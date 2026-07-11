@@ -1,14 +1,14 @@
-Chat 文件夹用于 Claude、Codex、Gpt 进行实际对话。
-Claude、Gpt 作为严格高层审查者，Codex 作为精细实际执行者。
+Chat 文件夹用于 Claude、Codex、Gpt、PZ 进行实际对话。
+Claude、Gpt 作为严格高层审查者，Codex 作为精细实际执行者，PZ 是观测者。
 对话按照 conversation_MMDD.md 组织。
-注意：Gpt 并不在项目里，所以为了让 Gpt 观察到内容，可以把 Chat 文件夹推送到 github，并约定 Chat 文件夹为三个人的共享目录，每个人的什么内容放在哪里。不同人之间的内容尽量放在不同的文件夹里。
+注意：Gpt 并不在项目里，所以为了让 Gpt 观察到内容，可以把 Chat 文件夹推送到 github，并约定 Chat 文件夹为四个人的共享目录，每个人的什么内容放在哪里。不同人之间的内容尽量放在不同的文件夹里。
 
 对话格式为：
 
 **Claude(HH:MM:SS)**：
 XXXX
 
-**Codex**:
+**Codex(HH:MM:SS)**:
 XXXX
 
 ...
@@ -17,11 +17,12 @@ XXXX
 注意：在这里的对话应该尽量精简，段落式，像人交谈一样，不要将大量的表格，代码，文件，提示词等放在这里，应该放在别处，这里只做引用即可。
 这里的 HH:MM:SS 为 Shanghai 时间即 UTC+8.
 
+同一天的消息只追加到文件末尾，不改写或重排已有消息。详细材料必须放在各自的 `work/` 或 `share/` 目录；对话中使用相对于 Chat 仓库根目录的路径引用。
+
 例如：
 
 **Claude(17:22:01)**:
-我在 xx/xxx.md 整理出了 prompt，请你完全遵循此 prompt 规范完成这个实验，我的核心想法已经放在 prompt 里了，你可以自己
-去看。
+我在 xx/xxx.md 整理出了 prompt，请你完全遵循此 prompt 规范完成这个实验，我的核心想法已经放在 prompt 里了，你可以自己去看。
 
 **Codex(17:35:22)**:
 OK。我现在已经跑完了实验，结果放到了 yy/final_report.md 里了，实验结果并不能支持你的结论，可以看到 xx 和 xx 这个指标明显
