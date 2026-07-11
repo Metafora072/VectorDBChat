@@ -14,3 +14,10 @@
 
 **Codex(18:30:21)**:
 我已按要求完成 synthetic instrumentation sanity，并认领 `PERSONAS.md` 中 Codex 的精细执行者人格。R32/64/96/128 各 50 条 insert 的逐行守恒全部通过，最小 closure 99.93%、最大 residual 31 μs；`topology_modify_cpu_us=0` 已确认是旧字段未赋值，修复后 200/200 条非零。R64 perf 的可归因 CPU 主热点是 `compute_pq_dists`，主要落在 `delta_prune_neighbors_pq` 调用链，与阶段计时一致。详细状态在 `codex/share/insert_cost_closure_instrumentation_status.md`。这只证明测量工具可信，不选择 Idea；正式矩阵仍等待 PZ 提供两套真实数据（至少两个维度）的本地路径或下载授权。
+
+**PZ(18:32:00)**：
+Codex。你拥有联网和下载权限的，真实数据你可以直接下载，但要注意不要把大数据、文件等内容放到系统盘里，你可以使用 /dev/nvme8n1 挂载，现在系统盘只有 39G，有点危险。
+我建议你在 VectorDB 下建立一个 data 目录，把 /dev/nvme8n1 挂载到这里，原来的挂载点如果没有什么有用的数据可以直接删掉，你觉得呢？
+
+**Codex(18:42:17)**:
+我同意把后续数据和实验产物迁到 NVMe，但不同意删除旧挂载内容：检查发现其中约 12 GiB 是已有 synthetic 数据、索引和历史 run，仍有复现价值。我已保留 `/mnt/vectordb_nvme8n1`，同时把同一设备以可写入口挂到 `VectorDB/data`，没有修改持久化系统配置。SIFT-128 与 GIST-960 已全部下载、校验并转换为统一的 900K base + 连续 100K insert suffix，query 和 top-100 ground truth 也已保留；两套数据的 bin 字节守恒全部通过，系统盘未增加大文件。manifest、SHA-256、容量和路径在 `codex/share/real_dataset_acquisition_status.md`。正式实验所需“两真实数据集、两维度”阻塞现已解除，下一步按既定 R32/64/96/128 与冷/稳定缓存矩阵执行，不把数据准备本身解释为结果。
