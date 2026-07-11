@@ -21,3 +21,17 @@ Codex。你拥有联网和下载权限的，真实数据你可以直接下载，
 
 **Codex(18:42:17)**:
 我同意把后续数据和实验产物迁到 NVMe，但不同意删除旧挂载内容：检查发现其中约 12 GiB 是已有 synthetic 数据、索引和历史 run，仍有复现价值。我已保留 `/mnt/vectordb_nvme8n1`，同时把同一设备以可写入口挂到 `VectorDB/data`，没有修改持久化系统配置。SIFT-128 与 GIST-960 已全部下载、校验并转换为统一的 900K base + 连续 100K insert suffix，query 和 top-100 ground truth 也已保留；两套数据的 bin 字节守恒全部通过，系统盘未增加大文件。manifest、SHA-256、容量和路径在 `codex/share/real_dataset_acquisition_status.md`。正式实验所需“两真实数据集、两维度”阻塞现已解除，下一步按既定 R32/64/96/128 与冷/稳定缓存矩阵执行，不把数据准备本身解释为结果。
+
+**Gpt(18:45:06)**:
+Codex，这一轮做得很好。你不仅把时间账闭合到了 99.93% 以上，还查清了 `topology_modify_cpu_us=0` 是旧字段未赋值；数据准备也很稳妥，保留了历史复现材料，没有为了省事删除旧内容。现在测量工具和真实数据都已经具备，项目可以进入正式阶段了。
+
+不过先不要直接铺开全部 R×数据集×缓存矩阵。instrumentation 中包含了 `rerank_search.cpp` 的语义修复，这不是单纯计时改动，请先把它与 instrumentation 分离，说明修复前后的行为差异，并确认不会让后续成本结果与原始 DGAI 基线失去可比性。同时做一次同 workload、同 seed 的 instrumented/uninstrumented 对照，量化计时和日志开销；如果开销明显，就需要校正或降低逐 insert 记录频率。
+
+这两项通过后，先做 SIFT-128 与 GIST-960 的 R64 真实数据 pilot，覆盖冷缓存和稳定缓存。样本量不要拍脑袋固定，以 dominant-stage share 的置信区间已经稳定为准。pilot 只验证三件事：真实数据路径正确、阶段占比稳定、两个维度下主瓶颈是否一致。确认后再扩展到 R32/64/96/128 全矩阵。块层 trace 暂时不作为阻塞项；只有后续仍要讨论设备写放大时才补。
+
+完成后请发布 `codex/share/insert_cost_closure_real_pilot.md`，重点报告语义修复隔离、instrumentation overhead、两套数据的阶段占比、缓存影响和是否值得继续完整矩阵。现在已经非常接近真正的方向判断了，但这一步仍然要把基线可比性守住。
+
+**Codex(19:30:24)**:
+两个前置门禁和 R64 real pilot 已完成，详细结果在 `codex/share/insert_cost_closure_real_pilot.md`。我确认 profiling 曾隐式携带 PQ alignment 修复和 pending-insert 过滤；现已拆成独立开关，pilot 只启用本机运行必需的 alignment-safe load，pending-insert filter 关闭。ops-only profiling 的 paired median overhead 为 −0.32%，95% CI [−3.81%, 1.61%]；page-event logging 约 18%，已禁用。SIFT/GIST 在 cold 与 stable 下的 dominant stage 都是 coordinate acquisition/rerank：stable 分别 37.8%/50.2%，cold 分别 54.4%/65.1%，所有 CI 均按自适应停止门禁收敛。因此我建议 Continue 到 R32/64/96/128 完整矩阵，但这还不是 Idea 判断。
+
+另外我需要明确报告一次执行错误：部分 trial 的相对路径误写到系统盘，共 57.6GB。经 PZ 提醒后，我已停止、按文件数和字节数校验后原样迁到 NVMe，系统盘源目录清空，可用空间从 59GB 恢复到 113GB；后续脚本会拒绝任何不在 `VectorDB/data` 下的输出路径。原始实验数据未丢失，也未混入结果口径。
