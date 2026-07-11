@@ -1,32 +1,27 @@
-# Claude 当前立场：成本闭合完成前暂不介入
+# Claude 当前立场
 
-日期：2026-07-11
+日期：2026-07-11，最后更新 21:43
 
 ## 已确认的 KILL
 
 - **M08 Stable-ID Refresh**：删除占比 5%，stale edge 不自然剪枝。KILL 证据充分。
 - **Dir 1 Deferred Topology Writes**：均匀模型验证后，billion-scale coalescing ratio → 1.0。KILL 证据充分。
-- **Append-only 邻接表版本化**（早期讨论中的方向 A）：尚未正式立项，但在此 session 中已初步量化 topology random write 仅占 insert 时间 6–10%，I/O 体积 16–36%。不构成主导成本，且 FreshDiskANN/LSM-VEC/OdinANN 已分别覆盖 out-of-place 的主要形态。暂不推进。
+- **Append-only 邻接表版本化**（早期讨论中的方向 A）：topology random write 仅占 insert 时间 6–10%。不构成主导成本，且 FreshDiskANN/LSM-VEC/OdinANN 已覆盖 out-of-place 主要形态。暂不推进。
+- **Coordinate acquisition/rerank 子阶段优化**：900K stable 下无子阶段超过 6%，成本弥散。不构成明确机制靶点。
+- **Application-cold io_submit 双峰**：非平稳、CI 不收敛、属 DGAI/Linux AIO 实现诊断。不生成系统 Idea。
 
-## 当前状态判断
+## 当前判断
 
-Gpt 主导的"先闭合成本账、再判断方向"策略是正确的。Codex 的 pilot 已证明 coordinate acquisition/rerank 在 SIFT-128 与 GIST-960 两套真实数据的 cold/stable 下均为 dominant stage（37.8–65.1%）。但"coordinate acquisition/rerank"仍是宽阶段，Gpt 已要求拆为 9 个互斥子阶段。
+子阶段归因已完成。900K stable 下没有单一子阶段超过 6%，我的介入条件未触发。Gpt 已启动全局重排账作为最后一步。
 
-**在子阶段归因完成之前，没有足够信息判断任何研究方向。**
+**预判**：coordinate acquisition/rerank 在一级仍会超 30%（pilot 已测得 37–50%），但这很可能是 DGAI 解耦 topology/coordinate 布局的结构性代价，不是驻盘图索引共性瓶颈。DiskANN 的 co-located 布局不需要额外 coordinate I/O。即使全局账确认此为唯一 30%+ 阶段，我倾向于不以此开启新研究方向——它指向的是 co-located vs. decoupled 的已知 tradeoff，两侧已分别被 DiskANN 和 DGAI 代表。
 
-## 我关注的下一个决策点
+**如果全局账没有其他 30%+ 共同主导阶段，建议关闭 DGAI 单系统 profiling。**
 
-当 Codex 发布 `insert_cost_scale_substage_report.md` 且满足以下条件时，我会介入：
+## 下次介入条件
 
-1. 某个明确子阶段在两套 900K 数据上稳定占总 insert 时间 30–40%+；
-2. 该子阶段的成本不是 DGAI 实现缺陷（如未优化的 memcpy、冗余日志）；
-3. 有初步证据表明该成本在其他图索引实现中也存在。
-
-届时判断：该子阶段是否指向一个有系统味道、跨系统共性、且不被现有工作覆盖的研究问题。
+全局重排账发布后，由 PZ 和 Gpt 决定是否继续或重新选题。如果需要我对新方向做高层判断，届时介入。
 
 ## 不会介入的事项
 
-- Instrumentation 细节
-- 数据集获取与环境配置
-- R 矩阵参数选择
-- Codex 的日常执行反馈
+- Instrumentation 细节、数据集配置、R 矩阵参数、日常执行反馈
