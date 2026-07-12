@@ -1,8 +1,8 @@
 # Claude 当前立场
 
-日期：2026-07-12，最后更新 18:18 (UTC+8)
+日期：2026-07-12，最后更新 18:40 (UTC+8)
 
-## 已确认的 KILL（共 17+ 个方向）
+## 已确认的 KILL（共 23 个方向）
 
 ### 原始九个（insert/update 路径）
 1. M08 Stable-ID Refresh
@@ -35,10 +35,13 @@
 18. 自动调优/crash recovery/SSD endurance（G2–G4）——分别被 autotuning baseline / 标准 WAL / 未证明瓶颈攻击
 
 ### 路径二方向 B
-19. 向量存储效率整体——VStream/DecoupleVS/DistVS/FaTRQ/LEANN/Milvus 2.6/S3 Vectors 覆盖 delta compression、分层精度、store-vs-recompute
-20. B1 routing-criticality quantization——量化算法贡献非系统贡献，query-dependent criticality 不稳定，5% 门槛太低
+19. 向量存储效率整体——VStream/DecoupleVS/DistVS/FaTRQ/LEANN/Milvus 2.6/S3 Vectors 覆盖
+20. B1 routing-criticality quantization——量化算法贡献非系统贡献
 21. B2 跨 embedding lazy migration——继承 G1 Kill 边界
 22. B4 query-frontier I/O fusion——继承 coalescing Kill
+
+### DiskColBERT（Idea 1 + Idea 3）
+23. DiskColBERT / SSD 驻盘 multi-vector 检索——ESPN (ISMM 2024) 覆盖 GPU+SSD 路径，ColBERT-serve (ECIR 2025) 覆盖 mmap 路径。容量计算、I/O 模式描述均有事实错误。剩余 CPU-only purpose-built I/O 空间太窄，只是 engineering delta。连带 Idea 3 characterization 失去叙事目标。
 
 ## 关键发现（非方向）
 
@@ -46,27 +49,26 @@ Vamana 拓扑对坐标扰动具有强鲁棒性：kNN overlap 变化 44–56% 时
 
 ## 路径一结论
 
-Codex 系统化 gap analysis（30+ 系统，2023–2026）确认驻盘图 ANN 传统系统优化空间高度饱和。唯一相对干净的空格（G1 共享 topology）storage claim 不足、机制 novelty 不足、A0 覆盖窄，不值得进 G0。路径一正式完成。
+Codex 系统化 gap analysis（30+ 系统，2023–2026）确认驻盘图 ANN 传统系统优化空间高度饱和。路径一正式完成。
+
+## 路径二结论
+
+方向 B（向量存储效率）出局。扩展方向 E2（learned components）、E3（LLM inference ANN）出局。E1 只剩极窄的 document-version atomic refresh。DiskColBERT（Idea Discovery Pipeline 产出的最高排名方向）被 ESPN + ColBERT-serve 覆盖后出局。
 
 ## 当前状态
 
-**路径二方向 B 已出局。** Codex prior-art 审计确认向量存储效率空间高度拥挤（VStream/DecoupleVS/DistVS/FaTRQ/LEANN 等覆盖）。B1 routing-criticality quantization 判定为量化算法贡献非系统贡献，不做 trace gate。
+**活跃候选：Idea 2——VAQ 物理设计。** Exqutor (Microsoft 2025) 只做了 query optimizer (10000× on TPC-H+vectors)，DiskJoin (SIGMOD 2026) 只覆盖 pairwise join。物理设计（数据布局、分区策略、向量/元组共置、缓冲管理）完全空白。PZ 的存储/布局专长适配，pgvector/DuckDB 可原型化。Novelty 7/10。
 
-**Idea Discovery Pipeline 完成。** E1-E3 被 Codex prior-art 扫描后，E2/E3 Kill，E1 只剩 document-version atomic refresh（窄）。
+**等待 Codex prior-art 审计**：重点检查 Exqutor/DiskJoin/pgvector/PostgreSQL-V 覆盖边界、传统物理设计 advisor 对 vector-specific 问题的适用性。
 
-通过系统性文献扫描发现新方向——**multi-vector retrieval (ColBERT/MaxSim) 是被忽视的存储系统问题**：
-- 所有引擎（WARP/PLAID/ColBERT-serve）纯内存
-- 十亿文档 ColBERT 索引需数十 TB，不可能全内存
-- LEMUR 降维为 single-vector 接 DiskANN（有损）
-- MaxSim I/O 模式与 graph-ANN 完全不同，可能更 SSD-friendly
+**已关闭的窄问题**：
+- Co-access locality trace（成功概率低，2× 门槛高）
+- E1-F document-version atomic refresh（太窄）
 
-候选方向（`claude/share/IDEA_REPORT_0712.md`）：
-1. **DiskColBERT：SSD 驻盘 late-interaction 检索引擎**（推荐，Novelty 8/10）
-2. VAQ 物理设计（备选，Novelty 7/10）
-3. Multi-vector I/O characterization（基础，低风险）
+## 反思
 
-等待 Codex 对 Idea 1 做 prior-art 深度验证（LEMUR 质量损失、constant-space MVR、PLAID SHIRTTT 覆盖范围）。
+23 kills 后的结构性教训：ANNS/vector DB 是一个被过度研究的领域。在 2026 年找到完全无人触及的系统设计空间极其困难。成功概率最高的路径是找到被忽视的**问题定义**（如 Exqutor 把 vector similarity 定义为 SQL operator 从而打开 physical design 空间），而不是在已有系统设计空间里找缝隙。
 
 ## 角色分工
 
-不再由 Claude 独立提出 novelty 声称。流程：Codex 先验证 prior-art 边界 → Claude 评估架构结构性和 kill 条件 → Gpt 统一裁决。
+Claude 独立评估方向可行性 → Codex 做 prior-art 审计和实验执行 → Gpt 统一裁决。Claude 对 Codex 的 Kill 做独立分析而非自动接受，但在分析后仍可能得出相同结论。
