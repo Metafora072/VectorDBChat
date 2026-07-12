@@ -29,6 +29,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--documents", type=int, default=96)
     p.add_argument("--queries", type=int, default=24)
+    p.add_argument("--skip-documents", type=int, default=0)
     p.add_argument("--image-batch", type=int, default=1)
     p.add_argument("--query-batch", type=int, default=8)
     p.add_argument("--threads", type=int, default=32)
@@ -50,7 +51,7 @@ def masked_rows(embeddings: torch.Tensor, attention_mask: torch.Tensor) -> list[
 def save_ragged(path: Path, arrays: list[np.ndarray], ids: list[str], texts: list[str] | None = None) -> None:
     lengths = np.asarray([len(x) for x in arrays], dtype=np.int32)
     offsets = np.concatenate(([0], np.cumsum(lengths, dtype=np.int64)))
-    values = np.concatenate(arrays, axis=0).astype(np.float16)
+    values = np.concatenate(arrays, axis=0).astype(np.float16) if arrays else np.empty((0, 128), dtype=np.float16)
     payload: dict[str, np.ndarray] = {
         "values": values,
         "offsets": offsets,
@@ -77,11 +78,14 @@ def main() -> None:
     # avoids duplicated pages masquerading as independent candidates.
     doc_rows: list[int] = []
     seen_docs: set[str] = set()
+    unique_seen = 0
     for i, row in enumerate(ds):
         doc_id = str(row["docId"])
         if doc_id not in seen_docs:
             seen_docs.add(doc_id)
-            doc_rows.append(i)
+            if unique_seen >= args.skip_documents:
+                doc_rows.append(i)
+            unique_seen += 1
         if len(doc_rows) == requested_documents:
             break
     if len(doc_rows) < requested_documents:
@@ -89,11 +93,12 @@ def main() -> None:
 
     corpus_ids = {str(ds[i]["docId"]) for i in doc_rows}
     query_rows: list[int] = []
-    for i, row in enumerate(ds):
-        if str(row["docId"]) in corpus_ids:
-            query_rows.append(i)
-        if len(query_rows) == requested_queries:
-            break
+    if requested_queries:
+        for i, row in enumerate(ds):
+            if str(row["docId"]) in corpus_ids:
+                query_rows.append(i)
+            if len(query_rows) == requested_queries:
+                break
     if len(query_rows) < requested_queries:
         raise RuntimeError(f"only {len(query_rows)} in-corpus queries available")
 

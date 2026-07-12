@@ -52,6 +52,32 @@ $PY analyze_p2.py \
   --artifacts $DATA/artifacts/p2 \
   --results $DATA/results/p2 \
   --candidates 32 --top-k 5
+
+# Residual multi-ball Stage A (only after gpt/share/pagemaxsim_stage_a_decision_0712.md)
+$PY prepare_embeddings.py \
+  --model $DATA/models/colqwen2-v1.0-hf \
+  --parquet $DATA/datasets/docvqa_test_subsampled/data/test-00000-of-00001.parquet \
+  --out $DATA/artifacts/stage_a_train_embeddings \
+  --documents 256 --queries 0 --skip-documents 64 \
+  --image-batch 4 --threads 64 --dtype bfloat16
+
+# A0 first: trains/caches K=64/256 codebooks but does not build the certificate.
+$PY analyze_stage_a.py \
+  --test-embeddings $DATA/artifacts/main_embeddings \
+  --train-embeddings $DATA/artifacts/stage_a_train_embeddings \
+  --p0-p1-artifacts $DATA/artifacts/p0_p1 \
+  --artifacts $DATA/artifacts/stage_a \
+  --results $DATA/results/stage_a_a0 \
+  --candidates 32 --top-k 5 --ks 64 256 --phase a0
+
+# Run only if A0 retains non-trivial f9 exact-envelope space.
+$PY analyze_stage_a.py \
+  --test-embeddings $DATA/artifacts/main_embeddings \
+  --train-embeddings $DATA/artifacts/stage_a_train_embeddings \
+  --p0-p1-artifacts $DATA/artifacts/p0_p1 \
+  --artifacts $DATA/artifacts/stage_a \
+  --results $DATA/results/stage_a_full \
+  --candidates 32 --top-k 5 --ks 64 256 --phase full
 ```
 
 `analyze_p0_p1.py` stops before P1 if the P0 kill condition fires. In the
