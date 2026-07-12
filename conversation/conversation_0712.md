@@ -197,3 +197,28 @@ Gpt，预检已完成，详细审计见 `codex/share/pq_free_ssd_exact_navigatio
 PQ 在 DiskANN 中确实是 I/O admission control：邻居先用 DRAM PQ 排序，只有被 frontier 选中的节点才读 SSD；expanded node 的 exact distance 只进入结果集，不回写导航队列。AiSAQ 已把这层控制面随当前 node chunk 下沉到 SSD，SIFT1B 查询内存约 11 MB，通常不增加 neighbor random read；所以“消除 O(N) PQ DRAM”已被更低 I/O 的方案覆盖。PageANN 又已覆盖 page-node、相似向量聚页、page traversal 和读页后页内 full-vector exact，只是跨页仍靠 compressed estimates。当前候选唯一剩余差异是先读候选 full-vector pages 再决定跨页导航，这只是待证伪的交换假设，没有新的 page topology、packing guarantee 或调度机制。
 
 最乐观 4 KiB raw capacity 在 128/384/960D float32 下仅为 8/2/1；若计一个 page node 的最小 header 和 R=64 page IDs，则是 7/2/0。对 64 个新邻居，即使 perfect packing，首次 exact-page 排序也至少读 8/32/64 页，而 AiSAQ 在 `R=64, M=32` 下可在约 2.8/3.8 KiB 的当前 record 内给 128D/384D 邻居全部做 PQ admission。960D 已无页内摊销，384D 也要求数量级 expansion 缩减才可能打平；128D 的可存活形态又与 PageANN 高度重叠。独立查新复核同样判定剩余 delta 不是方法 novelty。现有 trace 缺少逐 expansion 邻居、PQ/exact 排名和页映射，我在报告中保留了严格的 P0–P3 simulation 设计，但按门禁没有为已被 prior art 和容量上界否定的方向新增 instrumentation 或实验。
+
+**Claude(16:30:03)**:
+战略评估在 `claude/share/claude_strategic_assessment_post_council_0712.md`，这里只说结论。
+
+17 个方向连续 Kill 不是执行失败——是领域成熟度的结构性信号。2023–2026 年驻盘图 ANN 经历了爆发式增长，18+ 个系统把 serving 低内存、动态更新、异步 I/O、filtered search、workload 自适应、page-level search 等几乎所有系统级角度都覆盖了。在这个密度下，"从已知技术缝隙反推问题"的策略大概率命中已有工作。我自己连续出现的 prior-art 事实错误也证实了这一点。
+
+一个值得保留的发现：A0 实验意外揭示了 Vamana 拓扑对坐标扰动的强鲁棒性（kNN 变化 44–56%，recall 差异 <0.5pp）。这个事实本身不是系统贡献，但可以在未来方向中被利用。
+
+两条前进路径：
+
+**路径一：反转流程做系统化 gap 分析。** 不应继续"我提假设 → Codex Kill"的循环。应该让 Codex 先对 2023–2026 全部驻盘/SSD ANN 系统论文做结构化普查，建立 (问题, 机制, 系统) 矩阵，识别矩阵中的真正空白，再由空白出发设计假设。如果空白确认存在，我来评估架构结构性和 kill 条件。
+
+**路径二：战略转向相邻未饱和领域。** 利用已有领域理解转向密度更低的问题——例如向量搜索的数据库集成（transaction + ANN 交互）、多索引/多租户存储系统设计、或更广泛的驻盘向量搜索 characterization。具体选项在 share 文件。
+
+PZ，这是一个需要你判断的战略分叉点。路径一风险是 gap 分析可能确认"全部覆盖"（那就白花时间），收益是如果确有空白则立项最快。路径二风险是换赛道需要新的领域积累，收益是竞争密度低。两条路都可走，但不建议继续当前循环。
+
+**PZ(16:32:55)**:
+我同意，先让 Codex 做路径一吧。
+
+**Codex(16:40:59)**:
+PZ，路径一的系统化 gap analysis 已完成，完整目录、覆盖矩阵和反例审计见 `codex/share/ssd_ann_systematic_gap_analysis_0712.md`。本轮核对了 2023–2026 的 30 余个核心/边界系统；结论不是“完全没有空白”，而是 storage placement、page layout、cache、async execution、dynamic update、filtered search、build、multi-device 和 disaggregation 等传统维度都已高度饱和。多租户又被 Curator/Cosmos DB 攻击，transaction/MVCC 被 SingleStore-V、Manu、PostgreSQL-V 等覆盖，cloud tiering 也已有 VStream、DistVS、d-HNSW 和 GORIO，因此这些都不能直接当新方向。
+
+唯一相对干净的矩阵空格是“同一 corpus 的多个 embedding 模型/版本共享一套 graph topology”：现有 named-vector 系统通常每个空间独立建图，Drift-Adapter 是把新 query 映射回旧空间，FedBridge 是跨异构索引融合，都没有覆盖 one-topology/multi-coordinate 的驻盘设计。A0 中两组 old topology 与 fresh topology 的 Recall–I/O 差异小于 0.5pp，给了窄的真实性信号，但它仍未达到 `PROVISIONAL`。以 R64 纯 adjacency 约 260 B/vector 估算，两个版本共享一份 topology 对总 float32 payload 仅节省约 16.8%/7.2%/3.2%（128/384/960D）；高维 storage value 很弱，且“直接复用旧图”没有机制 novelty。若保留，只能先由 Gpt/Claude 判断一个多 model-pair 的 G0 characterization 是否值得，不能直接实验或设计系统。
+
+自动跨设计调优、standalone dynamic graph crash recovery、SSD endurance/ZNS/FDP 是三个字面空格，但分别面临普通 autotuning、标准 WAL/MVCC 和“未证明 endurance 是实际瓶颈”的强攻击，我只将它们登记为 gap registry，不自动补位。若高层认为共享 topology 的并存窗口、build cost 或业务价值不足，我建议按 Claude 的分叉直接进入路径二，不再从这三个弱空格继续猜题。
