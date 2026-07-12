@@ -1,23 +1,31 @@
 # Idea Candidates
 
-| # | Idea | Pilot Signal | Novelty | Status |
-|---|------|-------------|---------|--------|
-| 1 | DiskColBERT: SSD-Resident Late-Interaction Retrieval Engine | — | KILLED — ESPN + ColBERT-serve 覆盖 | KILLED |
-| 2 | Physical Design Advisor for Vector-Augmented Analytical Queries | NEEDS PILOT (pgvector benchmark) | 7/10 — Exqutor did optimizer, not physical design | ACTIVE — pending Codex audit |
-| 3 | Multi-Vector Retrieval I/O Characterization | — | KILLED — 失去叙事目标 | KILLED |
+| # | Idea | Source | Novelty | Status |
+|---|------|--------|---------|--------|
+| 1 | DiskColBERT | Idea Discovery Pipeline | KILLED — ESPN + ColBERT-serve | KILLED |
+| 2 | VAQ Physical Design | Idea Discovery Pipeline | KILLED — MINT + BoomHQ + traditional advisors | KILLED |
+| 3 | Multi-Vector I/O Characterization | Idea Discovery Pipeline | KILLED — lost narrative target | KILLED |
+| A | SetPageANN: Page-granular progressive multi-vector evaluation | Survey-derived | TBD — pending Codex audit | PRIOR-ART AUDIT |
+| B | SnapCursor: Versioned ANN cursor | Survey-derived | TBD — pending Codex audit (likely KILL) | PRIOR-ART AUDIT |
 
-## Active Idea: #2 — VAQ Physical Design
+## Active Candidate: A — SetPageANN
 
-- **Hypothesis**: Vector-augmented analytical queries (VAQs) require fundamentally different physical design than pure relational or pure vector workloads. Workload-aware layout/partitioning/materialization can improve VAQ performance by 3-10x over naive co-location.
-- **Key evidence**: (1) Exqutor (2025) proved VAQ query optimization matters (10000x) but only did query planner. (2) DiskJoin (SIGMOD 2026) covers pairwise join only. (3) pgvector stores vectors as regular columns with no vector-specific physical optimization. (4) Traditional physical design advisors don't account for vector similarity as an operator.
-- **Strongest threat**: VAQ workloads dominated by a single access pattern → design space trivial.
-- **Next step**: Codex prior-art audit of Exqutor/DiskJoin/pgvector/PostgreSQL-V/traditional physical design advisors → pgvector benchmark with 3 layouts
+- **Hypothesis**: Even with existing candidate generation and token pruning, multi-vector refinement still reads unnecessary token pages. A progressive page evaluation engine with synopsis-based score bounds can safely skip pages, introducing a new scheduling unit: (object, token-page-group).
+- **Key distinction from DiskColBERT**: Contribution is "read less data" not "put data on SSD." Requires proving that page-level skip space is significant AFTER PLAID/WARP pruning.
+- **Claude's risks**: (1) Post-pruning tokens per doc may fit in <1 page; (2) IGP reduces candidates to hundreds, limiting absolute I/O savings; (3) ESPN partial reranking is already object-level progressive evaluation.
+- **Next step**: Codex prior-art audit → oracle gate if PROVISIONAL
 
-## Killed Ideas
+## Secondary Candidate: B — SnapCursor
 
-### Idea 1: DiskColBERT
-- **Kill reason**: ESPN (ISMM 2024) covers GPU+SSD multi-vector reranking. ColBERT-serve (ECIR 2025) covers mmap-based disk serving. Core novelty claim "no disk-resident multi-vector system" invalidated. Capacity and I/O pattern calculations had factual errors (8× underestimate on doc size, random inter-document access mischaracterized as sequential).
-- **Remaining space**: CPU-only purpose-built I/O (too narrow for a paper).
+- **Hypothesis**: Dynamic ANN indexes lack proper pagination semantics. Versioned cursor with compact state, bounded version retention, and cursor-aware GC enables consistent progressive retrieval.
+- **Claude's concerns**: Demand risk high (search pagination rare in vector search, RAG re-searches cheaply, agent use case unproven). Existing systems (Milvus time travel, Weaviate cursor API) may suffice. LSM/segment snapshot is nearly free. A0 finding suggests topology mutation may not affect cursor quality.
+- **Next step**: Codex prior-art audit → likely KILL unless demand is stronger than expected
 
-### Idea 3: Multi-Vector I/O Characterization
-- **Kill reason**: Without a viable system direction (Idea 1 killed), characterization loses narrative purpose. ESPN characterizes GPU path, ColBERT-serve characterizes mmap path. CPU-NVMe profiling is technically uncharted but insufficient as standalone contribution.
+## Frozen Candidates (C-F)
+
+| # | Idea | Freeze Reason |
+|---|------|---------------|
+| C | SLO-ANN (progressive recall-SLO execution) | Filtered-ANN optimizer track crowded |
+| D | BridgeIndex (embedding version lifecycle) | Conflicts with A0 topology robustness finding |
+| E | MetricOverlay (shared backbone + metric overlays) | More graph algorithm than system |
+| F | QuarantineANN (vector poisoning quarantine) | More security/ML than system |
