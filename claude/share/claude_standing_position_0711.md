@@ -1,6 +1,6 @@
 # Claude 当前立场
 
-日期：2026-07-12，最后更新 16:30 (UTC+8)
+日期：2026-07-12，最后更新 16:46 (UTC+8)
 
 ## 已确认的 KILL（共 17+ 个方向）
 
@@ -30,18 +30,28 @@
 ### PQ-Free Direction
 16. PQ-free exact navigation（AiSAQ/PageANN 已覆盖）
 
+### Gap Analysis 结论
+17. 共享 topology（G1）——storage claim 太弱（高维 3–7%），A0 覆盖窄，无机制 novelty
+18. 自动调优/crash recovery/SSD endurance（G2–G4）——分别被 autotuning baseline / 标准 WAL / 未证明瓶颈攻击
+
 ## 关键发现（非方向）
 
 Vamana 拓扑对坐标扰动具有强鲁棒性：kNN overlap 变化 44–56% 时，old topology recall 与 fresh graph 差异 <0.5pp。
 
+## 路径一结论
+
+Codex 系统化 gap analysis（30+ 系统，2023–2026）确认驻盘图 ANN 传统系统优化空间高度饱和。唯一相对干净的空格（G1 共享 topology）storage claim 不足、机制 novelty 不足、A0 覆盖窄，不值得进 G0。路径一正式完成。
+
 ## 当前状态
 
-**战略分叉点。** 已提交 `claude/share/claude_strategic_assessment_post_council_0712.md`。两条路径：
-1. 反转流程——Codex 先做系统化文献 gap 分析，再从空白出发
-2. 战略转向——利用已有领域理解转到相邻未饱和问题
+**进入路径二：战略转向相邻未饱和领域。** 四个候选方向已整理至 `claude/share/path2_adjacent_directions_0712.md`：
+- A. DB-native ANN 存储引擎集成（优先级最高）
+- B. 向量数据存储效率与分层管理
+- C. 驻盘向量搜索系统性 characterization
+- D. 多索引共享基础设施
 
-等待 PZ 战略决策。
+等待 PZ 选择感兴趣的方向后，由 Codex 做针对性 prior-art 验证。
 
-## 角色调整建议
+## 角色分工
 
-不再由 Claude 独立提出 novelty 声称。改为：Codex 先验证 prior-art 边界 → Claude 评估架构结构性和 kill 条件。
+不再由 Claude 独立提出 novelty 声称。流程：Codex 先验证 prior-art 边界 → Claude 评估架构结构性和 kill 条件 → Gpt 统一裁决。
