@@ -76,6 +76,11 @@ def main() -> None:
     p.add_argument("--groundtruth", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--audit-query-ids", default="0,17")
+    p.add_argument(
+        "--checkpoints",
+        default="0,5,10,20",
+        help="comma-separated checkpoint percentages to validate",
+    )
     args = p.parse_args()
 
     queries = read_float_bin(args.dataset / "query.bin")
@@ -87,7 +92,10 @@ def main() -> None:
         "checkpoints": [],
     }
 
-    for pct in (0, 5, 10, 20):
+    checkpoints = tuple(int(value) for value in args.checkpoints.split(",") if value)
+    if not checkpoints or any(pct not in (0, 5, 10, 20) for pct in checkpoints):
+        raise ValueError("--checkpoints must be a non-empty subset of 0,5,10,20")
+    for pct in checkpoints:
         cp = f"cp{pct:02d}"
         base = read_float_bin(args.dataset / f"active_{cp}.bin")
         tags = read_tags(args.dataset / f"active_{cp}.tags.bin")

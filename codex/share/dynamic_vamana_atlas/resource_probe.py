@@ -68,6 +68,37 @@ def read_int(path: Path) -> int | None:
         return None
 
 
+def read_proc_io(path: Path) -> dict[str, int]:
+    values: dict[str, int] = {}
+    try:
+        for line in path.read_text().splitlines():
+            key, value = line.split(":", 1)
+            value = value.strip()
+            if value.isdigit():
+                values[key] = int(value)
+    except (FileNotFoundError, ProcessLookupError, PermissionError, ValueError):
+        pass
+    return values
+
+
+def read_cgroup_io(path: Path) -> list[dict[str, int | str]]:
+    rows: list[dict[str, int | str]] = []
+    try:
+        for line in path.read_text().splitlines():
+            fields = line.split()
+            if not fields:
+                continue
+            row: dict[str, int | str] = {"device": fields[0]}
+            for field in fields[1:]:
+                key, value = field.split("=", 1)
+                if value.isdigit():
+                    row[key] = int(value)
+            rows.append(row)
+    except (FileNotFoundError, PermissionError, ValueError):
+        pass
+    return rows
+
+
 def directory_space(root: Path | None) -> dict[str, int] | None:
     if root is None:
         return None
@@ -106,18 +137,25 @@ def main() -> None:
     cg = cgroup_path(proc.pid)
     samples = []
     peak_tree_rss_kb = 0
+    peak_tree_io_bytes = {"read_bytes": 0, "write_bytes": 0}
     peak_smaps: dict[str, int] = {}
     while proc.poll() is None:
         pids = process_tree(proc.pid)
         tree_rss_kb = 0
+        tree_io_bytes = {"read_bytes": 0, "write_bytes": 0}
         aggregate: dict[str, int] = {}
         for pid in pids:
             status = read_kv(Path(f"/proc/{pid}/status"))
             tree_rss_kb += status.get("VmRSS", 0)
+            proc_io = read_proc_io(Path(f"/proc/{pid}/io"))
+            for key in tree_io_bytes:
+                tree_io_bytes[key] += proc_io.get(key, 0)
             smaps = read_kv(Path(f"/proc/{pid}/smaps_rollup"))
             for key, value in smaps.items():
                 aggregate[key] = aggregate.get(key, 0) + value
         peak_tree_rss_kb = max(peak_tree_rss_kb, tree_rss_kb)
+        for key, value in tree_io_bytes.items():
+            peak_tree_io_bytes[key] = max(peak_tree_io_bytes[key], value)
         for key, value in aggregate.items():
             peak_smaps[key] = max(peak_smaps.get(key, 0), value)
         samples.append(
@@ -125,9 +163,11 @@ def main() -> None:
                 "elapsed_ms": round((time.monotonic() - start) * 1000, 3),
                 "process_count": len(pids),
                 "tree_rss_kb": tree_rss_kb,
+                "process_tree_io_bytes": tree_io_bytes,
                 "smaps_rollup_kb": aggregate,
                 "cgroup_memory_current": read_int(cg / "memory.current") if cg else None,
                 "cgroup_memory_peak": read_int(cg / "memory.peak") if cg else None,
+                "cgroup_io_stat": read_cgroup_io(cg / "io.stat") if cg else [],
                 "index_space": directory_space(args.space_root),
             }
         )
@@ -143,6 +183,7 @@ def main() -> None:
         "cgroup_path": str(cg) if cg else None,
         "cgroup_scope_note": "Values are process-specific only if the launcher has a dedicated cgroup.",
         "peak_process_tree_rss_kb": peak_tree_rss_kb,
+        "peak_process_tree_io_bytes": peak_tree_io_bytes,
         "peak_smaps_rollup_kb": peak_smaps,
         "page_cache_before_kb": meminfo_before.get("Cached"),
         "page_cache_after_kb": meminfo_after.get("Cached"),

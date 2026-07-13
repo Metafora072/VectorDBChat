@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import os
 import struct
 from pathlib import Path
@@ -57,10 +58,12 @@ def main() -> None:
     if active.size != initial.size or np.unique(active).size != initial.size:
         raise ValueError("smoke active-set cardinality/uniqueness failure")
 
-    with (args.dataset / "full_1m.bin").open("rb") as f:
+    manifest = json.loads((args.dataset / "manifest.json").read_text())
+    full_path = args.dataset / manifest.get("full_file", "full_1m.bin")
+    with full_path.open("rb") as f:
         npts, dim = struct.unpack("<II", f.read(8))
     source = np.memmap(
-        args.dataset / "full_1m.bin", dtype="<f4", mode="r", offset=8, shape=(npts, dim)
+        full_path, dtype="<f4", mode="r", offset=8, shape=(npts, dim)
     )
     data_path = args.dataset / "active_smoke100.bin"
     if not data_path.exists():

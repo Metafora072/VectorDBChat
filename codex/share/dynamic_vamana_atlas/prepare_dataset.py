@@ -78,6 +78,11 @@ def main() -> None:
     p.add_argument("--total", type=int, default=1_000_000)
     p.add_argument("--active", type=int, default=800_000)
     p.add_argument("--seed", type=int, default=20260713)
+    p.add_argument(
+        "--full-name",
+        default="full_1m.bin",
+        help="retained canonical corpus filename relative to --output",
+    )
     args = p.parse_args()
 
     source_n, dim = validate_float_bin(args.source)
@@ -99,7 +104,9 @@ def main() -> None:
     initial_ids = all_ids[: args.active]
     pool_ids = all_ids[args.active :]
 
-    full_path = out / "full_1m.bin"
+    full_path = out / args.full_name
+    if full_path.parent != out or full_path.name != args.full_name:
+        raise ValueError("--full-name must be a filename, not a path")
     if source_n == args.total:
         full_method = link_or_copy(args.source, full_path)
     else:
@@ -170,6 +177,7 @@ def main() -> None:
         "metric": "l2",
         "seed": args.seed,
         "full_materialization": full_method,
+        "full_file": args.full_name,
         "query_materialization": query_method,
         "checkpoint_denominator": "cumulative replaced objects / initial active corpus size",
         "checkpoints": checkpoint_rows,

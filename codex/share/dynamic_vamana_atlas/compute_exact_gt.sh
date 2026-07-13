@@ -13,7 +13,9 @@ gt_tool="$atlas_root/build/DiskANN/apps/utils/compute_groundtruth"
 openblas="$atlas_root/build/openblas-install/lib/libopenblas.so"
 
 mkdir -p "$output_dir"
-for pct in 00 05 10 20; do
+# P1 only needs checkpoint 0. Later stages may request every formal checkpoint
+# without duplicating this driver: ATLAS_CHECKPOINTS='00 05 10 20'.
+for pct in ${ATLAS_CHECKPOINTS:-"00 05 10 20"}; do
   base="$dataset_dir/active_cp${pct}.bin"
   tags="$dataset_dir/active_cp${pct}.tags.bin"
   prefix="$output_dir/gt_cp${pct}"
