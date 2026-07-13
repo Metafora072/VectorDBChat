@@ -7,18 +7,24 @@
 | 3 | Multi-Vector I/O Characterization | Idea Discovery | KILLED — lost narrative target |
 | A | SetPageANN / PageMaxSim | Survey-derived | KILLED — exact synopsis mechanism fails (P2 + Stage A) |
 | B | SnapCursor | Survey-derived | KILLED — demand unproven, MVCC baseline sufficient |
-| **NEW** | **Decoupled ANN Architecture Characterization + Optimization** | **PZ direction** | **ACTIVE — characterization pilot R1** |
+| 6 | Decoupled ANN: DGAI-vs-OdinANN R1 | PZ direction | SUPERSEDED — DecoupleVS already answers this |
+| 7 | DecoupleVS Late-Stability Dual-Frontier | PZ direction | KILLED — residual not query-dependent, fixed tuning covers oracle |
+| — | *Next direction* | *TBD* | *Awaiting PZ/Gpt decision* |
 
-## Active Direction: Decoupled ANN Architecture on Modern NVMe
+## DecoupleVS Late-Stability Closure (2026-07-13)
 
-- **Core question**: Does the decoupled architecture (DGAI-style: separate topology/coordinate storage) incur significant I/O amplification on modern high-bandwidth NVMe SSDs compared to coupled architecture (DiskANN/OdinANN)?
-- **Methodology change**: Problem-driven, not prior-art-driven. Characterize first, then build story from data. No exhaustive Kill gate before pilot.
-- **Key measurements**: Reranking I/O share, coupled vs decoupled I/O count/bytes, per-I/O software overhead, SSD utilization
-- **Decision logic**: Coordinate I/O >30% or per-I/O overhead >30% → direction viable. CPU dominant or <20% architecture difference → pivot.
-- **Scope**: `claude/share/decoupled_ann_characterization_scope_0713.md`
-- **Next step**: Codex executes R1 characterization on DGAI + OdinANN SIFT-900K
+Codex built `DecoupleSearch-R` (partial reproduction of DecoupleVS §3.4 on PipeANN/io_uring) and ran R0→R1→R2:
 
-## PageMaxSim Closure
+- **R0 passed**: Latency-aware search recovers ~16% mean latency at W=8 vs naive decoupling
+- **R1 confirmed phenomenon**: High-recall (B=80) causes trigger rate to drop to 0.4%, exposed tail ~1.17ms. But difficulty-tail Spearman only 0.118–0.218; per-query optimal B does not shift monotonically with difficulty quartile
+- **R2 killed design motivation**:
+  - Oracle A (perfect candidate knowledge): W=4 p99 **worsens 82%** due to queue contention; W=8/16 only 3–4% improvement
+  - Oracle B (earliest-safe stability): W=8/16 only 9.5%/5.3% mean improvement
+  - Oracle C (bandwidth allocation): Fixed workload-level quota already achieves 8.3–8.7% improvement; per-query oracle adds only 0.3–0.6% more
+- **Root cause**: Queue contention is the binding constraint, not stability signal precision. Simple fixed tuning nearly fully covers the recoverable space.
+- **Safe claim**: "High recall causes fixed-B late-stability to fail, exposing vector tail, but workload-level queue tuning suffices — no per-query adaptive scheduler needed."
+
+## PageMaxSim Closure (2026-07-12)
 
 PageMaxSim (visual multi-vector page-level progressive evaluation) closed at Stage A:
 - P0 passed (multi-page objects exist after token merging)
