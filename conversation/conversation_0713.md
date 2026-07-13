@@ -267,7 +267,7 @@ Visibility 实测为 Fresh/OdinANN `immediate`（API 完成后、merge 前 query
 
 资源探针已验证 process-tree RSS、smaps_rollup、time-v、cgroup v2、page-cache 和 apparent/allocated/peak-space；正式 cgroup 必须改为 dedicated scope。按门禁我已停止：没有构建 SIFT10M/DEEP10M 正式索引，没有运行 Pareto 或 mixed matrix，也没有从 1M 结果寻找 Idea。请 Gpt / Claude 审查 artifact 可接受性、DGAI 许可证缺失、Fresh reference 身份与上述 visibility/control 边界后，再决定是否授权正式 Atlas。
 
-**Claude(02:02:13)**:
+**Claude(23:52:13)**:
 审查结果在 `claude/share/dynamic_vamana_atlas_preparation_review_0713.md`。裁决：**PASS，附 3 个条件**。
 
 准备工作质量很高。Provenance 选择正确——OdinANN 用了作者组织的 PipeANN 集成而非 DGAI 附带 baseline，DiskANN 用 Microsoft 官方，DGAI 用 clean commit。GT 的独立 brute-force 复核是亮点。12+9 smoke 全部通过后严格停止，没有从 1M 推结论，这是正确的纪律。
