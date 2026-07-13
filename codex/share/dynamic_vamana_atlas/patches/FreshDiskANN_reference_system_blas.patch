@@ -1,0 +1,214 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 41ec3ec..e827906 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -66,7 +66,8 @@ endfunction()
+ 
+ 	
+ 
+-#MKL Config
++# BLAS compatibility for the Atlas host. Upstream hard-codes Intel MKL; the
++# code paths used here only require the CBLAS float ABI plus thread control.
+ if (MSVC)
+ 	checkEnvAndSetLocalVar("INTEL_ROOT" "Please install Intel MKL libraries and set the env variable INTEL_ROOT to the intel software directory. Should be similar to: C:\\Program Files (x86)\\IntelSWTools\\compilers_and_libraries\\windows\\. " "INTEL_ROOT")
+ 	set(MKL_ROOT ${INTEL_ROOT}/mkl)
+@@ -75,15 +76,13 @@ if (MSVC)
+ 	checkEnvAndSetLocalVar("BOOST_ROOT" "Please install Boost (1.71 or greater) from www.boost.org and set the env var BOOST_ROOT to the boost directory." "BOOST_ROOT")
+ 
+ else()
+-	set(INTEL_ROOT /opt/intel/compilers_and_libraries/linux)
+-	set(MKL_ROOT ${INTEL_ROOT}/mkl)
+-        add_compile_options(-m64 -Wl,--no-as-needed) 
+-	link_libraries(mkl_intel_ilp64 mkl_intel_thread mkl_core iomp5 pthread m dl)
+-	link_directories(${INTEL_ROOT}/lib/intel64 ${MKL_ROOT}/lib/intel64)
++	find_library(ATLAS_BLAS_LIBRARY NAMES blas libblas.so.3 REQUIRED)
++	add_compile_options(-m64 -Wl,--no-as-needed)
++	link_libraries(${ATLAS_BLAS_LIBRARY} pthread m dl)
++	link_directories(/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/build/gperftools-install/lib)
+ endif()
+ 
+-add_definitions(-DMKL_ILP64)
+-include_directories(include ${INTEL_ROOT}/include ${MKL_ROOT}/include ${BOOST_ROOT})
++include_directories(include ${BOOST_ROOT})
+ 
+ 
+ #Main compiler/linker settings 
+diff --git a/include/mkl/mkl.h b/include/mkl/mkl.h
+new file mode 100644
+index 0000000..e82e8f1
+--- /dev/null
++++ b/include/mkl/mkl.h
+@@ -0,0 +1,30 @@
++// Minimal MKL source-compatibility declarations backed by the system BLAS ABI.
++#pragma once
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++typedef int MKL_INT;
++
++typedef enum CBLAS_LAYOUT {
++    CblasRowMajor = 101,
++    CblasColMajor = 102
++} CBLAS_LAYOUT;
++typedef CBLAS_LAYOUT CBLAS_ORDER;
++
++typedef enum CBLAS_TRANSPOSE {
++    CblasNoTrans = 111,
++    CblasTrans = 112,
++    CblasConjTrans = 113
++} CBLAS_TRANSPOSE;
++
++float cblas_sdot(int n, const float *x, int incx, const float *y, int incy);
++float cblas_snrm2(int n, const float *x, int incx);
++void cblas_sgemm(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transa, CBLAS_TRANSPOSE transb, int m, int n, int k,
++                 float alpha, const float *a, int lda, const float *b, int ldb, float beta, float *c, int ldc);
++void mkl_set_num_threads(int num_threads);
++
++#ifdef __cplusplus
++}
++#endif
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 1a5f580..c7feedc 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -11,7 +11,7 @@ else()
+         linux_aligned_file_reader.cpp math_utils.cpp memory_mapper.cpp
+         partition_and_pq.cpp pq_flash_index.cpp logger.cpp distance.cpp
+ 		 utils.cpp v2/graph_delta.cpp v2/index_merger.cpp 
+-        v2/merge_insert.cpp)
++        v2/merge_insert.cpp mkl_compat.cpp)
+ 	add_library(${PROJECT_NAME} ${CPP_SOURCES})
+ 	add_library(${PROJECT_NAME}_s STATIC ${CPP_SOURCES})
+ endif()
+diff --git a/src/mkl_compat.cpp b/src/mkl_compat.cpp
+new file mode 100644
+index 0000000..141208f
+--- /dev/null
++++ b/src/mkl_compat.cpp
+@@ -0,0 +1,8 @@
++#include "mkl/mkl.h"
++
++#include <omp.h>
++
++extern "C" void mkl_set_num_threads(int num_threads)
++{
++    omp_set_num_threads(num_threads);
++}
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index 68be2d9..82e515d 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -119,11 +119,11 @@ else()
+ endif()
+ 
+ add_executable(overall_performance overall_performance.cpp)
+-target_link_libraries(overall_performance ${PROJECT_NAME} jemalloc aio)
++target_link_libraries(overall_performance ${PROJECT_NAME} tcmalloc aio)
+ # formatter
+ 
+ add_executable(motivation motivation.cpp)
+-target_link_libraries(motivation ${PROJECT_NAME} jemalloc aio)
++target_link_libraries(motivation ${PROJECT_NAME} tcmalloc aio)
+ 
+ add_executable(motivation_stress motivation_stress.cpp)
+-target_link_libraries(motivation_stress ${PROJECT_NAME} jemalloc aio)
+\ No newline at end of file
++target_link_libraries(motivation_stress ${PROJECT_NAME} tcmalloc aio)
+diff --git a/tests/overall_performance.cpp b/tests/overall_performance.cpp
+index 483a94b..1a5eaed 100644
+--- a/tests/overall_performance.cpp
++++ b/tests/overall_performance.cpp
+@@ -11,6 +11,7 @@
+ #include <time.h>
+ #include <timer.h>
+ #include <cstring>
++#include <cstdlib>
+ #include <iomanip>
+ #include <iostream>
+ #include <fstream>
+@@ -324,6 +325,42 @@ void get_trace(std::string data_bin, uint64_t l_start, uint64_t r_start,
+   reader.read((char*) data_load.data(), sizeof(T) * n * data_dim);
+ }
+ 
++template<typename T, typename TagT = uint32_t>
++uint64_t get_atlas_trace(const std::string& data_bin,
++                         const std::string& trace_bin,
++                         std::vector<TagT>& delete_tags,
++                         std::vector<TagT>& insert_tags,
++                         std::vector<T>& data_load) {
++  std::ifstream trace(trace_bin, std::ios::binary);
++  int32_t n = 0;
++  trace.read(reinterpret_cast<char*>(&n), sizeof(n));
++  if (!trace || n <= 0)
++    throw std::runtime_error("invalid ATLAS_TRACE_BIN: " + trace_bin);
++  delete_tags.resize(n);
++  insert_tags.resize(n);
++  trace.read(reinterpret_cast<char*>(delete_tags.data()), n * sizeof(TagT));
++  trace.read(reinterpret_cast<char*>(insert_tags.data()), n * sizeof(TagT));
++  if (!trace)
++    throw std::runtime_error("truncated ATLAS_TRACE_BIN: " + trace_bin);
++
++  std::ifstream data(data_bin, std::ios::binary);
++  int32_t npts = 0, dim = 0;
++  data.read(reinterpret_cast<char*>(&npts), sizeof(npts));
++  data.read(reinterpret_cast<char*>(&dim), sizeof(dim));
++  data_load.resize(static_cast<size_t>(n) * dim);
++  for (int32_t i = 0; i < n; ++i) {
++    if (insert_tags[i] >= static_cast<TagT>(npts))
++      throw std::runtime_error("Atlas insert tag exceeds dataset rows");
++    data.seekg(2 * sizeof(int32_t) +
++               static_cast<uint64_t>(insert_tags[i]) * dim * sizeof(T));
++    data.read(reinterpret_cast<char*>(data_load.data() +
++              static_cast<size_t>(i) * dim), dim * sizeof(T));
++  }
++  if (!data)
++    throw std::runtime_error("failed loading Atlas insert vectors");
++  return static_cast<uint64_t>(n);
++}
++
+ template<typename T, typename TagT>
+ void update(const std::string& data_bin, const unsigned L_disk,
+             const unsigned R_disk, const float alpha_disk, int step,
+@@ -361,7 +398,9 @@ void update(const std::string& data_bin, const unsigned L_disk,
+ 
+   std::cout << "Searching before inserts: " << std::endl;
+ 
+-  int               batch = step * 10;  // step / 10;
++  const char* atlas_trace_env = std::getenv("ATLAS_TRACE_BIN");
++  const bool atlas_mode = atlas_trace_env != nullptr && atlas_trace_env[0] != '\0';
++  int               batch = atlas_mode ? 1 : step * 10;  // step / 10;
+   int               inMemorySize = 0;
+   std::future<void> merge_future;
+ 
+@@ -379,6 +418,14 @@ void update(const std::string& data_bin, const unsigned L_disk,
+ 
+   uint64_t index_npts = x;
+   uint64_t vecs_per_step = index_npts / step;
++  if (atlas_mode) {
++    std::ifstream atlas_trace(atlas_trace_env, std::ios::binary);
++    int32_t atlas_count = 0;
++    atlas_trace.read(reinterpret_cast<char*>(&atlas_count), sizeof(atlas_count));
++    if (!atlas_trace || atlas_count <= 0)
++      throw std::runtime_error("invalid Atlas trace header");
++    vecs_per_step = static_cast<uint64_t>(atlas_count);
++  }
+   double   merge_ratio = ((double) Merge_Size / index_npts);
+ 
+   uint64_t ckpt_i = 0, res = 0, tmp_npts = index_npts;
+@@ -417,8 +464,12 @@ void update(const std::string& data_bin, const unsigned L_disk,
+ 
+     /**Prepare for update*/
+     uint64_t st = vecs_per_step * i;
+-    get_trace<T, TagT>(data_bin, st, st + index_npts, vecs_per_step, delete_vec,
+-                       insert_vec, data_load);
++    if (atlas_mode)
++      get_atlas_trace<T, TagT>(data_bin, atlas_trace_env, delete_vec,
++                               insert_vec, data_load);
++    else
++      get_trace<T, TagT>(data_bin, st, st + index_npts, vecs_per_step,
++                         delete_vec, insert_vec, data_load);
+ 
+     std::future<void> insert_future = std::async(
+         std::launch::async, insertion_kernel<T, TagT>, data_load.data(),

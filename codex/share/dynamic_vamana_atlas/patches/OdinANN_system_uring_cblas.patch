@@ -1,0 +1,153 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f40a9b8..aec997a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -27,6 +27,7 @@ endif()
+ include_directories(
+ 	${PROJECT_SOURCE_DIR}/include 
+ 	${PROJECT_SOURCE_DIR}/include/tsl/include 
++	/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/build/gperftools-install/include
+ )
+ 
+ add_compile_options(
+@@ -72,14 +73,16 @@ if(IO_ENGINE STREQUAL "aio" OR NOT PIPEANN_IO_URING_COMPILE_RESULT OR NOT "${PIP
+ 	set(IO_ENGINE "aio" CACHE STRING "I/O engine: uring, aio, or spdk" FORCE)
+ 	message(STATUS "Using AIO for asynchronous I/O, compatible but slower.")
+ else()
+-	include_directories(${PROJECT_SOURCE_DIR}/third_party/liburing/src/include)
+-	link_directories(${PROJECT_SOURCE_DIR}/third_party/liburing/src)
+ 	if(IO_ENGINE STREQUAL "spdk")
++		include_directories(${PROJECT_SOURCE_DIR}/third_party/liburing/src/include)
++		link_directories(${PROJECT_SOURCE_DIR}/third_party/liburing/src)
+ 		add_definitions(-DUSE_SPDK)
+ 		message(STATUS "Using SPDK for vector I/O & liburing for attr I/O, fastest but require user-space bdev.")
+ 	elseif(IO_ENGINE STREQUAL "uring")
++		find_library(PIPEANN_SYSTEM_URING_LIBRARY NAMES uring REQUIRED)
++		link_libraries(${PIPEANN_SYSTEM_URING_LIBRARY})
+ 		add_definitions(-DUSE_URING)
+-		message(STATUS "Using liburing for asynchronous I/O, faster but requires kernel support.")
++		message(STATUS "Using system liburing for asynchronous I/O: ${PIPEANN_SYSTEM_URING_LIBRARY}")
+ 	else()
+ 		message(FATAL_ERROR "Invalid IO_ENGINE=${IO_ENGINE}. Expected uring, aio, or spdk.")
+ 	endif()
+diff --git a/include/cblas.h b/include/cblas.h
+new file mode 100644
+index 0000000..8f55df9
+--- /dev/null
++++ b/include/cblas.h
+@@ -0,0 +1,33 @@
++#pragma once
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++typedef enum CBLAS_LAYOUT {
++  CblasRowMajor = 101,
++  CblasColMajor = 102
++} CBLAS_LAYOUT;
++typedef CBLAS_LAYOUT CBLAS_ORDER;
++
++typedef enum CBLAS_TRANSPOSE {
++  CblasNoTrans = 111,
++  CblasTrans = 112,
++  CblasConjTrans = 113
++} CBLAS_TRANSPOSE;
++
++typedef enum CBLAS_UPLO {
++  CblasUpper = 121,
++  CblasLower = 122
++} CBLAS_UPLO;
++
++float cblas_sdot(int n, const float *x, int incx, const float *y, int incy);
++float cblas_snrm2(int n, const float *x, int incx);
++void cblas_sgemm(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transa, CBLAS_TRANSPOSE transb, int m, int n, int k,
++                 float alpha, const float *a, int lda, const float *b, int ldb, float beta, float *c, int ldc);
++void cblas_ssyrk(CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k, float alpha,
++                 const float *a, int lda, float beta, float *c, int ldc);
++
++#ifdef __cplusplus
++}
++#endif
+diff --git a/tests/overall_performance.cpp b/tests/overall_performance.cpp
+index a9b640b..f1082b6 100644
+--- a/tests/overall_performance.cpp
++++ b/tests/overall_performance.cpp
+@@ -9,6 +9,7 @@
+ #include <time.h>
+ #include "utils/timer.h"
+ #include <cstring>
++#include <cstdlib>
+ #include <iomanip>
+ #include <iostream>
+ #include <fstream>
+@@ -188,6 +189,35 @@ void get_trace(std::string data_bin, uint64_t l_start, uint64_t r_start, uint64_
+   reader.read((char *) data_load.data(), sizeof(T) * n * data_dim);
+ }
+ 
++template<typename T, typename TagT = uint32_t>
++uint64_t get_atlas_trace(const std::string &data_bin, const std::string &trace_bin,
++                         std::vector<TagT> &delete_tags, std::vector<TagT> &insert_tags,
++                         std::vector<T> &data_load) {
++  std::ifstream trace(trace_bin, std::ios::binary);
++  int32_t n = 0;
++  trace.read(reinterpret_cast<char *>(&n), sizeof(n));
++  if (!trace || n <= 0) throw std::runtime_error("invalid ATLAS_TRACE_BIN: " + trace_bin);
++  delete_tags.resize(n);
++  insert_tags.resize(n);
++  trace.read(reinterpret_cast<char *>(delete_tags.data()), n * sizeof(TagT));
++  trace.read(reinterpret_cast<char *>(insert_tags.data()), n * sizeof(TagT));
++  if (!trace) throw std::runtime_error("truncated ATLAS_TRACE_BIN: " + trace_bin);
++
++  std::ifstream data(data_bin, std::ios::binary);
++  int32_t npts = 0, dim = 0;
++  data.read(reinterpret_cast<char *>(&npts), sizeof(npts));
++  data.read(reinterpret_cast<char *>(&dim), sizeof(dim));
++  data_load.resize(static_cast<size_t>(n) * dim);
++  for (int32_t i = 0; i < n; ++i) {
++    if (insert_tags[i] >= static_cast<TagT>(npts))
++      throw std::runtime_error("Atlas insert tag exceeds dataset rows");
++    data.seekg(2 * sizeof(int32_t) + static_cast<uint64_t>(insert_tags[i]) * dim * sizeof(T));
++    data.read(reinterpret_cast<char *>(data_load.data() + static_cast<size_t>(i) * dim), dim * sizeof(T));
++  }
++  if (!data) throw std::runtime_error("failed loading Atlas insert vectors");
++  return static_cast<uint64_t>(n);
++}
++
+ template<typename T, typename TagT>
+ void update(const std::string &data_bin, const unsigned L_disk, int step, std::string &save_path,
+             const std::string &query_file, std::string &truthset_file, const int recall_at,
+@@ -223,11 +253,20 @@ void update(const std::string &data_bin, const unsigned L_disk, int step, std::s
+     sync_search_kernel(query, query_num, query_dim, recall_at, Lsearch[j], index, currentFileName, true);
+   }
+ 
+-  int batch = 100;
++  const char *atlas_trace_env = std::getenv("ATLAS_TRACE_BIN");
++  const bool atlas_mode = atlas_trace_env != nullptr && atlas_trace_env[0] != '\0';
++  int batch = atlas_mode ? 1 : 100;
+   int inMemorySize = 0;
+   std::future<void> merge_future;
+   uint64_t index_npts = index.npoints();
+   uint64_t vecs_per_step = index_npts / step;
++  if (atlas_mode) {
++    std::ifstream atlas_trace(atlas_trace_env, std::ios::binary);
++    int32_t atlas_count = 0;
++    atlas_trace.read(reinterpret_cast<char *>(&atlas_count), sizeof(atlas_count));
++    if (!atlas_trace || atlas_count <= 0) throw std::runtime_error("invalid Atlas trace header");
++    vecs_per_step = static_cast<uint64_t>(atlas_count);
++  }
+ 
+   // Two-prefix swap: alternate between prefix_a and prefix_b to avoid copy overhead.
+   std::string prefix_a = index.index_prefix();
+@@ -241,7 +280,10 @@ void update(const std::string &data_bin, const unsigned L_disk, int step, std::s
+ 
+     /**Prepare for update*/
+     uint64_t st = vecs_per_step * i;
+-    get_trace<T, TagT>(data_bin, st, st + index_npts, vecs_per_step, delete_vec, insert_vec, data_load);
++    if (atlas_mode)
++      get_atlas_trace<T, TagT>(data_bin, atlas_trace_env, delete_vec, insert_vec, data_load);
++    else
++      get_trace<T, TagT>(data_bin, st, st + index_npts, vecs_per_step, delete_vec, insert_vec, data_load);
+ 
+     std::future<void> insert_future = std::async(std::launch::async, insertion_kernel<T, TagT>, data_load.data(),
+                                                  std::ref(index), std::ref(insert_vec), aligned_dim);

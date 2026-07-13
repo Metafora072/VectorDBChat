@@ -1,0 +1,120 @@
+{
+  "root": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift1m",
+  "files": [
+    {
+      "path": "active_cp00.bin",
+      "bytes": 409600008,
+      "sha256": "c997d4a9a8efa0c96bda1bce85728eeca3b76de46c4aa4c61d2325bd85dded24"
+    },
+    {
+      "path": "active_cp00.ids.u32",
+      "bytes": 3200000,
+      "sha256": "31e79e9948c31706ad9e56b180aa0b945d0ba2cba5a045a6c9865c9e6cbc2cf9"
+    },
+    {
+      "path": "active_cp00.tags.bin",
+      "bytes": 3200008,
+      "sha256": "5a5bd2839ee4810ccd22206e401586281b1c8913728f0124b486da557d4bc499"
+    },
+    {
+      "path": "active_cp05.bin",
+      "bytes": 409600008,
+      "sha256": "753b73100732d1aabde94c573b326589844cc564293fd0f994d6452efd05b81f"
+    },
+    {
+      "path": "active_cp05.ids.u32",
+      "bytes": 3200000,
+      "sha256": "0152726400b9a44649ebe5e2580d1fad6f527c601d57a70746fb082ac064a62e"
+    },
+    {
+      "path": "active_cp05.tags.bin",
+      "bytes": 3200008,
+      "sha256": "3e75773554d49a90cb85f31e64f0030f00b19d6642b67dec1047311002cd719c"
+    },
+    {
+      "path": "active_cp10.bin",
+      "bytes": 409600008,
+      "sha256": "d0a5219d9f6a23c23eeea51036b4bf324feed095438a92a6b8c918de5b6f812e"
+    },
+    {
+      "path": "active_cp10.ids.u32",
+      "bytes": 3200000,
+      "sha256": "277716e2adcf4904ac32ce188bc45ad41acb3fdc22dc8454dd12c384e5b46147"
+    },
+    {
+      "path": "active_cp10.tags.bin",
+      "bytes": 3200008,
+      "sha256": "3fe1de98ba74b159edda06817384ea14f1776dbffbd10fd766c37cdb68c644bc"
+    },
+    {
+      "path": "active_cp20.bin",
+      "bytes": 409600008,
+      "sha256": "94be53788a1ef7c808257e771e46dbd7dfa7e2e2c2573d79a95dc152f28b7ec4"
+    },
+    {
+      "path": "active_cp20.ids.u32",
+      "bytes": 3200000,
+      "sha256": "c5333352031aed0e02e66fac91f10af2422721d52e8fc91a3028ce3bad817eb6"
+    },
+    {
+      "path": "active_cp20.tags.bin",
+      "bytes": 3200008,
+      "sha256": "3af30b8d6a9a713f66da23063f3b3895f77bc67619855866a94a65b8ac48967b"
+    },
+    {
+      "path": "active_smoke100.bin",
+      "bytes": 409600008,
+      "sha256": "f217077e34e3d881ba0c234a102fafb5aae439d297279c3df7bb974eeb7473eb"
+    },
+    {
+      "path": "active_smoke100.ids.u32",
+      "bytes": 3200000,
+      "sha256": "edbc1c8746ffe972923b195b8097a10532aa4b002cf2477b88e7897fd055af4e"
+    },
+    {
+      "path": "active_smoke100.tags.bin",
+      "bytes": 3200008,
+      "sha256": "a7f1ed7c6a16bf9fa1f3e386a65af50fa9131cfff05e6d7ab15b795968711bb7"
+    },
+    {
+      "path": "full_1m.bin",
+      "bytes": 512000008,
+      "sha256": "8c7b3d999ba3133f865af72df078f77c2d248fdb80571d7ea1f1bb8e1750658e"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 2162,
+      "sha256": "02f0c482016fe56d6173d2714ca676a4672a9144bd0629a59c69078f624a377b"
+    },
+    {
+      "path": "query.bin",
+      "bytes": 5120008,
+      "sha256": "9b0082b67d0ac55b4c7d42216560344567ad87ce3e75a9d5214a0762f1c15d65"
+    },
+    {
+      "path": "replace_new_trace.csv",
+      "bytes": 6346741,
+      "sha256": "fef6f1d0395c48cac7ee265b11e7fc974764c54ae3901a86952df8b6f3c6de51"
+    },
+    {
+      "path": "same_vector_control.bin",
+      "bytes": 804,
+      "sha256": "107660c625ae7f04bf2d16154ec4046d8d570bc84a1a14b711078a4a468bc5cf"
+    },
+    {
+      "path": "same_vector_control.csv",
+      "bytes": 2500,
+      "sha256": "3b952e09bcb0647ca528a77ca5d63f190df4cfeab77e0c5a2c916a1b74848b37"
+    },
+    {
+      "path": "smoke_replace_new_trace.bin",
+      "bytes": 804,
+      "sha256": "64af2a8617e32ac27ffdbea8c9999d50351fdc38b4f60651bd37a5a35a9414f5"
+    },
+    {
+      "path": "smoke_replace_new_trace.csv",
+      "bytes": 2527,
+      "sha256": "9f0ca83f2c24b00780c5f239b4a13a53c4d655e0e35513af4078b781d4264825"
+    }
+  ]
+}

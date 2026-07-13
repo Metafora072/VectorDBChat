@@ -1,0 +1,114 @@
+{
+  "schema": "dynamic-vamana-atlas-gt-validation-v1",
+  "dataset": "sift1m",
+  "audit_query_ids": [
+    0,
+    17
+  ],
+  "checkpoints": [
+    {
+      "checkpoint_pct": 0,
+      "nqueries": 10000,
+      "k": 100,
+      "all_tags_active": true,
+      "distances_finite": true,
+      "distances_monotonic": true,
+      "independent_bruteforce_audits": [
+        {
+          "query_id": 0,
+          "top100_id_exact_match": true,
+          "top100_id_overlap": 100,
+          "tie_safe_top100": true,
+          "max_abs_distance_error": 0.0,
+          "max_reported_distance_error": 0.0
+        },
+        {
+          "query_id": 17,
+          "top100_id_exact_match": false,
+          "top100_id_overlap": 100,
+          "tie_safe_top100": true,
+          "max_abs_distance_error": 0.0,
+          "max_reported_distance_error": 0.0
+        }
+      ]
+    },
+    {
+      "checkpoint_pct": 5,
+      "nqueries": 10000,
+      "k": 100,
+      "all_tags_active": true,
+      "distances_finite": true,
+      "distances_monotonic": true,
+      "independent_bruteforce_audits": [
+        {
+          "query_id": 0,
+          "top100_id_exact_match": true,
+          "top100_id_overlap": 100,
+          "tie_safe_top100": true,
+          "max_abs_distance_error": 0.0,
+          "max_reported_distance_error": 0.0
+        },
+        {
+          "query_id": 17,
+          "top100_id_exact_match": false,
+          "top100_id_overlap": 100,
+          "tie_safe_top100": true,
+          "max_abs_distance_error": 0.0,
+          "max_reported_distance_error": 0.0
+        }
+      ]
+    },
+    {
+      "checkpoint_pct": 10,
+      "nqueries": 10000,
+      "k": 100,
+      "all_tags_active": true,
+      "distances_finite": true,
+      "distances_monotonic": true,
+      "independent_bruteforce_audits": [
+        {
+          "query_id": 0,
+          "top100_id_exact_match": true,
+          "top100_id_overlap": 100,
+          "tie_safe_top100": true,
+          "max_abs_distance_error": 0.0,
+          "max_reported_distance_error": 0.0
+        },
+        {
+          "query_id": 17,
+          "top100_id_exact_match": false,
+          "top100_id_overlap": 100,
+          "tie_safe_top100": true,
+          "max_abs_distance_error": 0.0,
+          "max_reported_distance_error": 0.0
+        }
+      ]
+    },
+    {
+      "checkpoint_pct": 20,
+      "nqueries": 10000,
+      "k": 100,
+      "all_tags_active": true,
+      "distances_finite": true,
+      "distances_monotonic": true,
+      "independent_bruteforce_audits": [
+        {
+          "query_id": 0,
+          "top100_id_exact_match": true,
+          "top100_id_overlap": 100,
+          "tie_safe_top100": true,
+          "max_abs_distance_error": 0.0,
+          "max_reported_distance_error": 0.0
+        },
+        {
+          "query_id": 17,
+          "top100_id_exact_match": false,
+          "top100_id_overlap": 100,
+          "tie_safe_top100": true,
+          "max_abs_distance_error": 0.0,
+          "max_reported_distance_error": 0.0
+        }
+      ]
+    }
+  ]
+}

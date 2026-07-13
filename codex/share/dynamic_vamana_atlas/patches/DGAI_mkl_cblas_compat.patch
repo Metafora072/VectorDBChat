@@ -1,0 +1,116 @@
+diff --git a/include/mkl_cblas.h b/include/mkl_cblas.h
+new file mode 100644
+index 0000000..f804c62
+--- /dev/null
++++ b/include/mkl_cblas.h
+@@ -0,0 +1,25 @@
++#pragma once
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++typedef enum CBLAS_ORDER {
++  CblasRowMajor = 101,
++  CblasColMajor = 102
++} CBLAS_ORDER;
++
++typedef enum CBLAS_TRANSPOSE {
++  CblasNoTrans = 111,
++  CblasTrans = 112,
++  CblasConjTrans = 113
++} CBLAS_TRANSPOSE;
++
++float cblas_sdot(int n, const float *x, int incx, const float *y, int incy);
++float cblas_snrm2(int n, const float *x, int incx);
++void cblas_sgemm(CBLAS_ORDER order, CBLAS_TRANSPOSE transa, CBLAS_TRANSPOSE transb, int m, int n, int k,
++                 float alpha, const float *a, int lda, const float *b, int ldb, float beta, float *c, int ldc);
++
++#ifdef __cplusplus
++}
++#endif
+diff --git a/tests/overall_performance.cpp b/tests/overall_performance.cpp
+index a1b29c6..8b86f97 100644
+--- a/tests/overall_performance.cpp
++++ b/tests/overall_performance.cpp
+@@ -10,6 +10,7 @@
+ #include <time.h>
+ #include <timer.h>
+ #include <cstring>
++#include <cstdlib>
+ #include <iomanip>
+ #include <iostream>
+ #include <fstream>
+@@ -320,6 +321,35 @@ void get_trace(std::string data_bin, uint64_t l_start, uint64_t r_start, uint64_
+   reader.read((char *) data_load.data(), sizeof(T) * n * data_dim);
+ }
+ 
++template<typename T, typename TagT = uint32_t>
++uint64_t get_atlas_trace(const std::string &data_bin, const std::string &trace_bin,
++                         std::vector<TagT> &delete_tags, std::vector<TagT> &insert_tags,
++                         std::vector<T> &data_load) {
++  std::ifstream trace(trace_bin, std::ios::binary);
++  int32_t n = 0;
++  trace.read(reinterpret_cast<char *>(&n), sizeof(n));
++  if (!trace || n <= 0) throw std::runtime_error("invalid ATLAS_TRACE_BIN: " + trace_bin);
++  delete_tags.resize(n);
++  insert_tags.resize(n);
++  trace.read(reinterpret_cast<char *>(delete_tags.data()), n * sizeof(TagT));
++  trace.read(reinterpret_cast<char *>(insert_tags.data()), n * sizeof(TagT));
++  if (!trace) throw std::runtime_error("truncated ATLAS_TRACE_BIN: " + trace_bin);
++
++  std::ifstream data(data_bin, std::ios::binary);
++  int32_t npts = 0, dim = 0;
++  data.read(reinterpret_cast<char *>(&npts), sizeof(npts));
++  data.read(reinterpret_cast<char *>(&dim), sizeof(dim));
++  data_load.resize(static_cast<size_t>(n) * dim * 2);
++  for (int32_t i = 0; i < n; ++i) {
++    if (insert_tags[i] >= static_cast<TagT>(npts))
++      throw std::runtime_error("Atlas insert tag exceeds dataset rows");
++    data.seekg(2 * sizeof(int32_t) + static_cast<uint64_t>(insert_tags[i]) * dim * sizeof(T));
++    data.read(reinterpret_cast<char *>(data_load.data() + static_cast<size_t>(i) * dim), dim * sizeof(T));
++  }
++  if (!data) throw std::runtime_error("failed loading Atlas insert vectors");
++  return static_cast<uint64_t>(n);
++}
++
+ template <typename T, typename TagT = uint32_t>
+ void get_trace2(tsl::robin_set<uint32_t> &inactive_set,
+                std::vector<TagT> &delete_tags, std::vector<TagT> &insert_tags,
+@@ -414,7 +444,9 @@ void update(const std::string &data_bin, const unsigned L_disk, int step, float
+     ref_diskio.push_back(diskio);
+   }
+   
+-  int batch = step;
++  const char *atlas_trace_env = std::getenv("ATLAS_TRACE_BIN");
++  const bool atlas_mode = atlas_trace_env != nullptr && atlas_trace_env[0] != '\0';
++  int batch = atlas_mode ? 1 : step;
+   int inMemorySize = 0;
+   std::future<void> merge_future;
+   uint64_t index_npts = sync_index._disk_index->num_points;
+@@ -423,6 +455,13 @@ void update(const std::string &data_bin, const unsigned L_disk, int step, float
+   if (batch_size < 1) {
+     vecs_per_step = index_npts * batch_size;
+   }
++  if (atlas_mode) {
++    std::ifstream atlas_trace(atlas_trace_env, std::ios::binary);
++    int32_t atlas_count = 0;
++    atlas_trace.read(reinterpret_cast<char *>(&atlas_count), sizeof(atlas_count));
++    if (!atlas_trace || atlas_count <= 0) throw std::runtime_error("invalid Atlas trace header");
++    vecs_per_step = static_cast<uint64_t>(atlas_count);
++  }
+   std::cerr << "vecs_per_step: " << vecs_per_step << std::endl;
+   
+   #ifdef USE_TOPO_DISK
+@@ -440,7 +479,10 @@ void update(const std::string &data_bin, const unsigned L_disk, int step, float
+ 
+     /**Prepare for update*/
+     uint64_t st = vecs_per_step * i;
+-    get_trace<T, TagT>(data_bin, st, st + index_npts, vecs_per_step, delete_vec, insert_vec, data_load);
++    if (atlas_mode)
++      get_atlas_trace<T, TagT>(data_bin, atlas_trace_env, delete_vec, insert_vec, data_load);
++    else
++      get_trace<T, TagT>(data_bin, st, st + index_npts, vecs_per_step, delete_vec, insert_vec, data_load);
+ 
+     if(gs != nullptr){
+       gs->clear();

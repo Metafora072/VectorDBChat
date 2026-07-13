@@ -1,0 +1,13 @@
+system	dataset	build	load_query	L20_recall_pct	L40_recall_pct	L80_recall_pct	L120_recall_pct	note
+DiskANN	sift1m	pass	pass	96.09	98.71	99.72	99.90	readiness-only
+DiskANN	gist1m	pass	pass	78.32	87.88	93.92	96.72	readiness-only; 8192-byte record I/O for 4100-byte node
+DiskANN	deep1m	pass	pass	95.75	98.30	99.43	99.74	readiness-only
+Fresh	sift1m	pass	pass	96.30	98.84	99.78	99.91	reference reproduction; setarch -R required
+Fresh	gist1m	pass	pass	59.82	73.34	85.04	90.12	R32 smoke fallback after native R64 record-layout failure
+Fresh	deep1m	pass	pass	95.88	98.40	99.53	99.78	reference reproduction; setarch -R required
+DGAI	sift1m	pass	pass	91.52	96.44	98.78	99.43	clean commit plus build/driver compatibility patch
+DGAI	gist1m	pass	pass	52.87	66.17	77.88	84.02	readiness-only
+DGAI	deep1m	pass	pass	90.45	95.46	98.18	98.97	readiness-only
+OdinANN	sift1m	pass	pass	92.02	98.24	99.73	99.93	author repository; true io_uring
+OdinANN	gist1m	pass	pass	42.12	53.80	66.11	73.06	8192-byte I/O path; true io_uring
+OdinANN	deep1m	pass	pass	90.75	97.77	99.57	99.85	author repository; true io_uring

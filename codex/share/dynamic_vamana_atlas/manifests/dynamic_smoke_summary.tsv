@@ -1,0 +1,13 @@
+system	dataset	trace	ops	status	before_recall_pct	after_recall_pct	visibility	semantic_note
+Fresh	sift1m	replace-new	100	pass	99.833	99.833	immediate	post-update query occurs before merge
+Fresh	gist1m	replace-new	100	pass	87.660	87.670	immediate	R32 artifact-safe smoke; post-update query before merge
+Fresh	deep1m	replace-new	100	pass	99.621	99.622	immediate	post-update query occurs before merge
+DGAI	sift1m	replace-new	100	pass	98.490	98.620	merge-visible	driver merges and reloads before post-update query
+DGAI	gist1m	replace-new	100	pass	77.000	77.760	merge-visible	driver merges and reloads before post-update query
+DGAI	deep1m	replace-new	100	pass	98.090	98.190	merge-visible	driver merges and reloads before post-update query
+OdinANN	sift1m	replace-new	100	pass	99.733	99.732	immediate	post-update query occurs before consolidation
+OdinANN	gist1m	replace-new	100	pass	66.460	66.460	immediate	post-update query occurs before consolidation
+OdinANN	deep1m	replace-new	100	pass	99.579	99.574	immediate	post-update query occurs before consolidation
+Fresh	sift1m	same-vector	100	control-pass	99.833	99.822	immediate	API/tag control only; not a formal workload
+DGAI	sift1m	same-vector	100	control-fail	98.500	98.560	merge-visible	post-merge metadata reports 799900 points, so concurrent same-tag delete/reinsert is not transparent
+OdinANN	sift1m	same-vector	100	control-pass	99.732	99.722	immediate	API/tag control only; not a formal workload

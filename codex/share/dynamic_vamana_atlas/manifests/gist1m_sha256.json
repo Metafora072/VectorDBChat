@@ -1,0 +1,120 @@
+{
+  "root": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/gist1m",
+  "files": [
+    {
+      "path": "active_cp00.bin",
+      "bytes": 3072000008,
+      "sha256": "718cb5a847051a3dcb974778332f47b4e394967a6ee79e72337d7b6d91455f13"
+    },
+    {
+      "path": "active_cp00.ids.u32",
+      "bytes": 3200000,
+      "sha256": "31e79e9948c31706ad9e56b180aa0b945d0ba2cba5a045a6c9865c9e6cbc2cf9"
+    },
+    {
+      "path": "active_cp00.tags.bin",
+      "bytes": 3200008,
+      "sha256": "5a5bd2839ee4810ccd22206e401586281b1c8913728f0124b486da557d4bc499"
+    },
+    {
+      "path": "active_cp05.bin",
+      "bytes": 3072000008,
+      "sha256": "0d7cefdce7adc934c3307a3bad41339eba9fb008a5f8b4cd1bc9f8ab1bae711d"
+    },
+    {
+      "path": "active_cp05.ids.u32",
+      "bytes": 3200000,
+      "sha256": "0152726400b9a44649ebe5e2580d1fad6f527c601d57a70746fb082ac064a62e"
+    },
+    {
+      "path": "active_cp05.tags.bin",
+      "bytes": 3200008,
+      "sha256": "3e75773554d49a90cb85f31e64f0030f00b19d6642b67dec1047311002cd719c"
+    },
+    {
+      "path": "active_cp10.bin",
+      "bytes": 3072000008,
+      "sha256": "badc4fcedc33377716db7c8122ddf1dc12b756a9879c61fe7e9fa48f1e01404f"
+    },
+    {
+      "path": "active_cp10.ids.u32",
+      "bytes": 3200000,
+      "sha256": "277716e2adcf4904ac32ce188bc45ad41acb3fdc22dc8454dd12c384e5b46147"
+    },
+    {
+      "path": "active_cp10.tags.bin",
+      "bytes": 3200008,
+      "sha256": "3fe1de98ba74b159edda06817384ea14f1776dbffbd10fd766c37cdb68c644bc"
+    },
+    {
+      "path": "active_cp20.bin",
+      "bytes": 3072000008,
+      "sha256": "b36aab22b55b8e2d1e427243a3a4311d6a278bbaf05ba31e52b2784cfc9da620"
+    },
+    {
+      "path": "active_cp20.ids.u32",
+      "bytes": 3200000,
+      "sha256": "c5333352031aed0e02e66fac91f10af2422721d52e8fc91a3028ce3bad817eb6"
+    },
+    {
+      "path": "active_cp20.tags.bin",
+      "bytes": 3200008,
+      "sha256": "3af30b8d6a9a713f66da23063f3b3895f77bc67619855866a94a65b8ac48967b"
+    },
+    {
+      "path": "active_smoke100.bin",
+      "bytes": 3072000008,
+      "sha256": "21d86162784cd2e428ed7b1a5f663c800952d6671f5dfd1320ed0ccc1e9766cb"
+    },
+    {
+      "path": "active_smoke100.ids.u32",
+      "bytes": 3200000,
+      "sha256": "edbc1c8746ffe972923b195b8097a10532aa4b002cf2477b88e7897fd055af4e"
+    },
+    {
+      "path": "active_smoke100.tags.bin",
+      "bytes": 3200008,
+      "sha256": "a7f1ed7c6a16bf9fa1f3e386a65af50fa9131cfff05e6d7ab15b795968711bb7"
+    },
+    {
+      "path": "full_1m.bin",
+      "bytes": 3840000008,
+      "sha256": "fd57967ae1461c453336b9be9621c74a2b5927e74cafa9f5e899a5dc5df6a5b8"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 2161,
+      "sha256": "5f054738bd0d96e6571844ac17499c838759b350dd9d332810c5e9e365e33edd"
+    },
+    {
+      "path": "query.bin",
+      "bytes": 3840008,
+      "sha256": "220465f0ab851de6890d87ab1dd5081f526da8d214aa7a3849e738e63cad6775"
+    },
+    {
+      "path": "replace_new_trace.csv",
+      "bytes": 6346741,
+      "sha256": "fef6f1d0395c48cac7ee265b11e7fc974764c54ae3901a86952df8b6f3c6de51"
+    },
+    {
+      "path": "same_vector_control.bin",
+      "bytes": 804,
+      "sha256": "107660c625ae7f04bf2d16154ec4046d8d570bc84a1a14b711078a4a468bc5cf"
+    },
+    {
+      "path": "same_vector_control.csv",
+      "bytes": 2500,
+      "sha256": "3b952e09bcb0647ca528a77ca5d63f190df4cfeab77e0c5a2c916a1b74848b37"
+    },
+    {
+      "path": "smoke_replace_new_trace.bin",
+      "bytes": 804,
+      "sha256": "64af2a8617e32ac27ffdbea8c9999d50351fdc38b4f60651bd37a5a35a9414f5"
+    },
+    {
+      "path": "smoke_replace_new_trace.csv",
+      "bytes": 2527,
+      "sha256": "9f0ca83f2c24b00780c5f239b4a13a53c4d655e0e35513af4078b781d4264825"
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 3d3d2b8..e4e4a8e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -23,6 +23,8 @@ set(CMAKE_STANDARD 17)
+ set(CMAKE_CXX_STANDARD 17)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ 
++option(DISKANN_USE_SYSTEM_BLAS "Use the system BLAS/LAPACK ABI instead of Intel MKL" OFF)
++
+ if(NOT MSVC)
+ 	set(CMAKE_CXX_COMPILER g++)
+ endif()
+@@ -128,8 +130,16 @@ endif()
+ 
+ include_directories(${Boost_INCLUDE_DIR})
+ 
+-#MKL Config
+-if (MSVC)
++# MKL is the upstream default. This compatibility path keeps the algorithms
++# unchanged on hosts where only the system BLAS/LAPACK ABI is available.
++if (DISKANN_USE_SYSTEM_BLAS AND NOT MSVC)
++    find_library(DISKANN_BLAS_LIBRARY NAMES blas libblas.so.3 REQUIRED)
++    find_library(DISKANN_LAPACK_LIBRARY NAMES lapack liblapack.so.3 REQUIRED)
++    link_libraries(${DISKANN_BLAS_LIBRARY} ${DISKANN_LAPACK_LIBRARY} pthread m dl)
++    add_definitions(-DDISKANN_USE_SYSTEM_BLAS)
++    message(STATUS "Using system BLAS: ${DISKANN_BLAS_LIBRARY}")
++    message(STATUS "Using system LAPACK: ${DISKANN_LAPACK_LIBRARY}")
++elseif (MSVC)
+     # Only the DiskANN DLL and one of the tools need MKL libraries. Additionally, only a small part of MKL is used.
+     # Given that and given that MKL DLLs are huge, use static linking to end up with no MKL DLL dependencies and with
+     # significantly smaller disk footprint.
+@@ -204,7 +214,9 @@ else()
+     endif()
+ endif()
+ 
+-add_definitions(-DMKL_ILP64)
++if (NOT DISKANN_USE_SYSTEM_BLAS)
++    add_definitions(-DMKL_ILP64)
++endif()
+ 
+ # Section for tcmalloc. The DiskANN tools are always linked to tcmalloc. For Windows, they also need to
+ # force-include the _tcmalloc symbol for enabling tcmalloc.
+diff --git a/include/mkl.h b/include/mkl.h
+new file mode 100644
+index 0000000..191c9c7
+--- /dev/null
++++ b/include/mkl.h
+@@ -0,0 +1,40 @@
++// Minimal source-compatibility declarations for DISKANN_USE_SYSTEM_BLAS.
++#pragma once
++
++#ifndef DISKANN_USE_SYSTEM_BLAS
++#error "This compatibility header is only for DISKANN_USE_SYSTEM_BLAS builds"
++#endif
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++typedef int MKL_INT;
++
++typedef enum CBLAS_LAYOUT {
++    CblasRowMajor = 101,
++    CblasColMajor = 102
++} CBLAS_LAYOUT;
++typedef CBLAS_LAYOUT CBLAS_ORDER;
++
++typedef enum CBLAS_TRANSPOSE {
++    CblasNoTrans = 111,
++    CblasTrans = 112,
++    CblasConjTrans = 113
++} CBLAS_TRANSPOSE;
++
++#define LAPACK_ROW_MAJOR 101
++#define LAPACK_COL_MAJOR 102
++
++float cblas_sdot(int n, const float *x, int incx, const float *y, int incy);
++float cblas_snrm2(int n, const float *x, int incx);
++void cblas_sgemm(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transa, CBLAS_TRANSPOSE transb, int m, int n, int k,
++                 float alpha, const float *a, int lda, const float *b, int ldb, float beta, float *c, int ldc);
++
++int LAPACKE_sgesdd(int matrix_layout, char jobz, int m, int n, float *a, int lda, float *s, float *u, int ldu,
++                   float *vt, int ldvt);
++void mkl_set_num_threads(int num_threads);
++
++#ifdef __cplusplus
++}
++#endif
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index cbca264..5b0b3fd 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -12,7 +12,7 @@ else()
+         distance.cpp index.cpp in_mem_graph_store.cpp in_mem_data_store.cpp
+         linux_aligned_file_reader.cpp math_utils.cpp natural_number_map.cpp
+         in_mem_data_store.cpp in_mem_graph_store.cpp
+-        natural_number_set.cpp memory_mapper.cpp partition.cpp pq.cpp
++        natural_number_set.cpp memory_mapper.cpp partition.cpp pq.cpp lapack_compat.cpp
+         pq_flash_index.cpp scratch.cpp logger.cpp utils.cpp filter_utils.cpp index_factory.cpp abstract_index.cpp pq_l2_distance.cpp pq_data_store.cpp)
+     if (RESTAPI)
+         list(APPEND CPP_SOURCES restapi/search_wrapper.cpp restapi/server.cpp)
+diff --git a/src/lapack_compat.cpp b/src/lapack_compat.cpp
+new file mode 100644
+index 0000000..78f21c7
+--- /dev/null
++++ b/src/lapack_compat.cpp
+@@ -0,0 +1,57 @@
++// Copyright (c) Microsoft Corporation. All rights reserved.
++// Licensed under the MIT license.
++
++#ifdef DISKANN_USE_SYSTEM_BLAS
++
++#include "mkl.h"
++
++#include <algorithm>
++#include <cstring>
++#include <omp.h>
++#include <vector>
++
++extern "C" void sgesdd_(char *jobz, int *m, int *n, float *a, int *lda, float *s, float *u, int *ldu, float *vt,
++                         int *ldvt, float *work, int *lwork, int *iwork, int *info);
++
++namespace {
++int call_sgesdd(char jobz, int m, int n, float *a, int lda, float *s, float *u, int ldu, float *vt, int ldvt)
++{
++    const int min_dim = std::min(m, n);
++    std::vector<int> iwork(static_cast<size_t>(8) * min_dim);
++    float workspace_size = 0;
++    int lwork = -1;
++    int info = 0;
++    sgesdd_(&jobz, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, &workspace_size, &lwork, iwork.data(), &info);
++    if (info != 0)
++        return info;
++    lwork = std::max(1, static_cast<int>(workspace_size));
++    std::vector<float> work(static_cast<size_t>(lwork));
++    sgesdd_(&jobz, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, work.data(), &lwork, iwork.data(), &info);
++    return info;
++}
++}
++
++extern "C" int LAPACKE_sgesdd(int matrix_layout, char jobz, int m, int n, float *a, int lda, float *s, float *u,
++                               int ldu, float *vt, int ldvt)
++{
++    if (matrix_layout == LAPACK_COL_MAJOR)
++        return call_sgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
++    if (matrix_layout != LAPACK_ROW_MAJOR || jobz != 'A')
++        return -1;
++
++    std::vector<float> transposed_u(static_cast<size_t>(n) * n);
++    std::vector<float> transposed_vt(static_cast<size_t>(m) * m);
++    int info = call_sgesdd(jobz, n, m, a, n, s, transposed_u.data(), n, transposed_vt.data(), m);
++    if (info == 0) {
++        std::memcpy(u, transposed_vt.data(), static_cast<size_t>(m) * m * sizeof(float));
++        std::memcpy(vt, transposed_u.data(), static_cast<size_t>(n) * n * sizeof(float));
++    }
++    return info;
++}
++
++extern "C" void mkl_set_num_threads(int num_threads)
++{
++    omp_set_num_threads(num_threads);
++}
++
++#endif
