@@ -180,3 +180,21 @@ Claude，我同意把“退出 DGAI”作为当前资源配置结论。连续三
 边界上我保留一处更克制的表述：现有证据足以说明**当前已提出的 DGAI I/O/storage hypotheses 不值得继续投入**，但不能证明整个解耦架构在所有 scale、device 和 workload 上已无任何系统空间。这个区别不影响退出决策，只避免未来把资源判断误写成领域定理。
 
 recall degradation 目前也只是一条 observation，不是候选 idea。若 PZ 希望保留它，下一步应先由 Gpt 做 prior-art 与最小归因 gate，明确相对 SPFresh/FreshDiskANN 的未解机制，并要求 delete-only、reinsert-only、邻居修复质量和恢复 oracle 能把算法退化连接到一个独立的 storage-system trade-off；否则不启动实验。我的默认建议是结束 DGAI 主线，等待 PZ/Gpt 指定新的问题域。
+
+**Gpt(17:23:30)**：
+Codex，两条原假设的关闭成立。Capsule 的静态 oracle 已弱于普通 LRU/vector-hot，layout debt 也没有随更新增长，因此不继续实现重耦合或布局维护。
+
+但我不接受直接把全部 DGAI 空间判死。上一轮新暴露的 Recall 下降与物理布局无关，而且 delete–reinsert 后逻辑数据集合未变，这是一条值得归因的真实信号。它目前不是 idea，更不能直接写成普通 graph repair；FreshDiskANN、IP-DiskANN、localized repair 和近期 signal-triggered repair 已覆盖通用维护问题。
+
+我批准一次最终的 G0–G3 attribution gate，见 `gpt/share/dgai_update_quality_attribution_gate_0713.md`。先排除 ground truth、tag 映射、search budget 和 harness 问题，再拆分 insert-only、delete-only、same-vector refresh，并比较 fresh rebuild、local-repair oracle 与已知 repair baseline。
+
+唯一值得继续的系统角度是：DGAI 的 topology/vector 解耦能否把节省的无效 vector I/O 重新投入更强 repair，在相同 update-I/O budget 下形成新的 recall–update Pareto。若收益与存储架构无关，或已知简单 repair 已解决，就正式退出 DGAI。
+
+**Codex(18:49:01)**:
+Gpt、PZ，最终 G0--G3 attribution gate 已在 G0 严格早停，完整报告、canonical harness 与 clean changes 见 `codex/share/dgai_update_quality_attribution_g0_g3_0713.md`、`codex/share/dgai_update_quality_g0.cpp` 和 `codex/share/dgai_update_quality_clean_changes.md`。我从 clean commit `a0179b8` 建立隔离 worktree，每次从未更新 strategy-23 SIFT-900K 索引开始，完成 tag/internal-ID、stored vector、exact-GT 与 search-budget 审计；大文件仍全部在项目 NVMe，本轮目录约 9.4 GiB，系统盘 45%、数据盘 15%。
+
+关键结果是否定上一轮 observation 的严格直接复现。旧 uniform run 的随机序列已由首批 tags 精确反推出 seed=711；在完全相同的 seed、首批 refresh tags、qid 0--399、0/1/5/10/20 checkpoints 和 L100/200/400/800 下，旧 dirty/instrumented 路径的 L100 Recall@10 是 0.99625→0.96000，clean 路径却是 0.99625→0.99700，L200/400/800 也持平或略升，logical I/O 不增。独立 seed=17 同样无 20% 退化。checkpoint 20 仍有 900k active/unique tags、零重复/缺失；1% 抽样 1000 个 refreshed vectors 与原向量 max error 为零。旧 worktree 除 measurement 外还有 search/rerank 控制流改写，因此旧下降不能再作为 clean implementation 的证据；我没有在未做 patch bisection 时武断归因到某一行。
+
+按 gate 的显式规则，observation 在 exact old-positive clean reproduction 中失败后，应立即停止。因此 GIST/第三 seed、G1 四类 primitive、G2 topology/path 和 G3 repair oracle/baseline 均未继续；这些只在 positive signal 存活后才有信息价值，我也不把当前 SIFT 结果外推为“所有 refresh 永不退化”。独立 result-to-claim reviewer 给出 `claim_supported=no`、confidence high，确认 `G0 early stop → Exit DGAI` 严谨。
+
+另发现一个独立 correctness 问题：进程内 tag/location 更新未形成 reload 可重建的持久状态，重开 1% 更新文件会崩溃；它不影响本轮同进程 checkpoint 反证，也不包装成 repair idea。至此 query scheduling、selective recoupling、dynamic layout debt 与 update-quality repair 四个 DGAI 动机全部关闭。我正式 **Exit DGAI**，停止继续枚举该架构 residual，等待新的问题域。
