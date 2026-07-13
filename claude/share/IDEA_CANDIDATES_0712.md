@@ -1,31 +1,29 @@
 # Idea Candidates
 
-| # | Idea | Source | Novelty | Status |
-|---|------|--------|---------|--------|
-| 1 | DiskColBERT | Idea Discovery Pipeline | KILLED — ESPN + ColBERT-serve | KILLED |
-| 2 | VAQ Physical Design | Idea Discovery Pipeline | KILLED — MINT + BoomHQ + traditional advisors | KILLED |
-| 3 | Multi-Vector I/O Characterization | Idea Discovery Pipeline | KILLED — lost narrative target | KILLED |
-| A | SetPageANN: Page-granular progressive multi-vector evaluation | Survey-derived | TBD — pending Codex audit | PRIOR-ART AUDIT |
-| B | SnapCursor: Versioned ANN cursor | Survey-derived | TBD — pending Codex audit (likely KILL) | PRIOR-ART AUDIT |
+| # | Idea | Source | Status |
+|---|------|--------|--------|
+| 1 | DiskColBERT | Idea Discovery | KILLED — ESPN + ColBERT-serve |
+| 2 | VAQ Physical Design | Idea Discovery | KILLED — MINT + BoomHQ + traditional advisors |
+| 3 | Multi-Vector I/O Characterization | Idea Discovery | KILLED — lost narrative target |
+| A | SetPageANN / PageMaxSim | Survey-derived | KILLED — exact synopsis mechanism fails (P2 + Stage A) |
+| B | SnapCursor | Survey-derived | KILLED — demand unproven, MVCC baseline sufficient |
+| **NEW** | **Decoupled ANN Architecture Characterization + Optimization** | **PZ direction** | **ACTIVE — characterization pilot R1** |
 
-## Active Candidate: A — SetPageANN
+## Active Direction: Decoupled ANN Architecture on Modern NVMe
 
-- **Hypothesis**: Even with existing candidate generation and token pruning, multi-vector refinement still reads unnecessary token pages. A progressive page evaluation engine with synopsis-based score bounds can safely skip pages, introducing a new scheduling unit: (object, token-page-group).
-- **Key distinction from DiskColBERT**: Contribution is "read less data" not "put data on SSD." Requires proving that page-level skip space is significant AFTER PLAID/WARP pruning.
-- **Claude's risks**: (1) Post-pruning tokens per doc may fit in <1 page; (2) IGP reduces candidates to hundreds, limiting absolute I/O savings; (3) ESPN partial reranking is already object-level progressive evaluation.
-- **Next step**: Codex prior-art audit → oracle gate if PROVISIONAL
+- **Core question**: Does the decoupled architecture (DGAI-style: separate topology/coordinate storage) incur significant I/O amplification on modern high-bandwidth NVMe SSDs compared to coupled architecture (DiskANN/OdinANN)?
+- **Methodology change**: Problem-driven, not prior-art-driven. Characterize first, then build story from data. No exhaustive Kill gate before pilot.
+- **Key measurements**: Reranking I/O share, coupled vs decoupled I/O count/bytes, per-I/O software overhead, SSD utilization
+- **Decision logic**: Coordinate I/O >30% or per-I/O overhead >30% → direction viable. CPU dominant or <20% architecture difference → pivot.
+- **Scope**: `claude/share/decoupled_ann_characterization_scope_0713.md`
+- **Next step**: Codex executes R1 characterization on DGAI + OdinANN SIFT-900K
 
-## Secondary Candidate: B — SnapCursor
+## PageMaxSim Closure
 
-- **Hypothesis**: Dynamic ANN indexes lack proper pagination semantics. Versioned cursor with compact state, bounded version retention, and cursor-aware GC enables consistent progressive retrieval.
-- **Claude's concerns**: Demand risk high (search pagination rare in vector search, RAG re-searches cheaply, agent use case unproven). Existing systems (Milvus time travel, Weaviate cursor API) may suffice. LSM/segment snapshot is nearly free. A0 finding suggests topology mutation may not affect cursor quality.
-- **Next step**: Codex prior-art audit → likely KILL unless demand is stronger than expected
-
-## Frozen Candidates (C-F)
-
-| # | Idea | Freeze Reason |
-|---|------|---------------|
-| C | SLO-ANN (progressive recall-SLO execution) | Filtered-ANN optimizer track crowded |
-| D | BridgeIndex (embedding version lifecycle) | Conflicts with A0 topology robustness finding |
-| E | MetricOverlay (shared backbone + metric overlays) | More graph algorithm than system |
-| F | QuarantineANN (vector poisoning quarantine) | More security/ML than system |
+PageMaxSim (visual multi-vector page-level progressive evaluation) closed at Stage A:
+- P0 passed (multi-page objects exist after token merging)
+- P1 passed (page oracle shows 20% space: f9-int8 95.1→80.9 pages)
+- P2 failed (single centroid-radius: 100% pages read)
+- Stage A failed (multi-ball certificate: still 100% pages read, ~3 false-threatening pages per cell)
+- Root cause: L2 residual direction information loss makes safe bounds too loose at page granularity
+- This is a mechanism failure, not a prior-art kill
