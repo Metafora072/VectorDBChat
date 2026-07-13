@@ -48,3 +48,41 @@ Pilot 的硬上界是 **2--3 个自然日、NVMe 额外 250 GB**。其中 F0 四
 250 GB 的保守峰值由最坏 **128 GB** 的完整 BIGANN 源文件保留、22 GB canonical/checkpoint/GT、38.4 GB 四套 SIFT 静态索引、最大的 17.1 GB 动态工作目录，以及 44.5 GB rebuild/临时文件/日志防护组成；各动态系统不会并发。当前实验 NVMe 余约 **1.4 TB**，Pilot 后仍应有约 **1.15 TB**；系统盘仅余 156 GB，因此 F0 脚本会显式拒绝把数据、TMPDIR、index 或结果落到系统盘。
 
 如 Pilot 显示 gap，再考虑完整 W0/W1：维持此前 **4--8 天、保守 10 天** 的估算，另设 **500 GB** NVMe 保护上界，并要求逐数据集清理可再生动态工作目录。F0 结束后，我会依据实际 10M build 时长、实际 allocated bytes 和下载体积更新预算，再请 Claude 与 Gpt 决定是否启动 slim W0/W1。
+
+**PZ(02:43:21)**:
+这个时间还是比较久，我推荐先不跑 FreshDiskANN，只跑 DiskANN、DGAI 和 OdinANN，Claude 怎么看，每个实验的计划时间是怎样的？有一个比较清晰的实验预算表格吗？
+
+**Claude(02:45:55)**:
+同意砍 Fresh-Ref。它是四个 artifact 里最弱的——reference reproduction、ASLR-off 依赖、GIST R32 限制，而且它在架构版图上的位置（耦合批量更新）和 OdinANN（耦合增量更新）部分重叠。核心三角是 DiskANN（静态上界）vs DGAI（解耦）vs OdinANN（耦合动态），这三个就能回答"解耦和耦合的 Pareto 位置差在哪"。如果三系统版图出现 gap，再考虑是否加 Fresh-Ref。
+
+三系统 Pilot Atlas 的实验预算表：
+
+| 阶段 | 内容 | 时间预算 | NVMe 空间 |
+|------|------|---------|----------|
+| **数据准备** | SIFT10M 下载/hash/canonical/80-20划分/GT | 2-6h | ~150 GB（含源文件） |
+| **F0-build** | DiskANN 45-75min + DGAI 90-150min + OdinANN 15-30min，串行 | 2.5-4.3h | 30.7 GB（三套静态索引） |
+| **F0-query** | 三系统 load+query smoke+资源快照+GT验证 | 1-2h | ~1 GB |
+| **slim W0** | 3系统 × 2并发(1,16) × 4 search settings × 1重复 = 24点，6次cold sweep | 1.5-4.5h | ~3 GB |
+| **W1-churn** | DGAI direct-to-20% (含merge/reload) | 6-24h | 14.2 GB |
+| **W1-churn** | OdinANN direct-to-20% | 2-8h | 17.1 GB |
+| **W1-rebuild** | DiskANN checkpoint-20 full rebuild | 1-3h | 25 GB |
+| **W1-query** | 2动态系统+DiskANN × 2并发 × 4 settings = 24点 | 1.5-4.5h | ~2 GB |
+| **合计** | | **~18-57h（1.5-2.5天）** | **~243 GB 峰值** |
+
+相比四系统 Pilot 省了 Fresh 的 build（70-120min）、一条完整 dynamic trajectory（2-8h）和约 23 GB 空间。更关键的是少了 Fresh 的 ASLR-off 脆弱性——减少一个潜在的中途失败点。
+
+最大的时间不确定性在 DGAI 的 W1-churn（6-24h），因为 merge/reload 在 10M 规模上没有实测。建议 Codex 给 DGAI trajectory 设一个 24h watchdog，超时就标 timeout 先跑其他的。
+
+Codex，按三系统准备 F0 脚本。分三个独立 shell 脚本（`f0_diskann.sh`、`f0_dgai.sh`、`f0_odinann.sh`），每个含环境检查、dedicated cgroup、build、load、query smoke、资源记录和完成标记。写好后发到对话里让我和 Gpt 确认，确认后你在 tmux 里顺序启动。
+
+**PZ(02:47:43)**:
+Codex，确认下 Claude 列的实验预算表有没有问题，FreshDiskANN 可不可以不跑？
+
+**Codex(02:52:00)**：
+已逐项复算，审计记录见 `codex/share/dynamic_vamana_three_system_pilot_budget_audit_0714.md`。Claude 表的时间加总为 **17.5--56.3 小时**，取整为 **18--57 小时（1.5--2.5 天）**正确；F0-build 的三系统串行和为 **2.5--4.25 小时**，表中 **2.5--4.3 小时**也正确。
+
+**243 GB 是正确的新增峰值保护值，但不能把各行空间相加。** 它按串行执行的 128 GB 最坏 BIGANN 源文件、约 22 GB canonical/checkpoint/GT、30.7 GB 三套静态索引、17.1 GB 最大动态工作目录、25 GB DiskANN rebuild 以及约 20 GB 临时/日志保护得出，约为 242.8 GB。数据准备行的 150 GB 已包含源文件与 canonical/GT；W1 三个系统不并发。建议保持 243 GB 上界，并在实际下载或目录 allocated bytes 超出分项 25% 时停止复核。
+
+**Fresh-Ref 可以在本轮 Pilot 不跑。** DiskANN（静态基线）、DGAI（解耦且 merge-visible）和 OdinANN（耦合且即时可见）足以发现“解耦/耦合的 Pareto 位置”是否存在 gap；它还能移除 Fresh-Ref 的 ASLR-off 与 legacy artifact 失败风险。代价是本轮只能称为“三系统方向发现 Pilot”，不能对 Fresh-Ref/FreshDiskANN 作任何性能或架构结论。
+
+需要明确的是，Gpt 的现有正式 gate 在 F0 与 W0 写的是四系统全参与。因此删 Fresh-Ref 是合理的 **scope amendment**，但应由 Gpt 在对话中确认后生效；确认后我将按 Claude 的要求只准备 `f0_diskann.sh`、`f0_dgai.sh`、`f0_odinann.sh` 供审查，仍不会启动 tmux 或下载/构建。
