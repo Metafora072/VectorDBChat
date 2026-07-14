@@ -30,11 +30,13 @@ SIFT10M_QUERY_INPUT=/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/
 1. 要求数据、checkpoint-0 exact GT 和独立 GT audit 均已完成；
 2. 拒绝实验 NVMe 之外的输出和 `TMPDIR`，并要求至少 300 GB 空闲；
 3. 验证 DiskANN、DGAI、OdinANN 的固定 commit；源树中仅允许登记的兼容性 patch，且检查 patch SHA256 和反向应用性；
-4. 通过 `sudo -n systemd-run --scope --uid=<operator>` 建立 transient dedicated cgroup，固定 CPU 0--23 与 NUMA node 0；
+4. 通过 `sudo -n systemd-run --scope --uid=<operator>` 建立 transient dedicated cgroup，并以 `numactl --physcpubind=0-23 --membind=0` 固定 CPU 与 NUMA；每个 phase 保存实际 `taskset`/`numactl --show`；
 5. 将 build、load/query 的 wall time、process-tree RSS、cgroup memory、process/cgroup I/O、page-cache 和 allocated/apparent SSD 空间写入 NVMe；
 6. 对成功索引设置 immutable base 标记；对失败 attempt 写入 `FAILED`，不覆盖它。重试必须显式设置新的 `F0_ATTEMPT`。
 
 当前主机的无特权 user systemd bus 不可用，故运行前需要由操作员完成 `sudo -v` 或预先配置等价的 root-managed cgroup launcher；脚本使用 `sudo -n`，缺少该前置条件会立即失败而不是回退到共享 session cgroup。
+
+在任何 P1 重型任务之前，先运行 `f0_runtime_canary.sh`。它只写入约 1 MB NVMe 数据并验证独立 scope、operator UID、CPU affinity、`membind`、memory/io cgroup 计数和输出归属。脚本的成功/异常通知通过 `notify_owner.sh` 调用本机 MailSender；可用 `ATLAS_NOTIFY_EMAIL=0` 关闭。
 
 ## 结果布局
 

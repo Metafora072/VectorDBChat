@@ -219,7 +219,8 @@ run_scoped() {
       numactl --physcpubind="$CPUSET" --membind="$NUMA_NODE" \
       "$CHAT/resource_probe.py" --output "$output" --interval-ms 100 \
       --space-root "$space_root" -- bash -c \
-      'log=$1; shift; exec "$@" >"$log" 2>&1' bash "$RESULT_DIR/${phase}.log" "$@"
+      'policy=$1; log=$2; shift 2; { taskset -pc $$; numactl --show; } >"$policy" 2>&1; exec "$@" >"$log" 2>&1' \
+      bash "$RESULT_DIR/${phase}_effective_policy.txt" "$RESULT_DIR/${phase}.log" "$@"
   write_state "$phase" passed
 }
 
