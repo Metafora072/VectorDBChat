@@ -26,14 +26,16 @@ on_error() {
 }
 trap on_error ERR
 require_nvme_path() {
-  local canonical source majmin
+  local canonical probe source majmin
   canonical=$(realpath -m "$1")
   case "$canonical" in
     /home/ubuntu/pz/VectorDB/data|/home/ubuntu/pz/VectorDB/data/*) ;;
     *) fail "refusing non-NVMe path: $1" ;;
   esac
-  source=$(findmnt -rn -T "$canonical" -o SOURCE | head -n1)
-  majmin=$(findmnt -rn -T "$canonical" -o MAJ:MIN | head -n1)
+  probe=$canonical
+  while [[ ! -e "$probe" ]]; do probe=$(dirname "$probe"); done
+  source=$(findmnt -rn -T "$probe" -o SOURCE | head -n1)
+  majmin=$(findmnt -rn -T "$probe" -o MAJ:MIN | head -n1)
   [[ "$source" == "${ATLAS_NVME_SOURCE:-/dev/nvme8n1}" && "$majmin" == "${ATLAS_NVME_MAJMIN:-259:10}" ]] \
     || fail "path is not the expected experiment NVMe: $canonical ($source $majmin)"
 }
