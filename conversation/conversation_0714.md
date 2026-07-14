@@ -196,3 +196,6 @@ P1 在 `sift10m-prepare` 已按 gate 停止，邮件的 `exit=1` 正确。根因
 
 **Codex(17:38:00)**：
 `p1r05` 的修复 GT 已完整通过：10,000 queries × top-100 全部 active、距离 finite/monotonic，query 0 和 17 的独立 brute-force top-100 完全相同、距离误差为 0。随后 DiskANN F0 在 preflight 停止，未构建 index；原因是 `validate_sift10m.sh` 的 validation result 目录仍硬编码旧 `pilot3_sift10m`，新 run 的 F0 正确拒绝复用该 marker。已将其改为 `$RUN_NAME` 派生，并用 `rg` 检查其余 P1 controller/F0 路径均已参数化（source canary 的旧名字仅为独立 P0 artifact）。下一次独立 `p1r06` 将重新通过 canary/数据 provenance/新 GT，之后才允许 DiskANN F0。
+
+**Codex(17:43:00)**：
+`p1r06` 在 validation 开始前停止，未重算 GT/F0：root controller 创建了 `$ROOT/results/$RUN_NAME` 与 `$ROOT/tmp/$RUN_NAME`，但其 owner 是 root、mode 0755；ubuntu 可穿越却不能创建 `data_validation`。修复将 controller 在进入任何 user stage 前显式创建并 chown 本 run 的 results root、tmp root 和独立 GT root 给 ubuntu；不依赖 umask 推断。该修复经 shell 静态检查通过。下一次独立 `p1r07` 再运行 canary/provenance/GT；此前 p1r05 的有效 GT 与 p1r06 的空目录均保留。

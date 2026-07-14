@@ -6,11 +6,22 @@ ROOT=${ATLAS_ROOT:-/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas}
 CHAT=${ATLAS_CHAT_ROOT:-/home/ubuntu/pz/VectorDB/chat/codex/share/dynamic_vamana_atlas}
 RUN_NAME=${ATLAS_RUN_NAME:-pilot3_sift10m}
 OPERATOR_USER=${ATLAS_OPERATOR_USER:-ubuntu}
+export ATLAS_GT_DIR=${ATLAS_GT_DIR:-$ROOT/groundtruth/sift10m/$RUN_NAME}
 LOG_DIR="$ROOT/results/$RUN_NAME/p1_controller"
 LOG="$LOG_DIR/p1.log"
 mkdir -p "$LOG_DIR"
 export TMPDIR="$ROOT/tmp/$RUN_NAME/p1_controller"
 mkdir -p "$TMPDIR"
+
+prepare_operator_run_paths() {
+  (( EUID == 0 )) || return 0
+  local uid gid
+  uid=$(id -u "$OPERATOR_USER")
+  gid=$(id -g "$OPERATOR_USER")
+  mkdir -p "$ROOT/results/$RUN_NAME" "$ROOT/tmp/$RUN_NAME" "$ATLAS_GT_DIR"
+  chown "$uid:$gid" "$ROOT/results/$RUN_NAME" "$ROOT/tmp/$RUN_NAME" "$ATLAS_GT_DIR"
+}
+prepare_operator_run_paths
 exec > >(tee -a "$LOG") 2>&1
 
 run_as_operator() {
@@ -64,7 +75,6 @@ if (( EUID != 0 )); then sudo -n true; fi
 
 export F0_ATTEMPT=${F0_ATTEMPT:-p1-01}
 export ATLAS_NOTIFY_EMAIL=${ATLAS_NOTIFY_EMAIL:-1}
-export ATLAS_GT_DIR=${ATLAS_GT_DIR:-$ROOT/groundtruth/sift10m/$RUN_NAME}
 P1_REMAINING_HOURS=24 run_stage runtime-canary "约 12--24 小时" supervisor \
   env F0_ATTEMPT=p1-canary-01 "$CHAT/formal/f0_runtime_canary.sh"
 P1_REMAINING_HOURS=20 run_stage sift10m-prepare "约 10--20 小时" operator "$CHAT/prepare_sift10m.sh"
