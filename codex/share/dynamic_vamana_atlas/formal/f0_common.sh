@@ -208,7 +208,9 @@ run_scoped() {
   # A root-managed transient scope is required because this host has no usable
   # unprivileged user bus. `sudo -n` intentionally fails fast if the operator
   # has not pre-authenticated/pre-provisioned the dedicated cgroup launcher.
-  sudo -n systemd-run --scope --quiet --collect --wait --unit "$unit" --uid "$(id -u)" \
+  # --scope is synchronous by itself on this host; systemd rejects combining
+  # it with --wait, so do not add that mutually exclusive option.
+  sudo -n systemd-run --scope --quiet --collect --unit "$unit" --uid "$(id -u)" \
     --property="AllowedCPUs=$CPUSET" --property=MemoryAccounting=yes \
     --property=CPUAccounting=yes --property=IOAccounting=yes -- \
     timeout --signal=TERM --kill-after=120s "$timeout_seconds" \
