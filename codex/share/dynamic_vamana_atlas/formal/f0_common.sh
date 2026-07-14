@@ -15,8 +15,10 @@ QUERY_THREADS=${ATLAS_QUERY_THREADS:-8}
 MIN_FREE_BYTES=${ATLAS_MIN_FREE_BYTES:-300000000000}
 SYSTEM=${SYSTEM:?SYSTEM must be set before sourcing f0_common.sh}
 OPERATOR_USER=${ATLAS_OPERATOR_USER:-ubuntu}
-OPERATOR_UID=${ATLAS_OPERATOR_UID:-$(id -u "$OPERATOR_USER")}
-OPERATOR_GID=${ATLAS_OPERATOR_GID:-$(id -g "$OPERATOR_USER")}
+# Resolve identity from the named local account rather than an inherited numeric
+# environment variable; a root-owned tmux server may carry namespace-mapped IDs.
+OPERATOR_UID=$(id -u "$OPERATOR_USER")
+OPERATOR_GID=$(id -g "$OPERATOR_USER")
 
 DATASET="$ROOT/datasets/sift10m"
 GT="$ROOT/groundtruth/sift10m/gt_cp00"

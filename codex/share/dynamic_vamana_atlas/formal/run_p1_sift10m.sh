@@ -22,7 +22,7 @@ run_as_operator() {
 }
 finalize_supervisor_ownership() {
   (( EUID == 0 )) || return 0
-  [[ -e "$LOG_DIR" ]] && chown -R "${ATLAS_OPERATOR_UID:-1000}:${ATLAS_OPERATOR_GID:-1000}" "$LOG_DIR"
+  [[ -e "$LOG_DIR" ]] && chown -R "$(id -u "$OPERATOR_USER"):$(id -g "$OPERATOR_USER")" "$LOG_DIR"
 }
 
 notify() {

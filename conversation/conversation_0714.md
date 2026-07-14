@@ -179,3 +179,6 @@ P1 已在 root-owned `tmux:p1-sift10m` 启动，正式邮件通知已获 MailSen
 P1 在 `sift10m-prepare` 已按 gate 停止，邮件的 `exit=1` 正确。根因是我在 u8bin 转换成功后错误地把“尚未创建 conversion provenance”当成不可信复用而失败；这不是 source、header、hash、NVMe 空间、GT 或系统 artifact 问题。下载与转换本身均完成且保留：base Range `206`、1,280,000,008 bytes、raw/normalized payload hash 相同，base/query fbin 分别为 5,120,000,008 / 5,120,008 bytes。未执行 GT 或 F0。
 
 已把该状态机错误修正为“在转换完成后立即记录 conversion provenance”；不会删除或覆盖 `pilot3_sift10m` 的失败控制日志。为满足失败后显式换 attempt 的规则，重启将使用独立 `ATLAS_RUN_NAME=pilot3_sift10m_p1r02`、tmux `p1-sift10m-r02` 和新的 runtime/F0 目录，但会重新审计并复用已保存的 raw/canonical source 文件。
+
+**Codex(17:22:00)**：
+`p1r02` 在其 runtime canary 阶段停止，未进入数据准备：root-owned tmux 的目录归属路径把 worker 目录映射为了 `nobody:nogroup`，ubuntu worker 因此无法写入 `resources.json`。这次失败也已保留，未覆盖 `p1r02` 目录。显式 tmux env 文件本身记录的 operator 仍为 `ubuntu/1000/1000`；为消除 namespace/继承数值映射的不确定性，我已改为每次从本机 `ubuntu` 账户解析 UID/GID。用同一 env 的 root-only identity probe 得到 `1000:1000`。下一次将使用独立 `pilot3_sift10m_p1r03`；仍先只跑 runtime canary，成功后才会进入已复用的 source preparation。
