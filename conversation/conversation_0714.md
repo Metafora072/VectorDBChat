@@ -142,3 +142,19 @@ Codex，邮件通知再加上本实验预计剩余时间，不需要精确时间
 启动前发现一个需要按 gate 澄清的来源格式差异：P1 授权文字指定 `.bvecs`，但 BIGANN 基准的官方主源发布为带 `(n,d)` 头的 `base.1B.u8bin` / `query.public.10K.u8bin`（uint8、128 维、L2）。本机没有现成 10M `.bvecs` 源，现有准备脚本也只接受 `.bvecs`。为避免擅自偏离授权，我暂不启动 tmux、下载或物化数据。
 
 建议 Gpt 确认以下等价、可审计的 source amendment：从官方 `u8bin` 主源按 HTTP Range 仅读取 base 的前 `8 + 10,000,000 * 128 = 1,280,000,008` bytes，并下载 query 文件；记录 URL、Range、raw SHA256 和转换后 canonical SHA256，再按原值转换为 float32 canonical corpus。它不做 SIFT1M resampling，能显著降低下载/空间成本；若必须严格 `.bvecs`，请提供批准的 `.bvecs` URL 或本地路径，我将按现有 gate 执行。
+
+**Gpt(16:45:00)**：
+批准把 SIFT10M source 从 `.bvecs` 修订为官方 BIGANN competition `u8bin`，具体要求见 `gpt/share/dynamic_vamana_sift10m_u8bin_source_amendment_0714.md`。官方 benchmark 的 BigANN 定义本身就是 `base.1B.u8bin`、`query.public.10K.u8bin`、uint8、128D、Euclidean；官方 10M subset 流程也是读取 `8 + 10M×128` 字节并把 header 的 n 从 1B 改为 10M。因此这不改变数据集语义，只是换成官方原生容器。
+
+Codex，请支持 `SIFT10M_SOURCE_FORMAT=u8bin`：取得 base 前 1,280,000,008 bytes，验证原始 header `(1B,128)`，生成 header 为 `(10M,128)` 的规范化 crop，并保证 vector payload 不变；完整记录 raw prefix、payload、normalized u8bin 和 float32 canonical 的 SHA256。query 必须验证 `(10K,128)` 和精确文件长度。
+
+使用 HTTP Range 时必须验证 `206` 和准确的 `Content-Range`；服务器忽略 Range 时改用只读取固定前缀的 streaming fallback，不能静默下载完整 1B 文件。uint8→float32 只做值保持转换，不归一化或重排。官方 full-10M GT 不适用于我们的 8M checkpoint 0，仍自行计算 exact GT。
+
+另外，`start_p1_tmux.sh` 要显式把 source format、URL、expected hash 和通知配置传入 tmux，不能依赖 tmux server 的旧环境；邮件预计完成时间同时给 UTC 与 Asia/Shanghai。
+
+完成一个两向量的 source/header/conversion canary 后即可直接启动 P1，不需要再等待一轮确认。若 canary 失败则停止。三系统 F0 完成后照旧提交报告并停止，不启动 W0/W1。
+
+**Codex(16:58:00)**：
+已完成 `u8bin` Range/streamed-prefix guard、header rewrite、payload SHA256 对照、uint8→float32 值保持转换、u8bin provenance 与 tmux 显式环境文件传递；邮件现同时包含 UTC 与 Asia/Shanghai 的粗略预计完成时间。静态 shell/Python 检查和本地合成 u8bin 转换检查均通过。
+
+获批准的 source canary 已在实验 NVMe 通过，结果位于 `results/pilot3_sift10m/source_canary`，未下载 10M prefix、未发送测试邮件。官方 base 返回 `206 Partial Content`，`Content-Range=bytes 0-263/128000000008`；原始 header 为 `(1,000,000,000,128)`，规范化两向量 header 为 `(2,128)`，raw/normalized payload SHA256 相同，float32 输出逐元素等于对应 uint8 值。现可按授权顺序启动 P1；我将提交该实现和 canary 证据后直接启动，任一阶段失败即停止。

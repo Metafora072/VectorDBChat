@@ -26,6 +26,18 @@ def add_common_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--query-fbin", type=Path, required=True)
     parser.add_argument("--base-expected-sha256", default="")
     parser.add_argument("--query-expected-sha256", default="")
+    parser.add_argument("--source-format", choices=("bvecs", "u8bin"), default="bvecs")
+    parser.add_argument("--source-review-status", default="operator-source-review-required")
+    parser.add_argument("--base-normalized-u8bin", type=Path)
+    parser.add_argument("--query-normalized-u8bin", type=Path)
+    parser.add_argument("--base-download-report", type=Path)
+    parser.add_argument("--query-download-report", type=Path)
+    parser.add_argument("--base-normalization-report", type=Path)
+    parser.add_argument("--query-normalization-report", type=Path)
+    parser.add_argument("--base-conversion-report", type=Path)
+    parser.add_argument("--query-conversion-report", type=Path)
+    parser.add_argument("--conversion-tool", type=Path)
+    parser.add_argument("--conversion-command", default="")
 
 
 def normalized_expected(value: str) -> str | None:
@@ -44,6 +56,10 @@ def actual_payload(args: argparse.Namespace) -> dict[str, object]:
         "base_10m_fbin": args.base_fbin,
         "query_fbin": args.query_fbin,
     }
+    if args.base_normalized_u8bin:
+        files["base_10m_u8bin"] = args.base_normalized_u8bin
+    if args.query_normalized_u8bin:
+        files["query_10k_u8bin"] = args.query_normalized_u8bin
     payload: dict[str, object] = {"files": {}}
     for name, path in files.items():
         if not path.is_file():
@@ -64,6 +80,39 @@ def actual_payload(args: argparse.Namespace) -> dict[str, object]:
         raise ValueError("base source SHA256 does not match SIFT10M_BASE_EXPECTED_SHA256")
     if query_expected and payload["files"]["query_source"]["sha256"] != query_expected:
         raise ValueError("query source SHA256 does not match SIFT10M_QUERY_EXPECTED_SHA256")
+    reports: dict[str, object] = {}
+    for name, path in {
+        "base_download": args.base_download_report,
+        "query_download": args.query_download_report,
+        "base_normalization": args.base_normalization_report,
+        "query_normalization": args.query_normalization_report,
+        "base_conversion": args.base_conversion_report,
+        "query_conversion": args.query_conversion_report,
+    }.items():
+        if path:
+            if not path.is_file():
+                raise FileNotFoundError(path)
+            reports[name] = json.loads(path.read_text())
+    payload["source_identity"] = {
+        "dataset": "BIGANN",
+        "source_format": args.source_format,
+        "source_corpus": "base.1B.u8bin prefix" if args.source_format == "u8bin" else "BIGANN bvecs prefix",
+        "source_query": "query.public.10K.u8bin" if args.source_format == "u8bin" else "BIGANN query bvecs",
+        "source_review_status": args.source_review_status,
+        "metric": "squared-l2",
+        "dimension": 128,
+        "dtype_source": "uint8",
+        "dtype_canonical": "float32",
+    }
+    payload["u8bin_audit_reports"] = reports
+    if args.conversion_tool:
+        if not args.conversion_tool.is_file():
+            raise FileNotFoundError(args.conversion_tool)
+        payload["conversion_tool"] = {
+            "path": str(args.conversion_tool.resolve()),
+            "sha256": sha256(args.conversion_tool),
+            "command": args.conversion_command,
+        }
     return payload
 
 
@@ -118,6 +167,10 @@ def main() -> None:
         recorded = expected.get("files", {}).get(name, {})
         if recorded.get("sha256") != detail["sha256"] or recorded.get("bytes") != detail["bytes"]:
             raise ValueError(f"provenance mismatch for {name}")
+    if expected.get("source_identity") != payload["source_identity"]:
+        raise ValueError("source identity changed since provenance record")
+    if expected.get("u8bin_audit_reports") != payload["u8bin_audit_reports"]:
+        raise ValueError("u8bin audit reports changed since provenance record")
     print(json.dumps({"verified": True, "manifest": str(args.manifest)}, indent=2))
 
 

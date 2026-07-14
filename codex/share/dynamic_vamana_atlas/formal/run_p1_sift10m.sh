@@ -23,6 +23,8 @@ fail() {
 trap fail ERR
 
 require_source() {
+  [[ "${SIFT10M_SOURCE_FORMAT:-u8bin}" =~ ^(u8bin|bvecs)$ ]] \
+    || { echo "SIFT10M_SOURCE_FORMAT must be u8bin or bvecs" >&2; exit 2; }
   [[ -n "${SIFT10M_BASE_INPUT:-}${SIFT10M_BASE_URL:-}" ]] \
     || { echo "set SIFT10M_BASE_INPUT or SIFT10M_BASE_URL" >&2; exit 2; }
   [[ -n "${SIFT10M_QUERY_INPUT:-}${SIFT10M_QUERY_URL:-}" ]] \
@@ -33,6 +35,7 @@ run_stage() {
   export P1_PHASE="$phase"
   export P1_ESTIMATED_REMAINING="$remaining"
   export P1_EXPECTED_FINISH_UTC="roughly $(date -u -d "+${P1_REMAINING_HOURS:-24} hours" +%Y-%m-%dT%H:%M:%SZ)"
+  export P1_EXPECTED_FINISH_SHANGHAI="roughly $(TZ=Asia/Shanghai date -d "+${P1_REMAINING_HOURS:-24} hours" +%Y-%m-%dT%H:%M:%S%z)"
   notify "Dynamic Vamana P1 started: $phase" "command=$*; log=$LOG"
   "$@"
 }
@@ -54,5 +57,6 @@ P1_REMAINING_HOURS=3 run_stage odinann-f0 "约 0.5--3 小时" "$CHAT/formal/f0_o
 export P1_PHASE=p1-complete
 export P1_ESTIMATED_REMAINING=0
 export P1_EXPECTED_FINISH_UTC="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+export P1_EXPECTED_FINISH_SHANGHAI="$(TZ=Asia/Shanghai date +%Y-%m-%dT%H:%M:%S%z)"
 notify "Dynamic Vamana P1 F0 complete" "all three systems completed; STOPPED pending review; log=$LOG"
 touch "$LOG_DIR/P1_F0_COMPLETE"

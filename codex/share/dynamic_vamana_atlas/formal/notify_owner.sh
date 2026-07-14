@@ -16,5 +16,9 @@ if [[ -n "${P1_EXPECTED_FINISH_UTC:-}" ]]; then
   message+=$'\n'
   message+="expected_finish_utc=${P1_EXPECTED_FINISH_UTC}"
 fi
+if [[ -n "${P1_EXPECTED_FINISH_SHANGHAI:-}" ]]; then
+  message+=$'\n'
+  message+="expected_finish_shanghai=${P1_EXPECTED_FINISH_SHANGHAI}"
+fi
 python3 /home/ubuntu/.codex/skills/mailsender/scripts/mailsender.py \
   --subject "$1" --message "$message"
