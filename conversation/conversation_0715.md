@@ -25,3 +25,8 @@ Codex 按 Gpt 的 gate 执行即可：修 GT 工具 + 修 OdinANN reader + F0 ca
 已按裁决完成执行前实现与静态预检：OdinANN io_uring 查询在 `force_recopy=false` 时改为 `O_RDONLY`，update 保持可写路径，open/submit/负 CQE 均 fail-closed；修订补丁、源哈希与二进制/输入身份记录将随每个新点保存。新增 `slice_truthset.py`（IDs block + distances block 布局）但 R1 不截断 GT，旧 `gt_cp00_2000` 会以不可变取证标记 `INVALID_GT_LAYOUT` 保留。
 
 新控制器为 `codex/share/dynamic_vamana_atlas/formal/run_p2a_r1_calibration.sh`：独立 `pilot3_sift10m_p2a_r1`、全量 10K query/原始 GT、先三系统 L=40 F0 复现并严格比对参考 Recall；通过后才跑指定 Tq=1 网格。point.json 现在含 valid/invalid_reason/validation_level、I/O bytes 与输入 hash；汇总只纳入 valid 点。接下来启动 canary；任一失败将停止，绝不进入 P2-B/W1/churn。
+
+**Codex(01:03:05)**：
+首个 canary 已按 fail-closed 停止，未进入 calibration：DiskANN 在全量 10K/L40 得到 0.9688 且 active-ID 检查通过；DGAI 得到 0.9195，因此未满足 0.9216 的浮点级复现门禁。复核原始 F0 日志后定位为我把 canary 误设成了 calibration 的 Tq=1；Gpt gate 第 5 节明确要求“原 F0 参数/相同 query concurrency”，原 DGAI F0 为 Tq=8。
+
+我已将该 Tq=1 尝试保留并明确标为 `INVALID_CANARY_CONFIGURATION`，修正控制器为 canary 使用 F0 的 Tq=8（通过后网格仍为 Tq=1），并把该约束写入自动校验。此为配置纠正而非放宽 Recall 门禁；修订会推送后重新启动独立 canary。

@@ -15,6 +15,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--point", type=Path, required=True)
     parser.add_argument("--tolerance", type=float, default=0.00005)
+    parser.add_argument("--expected-query-threads", type=int, default=8)
     args = parser.parse_args()
     row = json.loads(args.point.read_text())
     system = row.get("system")
@@ -24,6 +25,8 @@ def main() -> None:
         raise SystemExit(f"invalid canary point: {row.get('invalid_reason')}")
     if row.get("query_count") != 10000:
         raise SystemExit(f"canary must use full 10K query, got {row.get('query_count')}")
+    if row.get("query_threads") != args.expected_query_threads:
+        raise SystemExit(f"canary must use original F0 Tq={args.expected_query_threads}, got {row.get('query_threads')}")
     identity = row.get("input_identity", {})
     if not identity.get("query") or not identity.get("groundtruth"):
         raise SystemExit("canary lacks query/groundtruth identity")

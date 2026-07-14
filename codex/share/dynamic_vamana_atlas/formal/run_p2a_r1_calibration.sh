@@ -19,9 +19,9 @@ trap fail ERR
 run_as_operator() { runuser -u "$OPERATOR_USER" --preserve-environment -- "$@"; }
 
 point_valid() {
-  local stage=$1 system=$2 l=$3
+  local stage=$1 system=$2 l=$3 tq=${4:-1}
   local point
-  for point in "$ROOT/results/$RUN_NAME/$stage/$system/tq1/L$l"/r*/point.json; do
+  for point in "$ROOT/results/$RUN_NAME/$stage/$system/tq${tq}/L$l"/r*/point.json; do
     [[ -f "$point" ]] || continue
     python3 - "$point" <<'PY' >/dev/null && return 0
 import json, sys
@@ -32,17 +32,17 @@ PY
 }
 
 next_repeat() {
-  local stage=$1 system=$2 l=$3 repeat=1
-  while [[ -e "$ROOT/results/$RUN_NAME/$stage/$system/tq1/L$l/r$repeat" || \
-           -e "$ROOT/formal/$RUN_NAME/$stage/$system/tq1/L$l/r$repeat" ]]; do
+  local stage=$1 system=$2 l=$3 tq=${4:-1} repeat=1
+  while [[ -e "$ROOT/results/$RUN_NAME/$stage/$system/tq${tq}/L$l/r$repeat" || \
+           -e "$ROOT/formal/$RUN_NAME/$stage/$system/tq${tq}/L$l/r$repeat" ]]; do
     ((repeat += 1))
   done
   printf '%s\n' "$repeat"
 }
 
 run_one() {
-  local stage=$1 system=$2 l=$3 repeat=$4
-  P2A_STAGE="$stage" P2A_SYSTEM="$system" P2A_L="$l" P2A_TQ=1 P2A_REPEAT="$repeat" \
+  local stage=$1 system=$2 l=$3 repeat=$4 tq=${5:-1}
+  P2A_STAGE="$stage" P2A_SYSTEM="$system" P2A_L="$l" P2A_TQ="$tq" P2A_REPEAT="$repeat" \
     "$CHAT/formal/p2a_r1_query_point.sh"
 }
 
@@ -53,6 +53,22 @@ export P1_ESTIMATED_REMAINING="约 20--50 分钟"
 export P1_EXPECTED_FINISH_UTC="roughly $(date -u -d '+50 minutes' +%Y-%m-%dT%H:%M:%SZ)"
 export P1_EXPECTED_FINISH_SHANGHAI="roughly $(TZ=Asia/Shanghai date -d '+50 minutes' +%Y-%m-%dT%H:%M:%S%z)"
 
+# Preserve the first R1 canary attempts, but explicitly exclude them from the
+# F0 gate: they used calibration Tq=1 instead of original-F0 Tq=8.
+if compgen -G "$ROOT/results/$RUN_NAME/canary/*/tq1/L40/r*/point.json" >/dev/null; then
+  run_as_operator python3 - "$ROOT/results/$RUN_NAME/CANARY_TQ1_CONFIGURATION_INVALID.json" <<'PY'
+import json, sys, time
+from pathlib import Path
+Path(sys.argv[1]).write_text(json.dumps({
+    "schema": "dynamic-vamana-canary-configuration-invalid-v1",
+    "marked_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    "status": "INVALID_CANARY_CONFIGURATION",
+    "reason": "F0 reproduction gate requires original-F0 Tq=8; these diagnostic attempts used Tq=1.",
+    "preservation": "artifacts retained unchanged and excluded from the F0 gate and calibration summary",
+}, indent=2) + "\n")
+PY
+fi
+
 P2A_PHASE=mark-old-gt-invalid
 run_as_operator python3 "$CHAT/mark_invalid_gt_layout.py" --old-run-root "$ROOT/results/pilot3_sift10m_p2" \
   --truthset "$ROOT/groundtruth/sift10m/$VALIDATION_RUN/gt_cp00_2000"
@@ -60,14 +76,16 @@ run_as_operator python3 "$CHAT/mark_invalid_gt_layout.py" --old-run-root "$ROOT/
 P2A_PHASE=f0-reproduction-canary
 notify "Dynamic Vamana P2-A-R1 started: full-10K F0 reproduction" "run=$RUN_NAME; full GT; L=40; controller=$LOG"
 for system in DiskANN DGAI OdinANN; do
-  if point_valid canary "$system" 40; then
-    echo "resume: retaining valid F0 canary system=$system L=40"
+  # Gate section 5 requires the original F0 query concurrency (8), rather
+  # than the Tq=1 calibration concurrency used only after the gate passes.
+  if point_valid canary "$system" 40 8; then
+    echo "resume: retaining valid F0 canary system=$system L=40 Tq=8"
     continue
   fi
-  repeat=$(next_repeat canary "$system" 40)
-  run_one canary "$system" 40 "$repeat"
+  repeat=$(next_repeat canary "$system" 40 8)
+  run_one canary "$system" 40 "$repeat" 8
   run_as_operator python3 "$CHAT/verify_f0_reproduction.py" \
-    --point "$ROOT/results/$RUN_NAME/canary/$system/tq1/L40/r$repeat/point.json"
+    --point "$ROOT/results/$RUN_NAME/canary/$system/tq8/L40/r$repeat/point.json"
 done
 touch "$LOG_DIR/F0_REPRODUCTION_PASSED"
 notify "Dynamic Vamana P2-A-R1 F0 reproduction passed" "run=$RUN_NAME; grid may begin; controller=$LOG"
