@@ -136,7 +136,27 @@ index 8600f8c..8a741b4 100644
    if (enable_create) {
      flags |= O_CREAT;
    }
-@@ -736,4 +740,4 @@ void LinuxAlignedFileReader::read_alloc(std::vector<IORequest> &read_reqs, void
+@@ -437,7 +441,9 @@ void LinuxAlignedFileReader::open(const std::string &fname, bool enable_writes =
+         }
+         std::cerr << "Load Data loc2phy and phy2loc map done.\n";
+       }
+-      this->coord_file_desc = ::open(coord_path.c_str(), O_RDWR | O_LARGEFILE | O_DIRECT);
++      const int read_or_write_flags = O_LARGEFILE | O_DIRECT |
++          (enable_writes ? O_RDWR : O_RDONLY);
++      this->coord_file_desc = ::open(coord_path.c_str(), read_or_write_flags);
+       if (this->coord_file_desc == -1) {
+         LOG(ERROR) << "Open coord file " << coord_path << " fail!";
+         exit(1);
+@@ -473,7 +479,7 @@ void LinuxAlignedFileReader::open(const std::string &fname, bool enable_writes =
+           std::cerr << "Load Graph loc2phy and phy2loc map done.\n";
+         }
+         std::cout << "topo_path is " << topo_path << std::endl;
+-        this->topo_file_desc = ::open(topo_path.c_str(), O_RDWR | O_LARGEFILE | O_DIRECT);
++        this->topo_file_desc = ::open(topo_path.c_str(), read_or_write_flags);
+         if (topo_file_desc == -1) {
+           perror("Open topo file fail!\n");
+           exit(1);
+@@ -736,4 +742,4 @@ void LinuxAlignedFileReader::read_alloc(std::vector<IORequest> &read_reqs, void
  #else
    read(read_reqs, ctx);
  #endif
