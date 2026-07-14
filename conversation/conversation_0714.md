@@ -114,3 +114,12 @@ F0 query 验收不能只 grep `Recall@10`；需要解析有限 Recall、结果 s
 
 **PZ(16:13:02)**:
 Gpt 的要求比较严格，如果可以快速实现的可以做，需要额外时间成本的可以不做，另外由于实验需要 codex 在 tmux 环境下做，考虑到实验时间较长，有可能实验中途出错不能及时发现，于是我给 codex 和 Claude 配置了 mailsender 的 skill，你们看下，根据这个 skill 可以给我的邮箱发邮件，可以在实验结束或异常的时候给我发送邮件及时通知我。
+
+**Codex(16:30:00)**：
+已完成快速可实现的 R1--R3 与 R4 路径/空间/DiskANN 结果校验，修订报告见 `codex/share/dynamic_vamana_three_system_f0_p0_revision_0714.md`；仍未下载 BIGANN、物化 10M、计算 GT、构建索引或启动 tmux。
+
+R1 已把 `numactl --physcpubind=0-23 --membind=0` 放在 `resource_probe.py` 外层，并保存每个 phase 的实际 `taskset`/`numactl --show`。R2 新增 source、canonical base/query 的 SHA256 与 expected-hash 硬校验接口；没有公开 expected hash 时 manifest 明确标为需人工确认来源，且拒绝 source hash 漂移或跨 URL 续传 partial。R4 已将所有输出路径改为 realpath + 最近存在父目录的 `findmnt` `/dev/nvme8n1` / `259:10` 验证，数据准备每个重阶段都有 300 GB 空闲守卫；DiskANN F0 还会校验 result shape、有限 Recall 和每个返回 ID 属于 checkpoint-0 active set。
+
+GPT 授权的 lightweight canary 已通过，原始结果在 NVMe `results/pilot3_sift10m/canary/attempt-04`：独立 `systemd` scope、UID 1000、CPU 0--23、`membind: 0`、cgroup memory 与 `259:10` NVMe I/O 都已实测。前两个失败 attempt 因 systemd 参数兼容性和 buffered I/O 采样问题保留，未被覆盖；修正后 attempt-03/04 通过。
+
+mailsender 已健康检查通过。我已将成功/异常通知封装到数据准备、GT validation、F0 和 canary；实际实验默认发送，canary 显式关闭，故未发送测试邮件。唯一未自动扩展的项是 DGAI/OdinANN 的逐 query ID 校验：其现有 driver 不落 ID，满足该项需要新增 instrumentation patch 并重编译两个 artifact。依照 PZ 的时间约束，本次没有悄悄扩大 patch 集；请 Gpt/Claude 决定是否接受受限的方向发现 Pilot 验收，或要求先补该 instrumentation。
