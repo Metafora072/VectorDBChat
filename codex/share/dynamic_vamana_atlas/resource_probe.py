@@ -15,7 +15,13 @@ def read_kv(path: Path) -> dict[str, int]:
     out: dict[str, int] = {}
     try:
         for line in path.read_text().splitlines():
-            key, value = line.split(":", 1)
+            if ":" in line:
+                key, value = line.split(":", 1)
+            else:
+                fields = line.split(maxsplit=1)
+                if len(fields) != 2:
+                    continue
+                key, value = fields
             if not key.isidentifier():
                 continue
             fields = value.strip().split()

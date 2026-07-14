@@ -43,6 +43,15 @@ if not cg.endswith(".scope") or unit not in cg or "session" in cg:
     raise ValueError(f"not an independent transient scope: {cg}")
 if not any(sample.get("cgroup_memory_current") is not None and sample.get("cgroup_memory_peak") is not None for sample in samples):
     raise ValueError("cgroup memory counters are unavailable")
+required_events = {"low", "high", "max", "oom", "oom_kill"}
+direct_events = payload.get("memory_events", {})
+sampled_events = report.get("cgroup_memory_events_final", {})
+if not required_events <= direct_events.keys():
+    raise ValueError(f"payload memory.events lacks required keys: {direct_events}")
+if not required_events <= sampled_events.keys():
+    raise ValueError(f"resource probe memory.events lacks required keys: {sampled_events}")
+if direct_events != sampled_events:
+    raise ValueError(f"memory.events mismatch: direct={direct_events} sampled={sampled_events}")
 if not any(any(row.get("device") == device for row in sample.get("cgroup_io_stat", [])) for sample in samples):
     raise ValueError(f"cgroup io.stat lacks expected NVMe device {device}")
 if payload.get("uid") != int(uid) or Path(nvme_file).stat().st_uid != int(uid):
@@ -69,6 +78,7 @@ Path(output).write_text(json.dumps({
     "cpu_affinity": payload["cpu_affinity"],
     "numactl_show": show,
     "expected_nvme_device": device,
+    "memory_events": direct_events,
     "output_owner_uid": Path(nvme_file).stat().st_uid,
 }, indent=2) + "\n")
 PY

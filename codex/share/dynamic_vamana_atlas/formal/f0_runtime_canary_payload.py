@@ -11,6 +11,15 @@ import time
 from pathlib import Path
 
 
+def read_memory_events() -> dict[str, int]:
+    events: dict[str, int] = {}
+    for line in Path("/sys/fs/cgroup/memory.events").read_text().splitlines():
+        fields = line.split()
+        if len(fields) == 2 and fields[1].isdigit():
+            events[fields[0]] = int(fields[1])
+    return events
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, required=True)
@@ -36,6 +45,7 @@ def main() -> None:
         "cpu_affinity": sorted(os.sched_getaffinity(0)),
         "numactl_show": numa_show,
         "cgroup": Path("/proc/self/cgroup").read_text(),
+        "memory_events": read_memory_events(),
         "nvme_file": str(args.nvme_file),
         "nvme_file_uid": args.nvme_file.stat().st_uid,
     }
