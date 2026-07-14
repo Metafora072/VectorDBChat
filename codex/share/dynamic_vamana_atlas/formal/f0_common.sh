@@ -147,7 +147,7 @@ check_sources() {
     049677e181bec2990fe985cec0c503c014fd2af5f383dc9fcc004c0fe6004cfd
   check_allowed_patch "$odin_repo" 9e7a193dc3f38ad12063bfe50aa5885efb4e8d3b \
     "$CHAT/patches/OdinANN_system_uring_cblas.patch" \
-    97af1345dd5ecb3e66e20597caf1aabfd8b4be52f2fcd56f6c11468f7eb41ee7
+    6a716905d2644aaaafc1c2ad18242b5a6d73e80162e13ad88b65bccb1eba3e27
 }
 
 write_environment_manifest() {

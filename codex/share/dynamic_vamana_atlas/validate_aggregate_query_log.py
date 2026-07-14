@@ -10,7 +10,11 @@ import re
 from pathlib import Path
 
 
-FATAL = re.compile(r"fatal|abort|assert(?:ion)? failure|segmentation fault|core dumped", re.I)
+FATAL = re.compile(
+    r"bad file descriptor|\bfailed\b|i/o error|io_uring.*failed|fatal|abort|"
+    r"assert(?:ion)? failure|segmentation fault|core dumped",
+    re.I,
+)
 
 
 def main() -> None:
@@ -20,7 +24,7 @@ def main() -> None:
     args = parser.parse_args()
     text = args.log.read_text(errors="replace")
     if FATAL.search(text):
-        raise ValueError("query log contains fatal/abort/assert/segmentation-fault marker")
+        raise ValueError("query log contains an I/O or fatal failure marker")
     lines = text.splitlines()
     header = next((index for index, line in enumerate(lines) if "Recall@10" in line), None)
     if header is None:

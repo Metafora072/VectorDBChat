@@ -151,3 +151,102 @@ index a9b640b..f1082b6 100644
  
      std::future<void> insert_future = std::async(std::launch::async, insertion_kernel<T, TagT>, data_load.data(),
                                                   std::ref(index), std::ref(insert_vec), aligned_dim);
+diff --git a/src/utils/linux_aligned_file_reader.cpp b/src/utils/linux_aligned_file_reader.cpp
+index 5c54701..4cc689e 100644
+--- a/src/utils/linux_aligned_file_reader.cpp
++++ b/src/utils/linux_aligned_file_reader.cpp
+@@ -561,7 +561,11 @@ namespace {
+           io_uring_prep_read(sqe, fd, reqs[j].buf, reqs[j].len, reqs[j].offset);
+         }
+       }
+-      io_uring_submit(ring);
++      const int submitted = io_uring_submit(ring);
++      if (submitted < 0 || submitted != static_cast<int>(reqs.size())) {
++        LOG(FATAL) << "io_uring_submit failed: submitted=" << submitted << " expected=" << reqs.size()
++                   << " errno=" << errno << " (" << std::strerror(errno) << ")";
++      }
+ 
+       io_uring_cqe *cqe = nullptr;
+       bool fail = false;
+@@ -571,11 +575,16 @@ namespace {
+           ret = io_uring_wait_cqe(ring, &cqe);
+         } while (ret == -EINTR);
+ 
+-        if (ret < 0 || cqe->res < 0) {
+-          fail = true;
+-          LOG(ERROR) << "Failed " << strerror(-ret) << " " << ring << " " << j << " " << reqs[j].buf << " "
+-                     << reqs[j].len << " " << reqs[j].offset;
+-          break;  // CQE broken.
++        if (ret < 0) {
++          LOG(FATAL) << "io_uring_wait_cqe failed: ret=" << ret << " errno=" << -ret
++                     << " (" << std::strerror(-ret) << ")";
++        }
++        if (cqe->res < 0) {
++          const int cqe_res = cqe->res;
++          io_uring_cqe_seen(ring, cqe);
++          LOG(FATAL) << "io_uring CQE failed: res=" << cqe_res << " errno=" << -cqe_res
++                     << " (" << std::strerror(-cqe_res) << ") request=" << j
++                     << " len=" << reqs[j].len << " offset=" << reqs[j].offset;
+         }
+         io_uring_cqe_seen(ring, cqe);
+       }
+@@ -643,14 +652,19 @@ void LinuxAlignedFileReader::register_buf(void *buf, uint64_t buf_size, int mrid
+ }
+ 
+ void LinuxAlignedFileReader::open(const std::string &fname, bool enable_writes = false, bool enable_create = false) {
+-  int flags = O_DIRECT | O_LARGEFILE | O_RDWR;
++  if (enable_create && !enable_writes) {
++    LOG(FATAL) << "refusing O_CREAT without write permission for " << fname;
++  }
++  int flags = O_DIRECT | O_LARGEFILE | (enable_writes ? O_RDWR : O_RDONLY);
+   if (enable_create) {
+     flags |= O_CREAT;
+   }
+   this->fd = ::open(fname.c_str(), flags, 0644);
+-  // error checks
+-  assert(this->fd != -1);
+-  //  std::cerr << "Opened file : " << fname << std::endl;
++  if (this->fd == -1) {
++    const int saved_errno = errno;
++    LOG(FATAL) << "open failed: path=" << fname << " flags=" << flags << " errno=" << saved_errno
++               << " (" << std::strerror(saved_errno) << ")";
++  }
+ }
+ 
+ void LinuxAlignedFileReader::close() {
+@@ -717,11 +731,15 @@ int LinuxAlignedFileReader::poll(void *ctx) {
+   static __thread io_uring_cqe *cqes[MAX_EVENTS];
+   int ret = io_uring_peek_batch_cqe(ring, cqes, MAX_EVENTS);
+   if (ret < 0) {
+-    return 0;  // not finished yet.
++    LOG(FATAL) << "io_uring_peek_batch_cqe failed: ret=" << ret << " errno=" << -ret
++               << " (" << std::strerror(-ret) << ")";
+   }
+   for (int i = 0; i < ret; i++) {
+     if (cqes[i]->res < 0) {
+-      LOG(ERROR) << "Failed " << strerror(-cqes[i]->res);
++      const int cqe_res = cqes[i]->res;
++      io_uring_cqe_seen(ring, cqes[i]);
++      LOG(FATAL) << "io_uring CQE failed in poll: res=" << cqe_res << " errno=" << -cqe_res
++                 << " (" << std::strerror(-cqe_res) << ")";
+     }
+     IORequest *req = (IORequest *) cqes[i]->user_data;
+     if (req != nullptr) {
+@@ -737,11 +755,15 @@ void LinuxAlignedFileReader::poll_alloc(void *ctx, std::vector<uint64_t> *page_r
+   static __thread io_uring_cqe *cqes[MAX_EVENTS];
+   int ret = io_uring_peek_batch_cqe(ring, cqes, MAX_EVENTS);
+   if (ret < 0) {
+-    return;
++    LOG(FATAL) << "io_uring_peek_batch_cqe failed: ret=" << ret << " errno=" << -ret
++               << " (" << std::strerror(-ret) << ")";
+   }
+   for (int i = 0; i < ret; i++) {
+     if (cqes[i]->res < 0) {
+-      LOG(ERROR) << "Failed " << strerror(-cqes[i]->res);
++      const int cqe_res = cqes[i]->res;
++      io_uring_cqe_seen(ring, cqes[i]);
++      LOG(FATAL) << "io_uring CQE failed in poll_alloc: res=" << cqe_res << " errno=" << -cqe_res
++                 << " (" << std::strerror(-cqe_res) << ")";
+     }
+     IORequest *req = (IORequest *) cqes[i]->user_data;
+     if (req != nullptr) {
