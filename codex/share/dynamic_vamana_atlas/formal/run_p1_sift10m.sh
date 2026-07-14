@@ -64,6 +64,7 @@ if (( EUID != 0 )); then sudo -n true; fi
 
 export F0_ATTEMPT=${F0_ATTEMPT:-p1-01}
 export ATLAS_NOTIFY_EMAIL=${ATLAS_NOTIFY_EMAIL:-1}
+export ATLAS_GT_DIR=${ATLAS_GT_DIR:-$ROOT/groundtruth/sift10m/$RUN_NAME}
 P1_REMAINING_HOURS=24 run_stage runtime-canary "约 12--24 小时" supervisor \
   env F0_ATTEMPT=p1-canary-01 "$CHAT/formal/f0_runtime_canary.sh"
 P1_REMAINING_HOURS=20 run_stage sift10m-prepare "约 10--20 小时" operator "$CHAT/prepare_sift10m.sh"

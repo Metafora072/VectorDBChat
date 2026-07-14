@@ -188,3 +188,8 @@ P1 在 `sift10m-prepare` 已按 gate 停止，邮件的 `exit=1` 正确。根因
 
 **Codex(17:28:00)**：
 `p1r04` runtime canary 已通过（unit `dv-pilot3_sift10m_p1r04-RuntimeCanary-canary-p1-canary-01-1019156`），worker attempt 目录 owner 为 `ubuntu:ubuntu`，其 root-owned 父目录现为可穿越的 `0755`。P1 已进入 `sift10m-prepare`，以 ubuntu UID 运行；base/query 下载器正确标为 `reused-local`，并再次核对 raw header、payload equality 与 fbin SHA256。即未重新下载 10M prefix，也未覆盖前面失败 attempt；尚未进入 GT 或任一 F0。
+
+**Codex(17:33:00)**：
+`p1r04` 已完成 data preparation，但在 checkpoint-0 GT validation 按 gate 停止，未启动 F0。根因在 DiskANN `compute_groundtruth` 的 tag 语义：源码明确将 `location_to_tag == 0` 跳过；cp00 tags 恰为顺序 `0..7,999,999`。query 7150 的 exact top-100 含 tag 0，工具只得到 99 项并写入末尾 `(id=0, dist=0)`，于是独立 validator 正确报告唯一的 monotonic failure。raw/canonical SHA256、header、payload equality、8M/10K shape 及 NVMe 空间均通过，非数据损坏。
+
+修复限定在 cp00：先审计 tag 文件确为顺序 row ID，再不向该工具传 `--tags_file`，使其输出 row ID（与 cp00 logical tag 等价且包含 0）；随后独立 validator 仍检查 active tags、距离单调和 brute-force audit。每个 P1 attempt 也改用独立 `groundtruth/sift10m/<run-name>`，故 `p1r04` 的无效 GT 被完整保留。静态检查已通过；下一次将是独立 `p1r05`，先 runtime canary，再复用 DATA_PREPARED_OK 数据并重算新的 cp00 GT。

@@ -6,7 +6,7 @@ set -euo pipefail
 ROOT=${ATLAS_ROOT:-/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas}
 CHAT=${ATLAS_CHAT_ROOT:-/home/ubuntu/pz/VectorDB/chat/codex/share/dynamic_vamana_atlas}
 DATASET="$ROOT/datasets/sift10m"
-GT="$ROOT/groundtruth/sift10m"
+GT=${ATLAS_GT_DIR:-$ROOT/groundtruth/sift10m}
 RESULT="$ROOT/results/pilot3_sift10m/data_validation"
 
 fail() { echo "validate_sift10m: $*" >&2; exit 1; }

@@ -21,7 +21,7 @@ OPERATOR_UID=$(id -u "$OPERATOR_USER")
 OPERATOR_GID=$(id -g "$OPERATOR_USER")
 
 DATASET="$ROOT/datasets/sift10m"
-GT="$ROOT/groundtruth/sift10m/gt_cp00"
+GT="${ATLAS_GT_DIR:-$ROOT/groundtruth/sift10m}/gt_cp00"
 RUN_ROOT="$ROOT/formal/$RUN_NAME/f0/$SYSTEM/$ATTEMPT"
 INDEX_DIR="$RUN_ROOT/index"
 RESULT_DIR="$ROOT/results/$RUN_NAME/f0/$SYSTEM/$ATTEMPT"
