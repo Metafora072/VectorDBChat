@@ -9,8 +9,9 @@ OPERATOR_USER=${ATLAS_OPERATOR_USER:-ubuntu}
 VALIDATION_RUN=pilot3_sift10m_p1r07
 LOG_DIR="$ROOT/results/$RUN_NAME/p2a_r1_controller"
 LOG="$LOG_DIR/p2a_r1.log"
-mkdir -p "$LOG_DIR" "$ROOT/tmp/$RUN_NAME" "$ROOT/results/$RUN_NAME"
-chown "$(id -u "$OPERATOR_USER"):$(id -g "$OPERATOR_USER")" "$LOG_DIR" "$ROOT/tmp/$RUN_NAME" "$ROOT/results/$RUN_NAME"
+mkdir -p "$LOG_DIR" "$ROOT/tmp/$RUN_NAME" "$ROOT/results/$RUN_NAME" "$ROOT/manifests/$RUN_NAME/artifacts"
+chown "$(id -u "$OPERATOR_USER"):$(id -g "$OPERATOR_USER")" \
+  "$LOG_DIR" "$ROOT/tmp/$RUN_NAME" "$ROOT/results/$RUN_NAME" "$ROOT/manifests/$RUN_NAME" "$ROOT/manifests/$RUN_NAME/artifacts"
 exec > >(tee -a "$LOG") 2>&1
 
 notify() { "$CHAT/formal/notify_owner.sh" "$1" "$2" || echo "MailSender failure does not change P2-A-R1 state" >&2; }
