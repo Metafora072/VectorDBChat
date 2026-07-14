@@ -36,7 +36,8 @@ if [[ ! -f "$RESULT_DIR/QUERY_OK" ]]; then
     /usr/bin/time -v -o "$RESULT_DIR/query_time.txt" \
     "$ROOT/build/DGAI/tests/search_disk_index" float "$prefix" "$QUERY_THREADS" 16 \
     "$DATASET/query.bin" "$GT" 10 l2 2 0 23 40
-  assert_query_recall "$RESULT_DIR/query.log"
+  python3 "$CHAT/validate_aggregate_query_log.py" --log "$RESULT_DIR/query.log" \
+    --output "$RESULT_DIR/query_validation.json"
   touch "$RESULT_DIR/QUERY_OK"
 fi
 make_immutable_base

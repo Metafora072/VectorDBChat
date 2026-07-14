@@ -22,7 +22,10 @@ def read_header(path: Path) -> tuple[int, int]:
 
 
 def parse_recall(log: Path) -> float:
-    lines = log.read_text(errors="replace").splitlines()
+    content = log.read_text(errors="replace")
+    if re.search(r"fatal|abort|assert(?:ion)? failure|segmentation fault|core dumped", content, re.I):
+        raise ValueError("query log contains fatal/abort/assert/segmentation-fault marker")
+    lines = content.splitlines()
     header = next((index for index, line in enumerate(lines) if "Recall@10" in line), None)
     if header is None:
         raise ValueError("missing Recall@10 header")
