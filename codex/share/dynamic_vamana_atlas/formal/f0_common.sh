@@ -10,6 +10,7 @@ RUN_NAME=${ATLAS_RUN_NAME:-pilot3_sift10m}
 ATTEMPT=${F0_ATTEMPT:-attempt-01}
 CPUSET=${ATLAS_CPUSET:-0-23}
 NUMA_NODE=${ATLAS_NUMA_NODE:-0}
+VALIDATION_RUN_NAME=${ATLAS_VALIDATION_RUN_NAME:-$RUN_NAME}
 BUILD_THREADS=${ATLAS_BUILD_THREADS:-24}
 QUERY_THREADS=${ATLAS_QUERY_THREADS:-8}
 MIN_FREE_BYTES=${ATLAS_MIN_FREE_BYTES:-300000000000}
@@ -80,7 +81,7 @@ check_paths() {
   [[ "$free" =~ ^[0-9]+$ ]] || fail "cannot determine free space"
   (( free >= MIN_FREE_BYTES )) || fail "NVMe free bytes $free below guard $MIN_FREE_BYTES"
   require_file "$DATASET/DATA_PREPARED_OK"
-  require_file "$ROOT/results/$RUN_NAME/data_validation/VALIDATED_CP00_OK"
+  require_file "$ROOT/results/$VALIDATION_RUN_NAME/data_validation/VALIDATED_CP00_OK"
   require_file "$DATASET/active_cp00.bin"
   require_file "$DATASET/active_cp00.tags.bin"
   require_file "$DATASET/query.bin"
@@ -160,6 +161,9 @@ write_environment_manifest() {
     echo "attempt=$ATTEMPT"
     echo "cpuset=$CPUSET"
     echo "numa_node=$NUMA_NODE"
+    echo "validation_run_name=$VALIDATION_RUN_NAME"
+    echo "dgai_build_memory_policy=${DGAI_BUILD_MEMORY_POLICY:-membind}"
+    echo "dgai_build_memory_nodes=${DGAI_BUILD_MEMORY_NODES:-$NUMA_NODE}"
     echo "build_threads=$BUILD_THREADS"
     echo "query_threads=$QUERY_THREADS"
     echo "atlas_root=$ROOT"
@@ -232,6 +236,17 @@ run_scoped() {
   local unit="dv-${RUN_NAME}-${SYSTEM}-${phase}-${ATTEMPT}-$$"
   local worker_threads=$BUILD_THREADS
   [[ "$phase" == query ]] && worker_threads=$QUERY_THREADS
+  local -a numa_args=(--physcpubind="$CPUSET" --membind="$NUMA_NODE")
+  local -a scope_properties=(--property="AllowedCPUs=$CPUSET" --property=MemoryAccounting=yes
+    --property=CPUAccounting=yes --property=IOAccounting=yes)
+  local requested_policy="membind=$NUMA_NODE"
+  if [[ "$SYSTEM" == DGAI && "$phase" == build && "${DGAI_BUILD_MEMORY_POLICY:-membind}" == interleave ]]; then
+    local nodes=${DGAI_BUILD_MEMORY_NODES:-0,1}
+    [[ "$nodes" == "0,1" ]] || fail "DGAI build interleave nodes must be exactly 0,1 (got $nodes)"
+    numa_args=(--physcpubind="$CPUSET" --interleave="$nodes")
+    scope_properties+=(--property=MemoryMax="${DGAI_BUILD_MEMORY_MAX:-200G}")
+    requested_policy="interleave=$nodes; MemoryMax=${DGAI_BUILD_MEMORY_MAX:-200G}"
+  fi
   CURRENT_PHASE=$phase
   write_state "$phase" running
   printf '%s\n' "$unit" >"$RESULT_DIR/${phase}_systemd_unit.txt"
@@ -241,16 +256,15 @@ run_scoped() {
   # --scope is synchronous by itself on this host; systemd rejects combining
   # it with --wait, so do not add that mutually exclusive option.
   root_managed systemd-run --scope --quiet --collect --unit "$unit" --uid "$OPERATOR_UID" \
-    --property="AllowedCPUs=$CPUSET" --property=MemoryAccounting=yes \
-    --property=CPUAccounting=yes --property=IOAccounting=yes -- \
+    "${scope_properties[@]}" -- \
     timeout --signal=TERM --kill-after=120s "$timeout_seconds" \
     env TMPDIR="$TMP_WORK" LD_LIBRARY_PATH="$LIBS" \
       OPENBLAS_NUM_THREADS="$worker_threads" OMP_NUM_THREADS="$worker_threads" \
-      numactl --physcpubind="$CPUSET" --membind="$NUMA_NODE" \
+      numactl "${numa_args[@]}" \
       "$CHAT/resource_probe.py" --output "$output" --interval-ms 100 \
       --space-root "$space_root" -- bash -c \
-      'policy=$1; log=$2; shift 2; { taskset -pc $$; numactl --show; } >"$policy" 2>&1; exec "$@" >"$log" 2>&1' \
-      bash "$RESULT_DIR/${phase}_effective_policy.txt" "$RESULT_DIR/${phase}.log" "$@"
+      'policy=$1; log=$2; requested=$3; shift 3; { echo "requested_policy=$requested"; taskset -pc $$; numactl --show; } >"$policy" 2>&1; exec "$@" >"$log" 2>&1' \
+      bash "$RESULT_DIR/${phase}_effective_policy.txt" "$RESULT_DIR/${phase}.log" "$requested_policy" "$@"
   write_state "$phase" passed
 }
 

@@ -2,6 +2,7 @@
 set -euo pipefail
 SYSTEM=DGAI
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/f0_common.sh"
+DGAI_BUILD_TIMEOUT_SECONDS=${DGAI_BUILD_TIMEOUT_SECONDS:-10800}
 
 check_paths; check_sources; write_environment_manifest; assert_fresh_attempt; enable_error_trap
 require_executable "$ROOT/build/DGAI/tests/build_disk_index"
@@ -15,7 +16,7 @@ if [[ ! -f "$INDEX_DIR/BUILD_OK" ]]; then
     || fail "partial index directory exists; use a new F0_ATTEMPT instead of overwriting it"
   mkdir -p "$INDEX_DIR"
   ensure_operator_owned "$INDEX_DIR"
-  run_scoped build 10800 "$INDEX_DIR" "$RESULT_DIR/build_resources.json" \
+  run_scoped build "$DGAI_BUILD_TIMEOUT_SECONDS" "$INDEX_DIR" "$RESULT_DIR/build_resources.json" \
     /usr/bin/time -v -o "$RESULT_DIR/build_time.txt" \
     "$ROOT/build/DGAI/tests/build_disk_index" float "$DATASET/active_cp00.bin" "$prefix" \
     32 75 1 64 "$BUILD_THREADS" l2 0

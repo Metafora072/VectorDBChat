@@ -167,6 +167,7 @@ def main() -> None:
                 "smaps_rollup_kb": aggregate,
                 "cgroup_memory_current": read_int(cg / "memory.current") if cg else None,
                 "cgroup_memory_peak": read_int(cg / "memory.peak") if cg else None,
+                "cgroup_memory_events": read_kv(cg / "memory.events") if cg else {},
                 "cgroup_io_stat": read_cgroup_io(cg / "io.stat") if cg else [],
                 "index_space": directory_space(args.space_root),
             }
@@ -182,6 +183,7 @@ def main() -> None:
         "root_pid": proc.pid,
         "cgroup_path": str(cg) if cg else None,
         "cgroup_scope_note": "Values are process-specific only if the launcher has a dedicated cgroup.",
+        "cgroup_memory_events_final": read_kv(cg / "memory.events") if cg else {},
         "peak_process_tree_rss_kb": peak_tree_rss_kb,
         "peak_process_tree_io_bytes": peak_tree_io_bytes,
         "peak_smaps_rollup_kb": peak_smaps,
