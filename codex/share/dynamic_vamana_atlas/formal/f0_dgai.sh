@@ -42,4 +42,5 @@ fi
 make_immutable_base
 touch "$RESULT_DIR/F0_OK"
 write_state complete passed
+notify_owner "Dynamic Vamana F0 complete: DGAI/$ATTEMPT" "result=$RESULT_DIR"
 note "F0 ready: DGAI/$ATTEMPT"

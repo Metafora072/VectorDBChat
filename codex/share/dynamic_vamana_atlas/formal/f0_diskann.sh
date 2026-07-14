@@ -28,10 +28,13 @@ if [[ ! -f "$RESULT_DIR/QUERY_OK" ]]; then
     --index_path_prefix "$prefix" --result_path "$RESULT_DIR/result" \
     --query_file "$DATASET/query.bin" --gt_file "$GT" -K 10 -L 40 \
     -T "$QUERY_THREADS" -W 4
-  assert_query_recall "$RESULT_DIR/query.log"
+  python3 "$CHAT/validate_query_result.py" --result "$RESULT_DIR/result_40_idx_uint32.bin" \
+    --active-tags "$DATASET/active_cp00.tags.bin" --query "$DATASET/query.bin" \
+    --log "$RESULT_DIR/query.log" --k 10 --output "$RESULT_DIR/query_validation.json"
   touch "$RESULT_DIR/QUERY_OK"
 fi
 make_immutable_base
 touch "$RESULT_DIR/F0_OK"
 write_state complete passed
+notify_owner "Dynamic Vamana F0 complete: DiskANN/$ATTEMPT" "result=$RESULT_DIR"
 note "F0 ready: DiskANN/$ATTEMPT"

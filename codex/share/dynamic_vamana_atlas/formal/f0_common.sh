@@ -30,10 +30,37 @@ require_file() { [[ -f "$1" ]] || fail "missing required file: $1"; }
 require_executable() { [[ -x "$1" ]] || fail "missing executable: $1"; }
 
 require_nvme_path() {
-  case "$1" in
-    /home/ubuntu/pz/VectorDB/data/*) ;;
+  local canonical source majmin
+  canonical=$(realpath -m "$1")
+  case "$canonical" in
+    /home/ubuntu/pz/VectorDB/data|/home/ubuntu/pz/VectorDB/data/*) ;;
     *) fail "refusing path outside experiment NVMe: $1" ;;
   esac
+  source=$(findmnt -rn -T "$canonical" -o SOURCE | head -n1)
+  majmin=$(findmnt -rn -T "$canonical" -o MAJ:MIN | head -n1)
+  [[ "$source" == "${ATLAS_NVME_SOURCE:-/dev/nvme8n1}" && "$majmin" == "${ATLAS_NVME_MAJMIN:-259:10}" ]] \
+    || fail "path is not expected experiment NVMe: $canonical ($source $majmin)"
+}
+
+check_numa_binding() {
+  command -v numactl >/dev/null || fail "numactl is required"
+  local node_cpus
+  node_cpus=$(cat "/sys/devices/system/node/node${NUMA_NODE}/cpulist" 2>/dev/null) \
+    || fail "NUMA node ${NUMA_NODE} is absent"
+  python3 - "$CPUSET" "$node_cpus" <<'PY'
+import sys
+def expand(spec):
+    result = set()
+    for part in spec.split(','):
+        if '-' in part:
+            left, right = map(int, part.split('-', 1)); result.update(range(left, right + 1))
+        else:
+            result.add(int(part))
+    return result
+requested, node = map(expand, sys.argv[1:])
+if not requested or not requested <= node:
+    raise SystemExit(f"CPUSET {sys.argv[1]} is not contained in node cpulist {sys.argv[2]}")
+PY
 }
 
 check_paths() {
@@ -51,6 +78,7 @@ check_paths() {
   require_file "$DATASET/active_cp00.tags.bin"
   require_file "$DATASET/query.bin"
   require_file "$GT"
+  check_numa_binding
   mkdir -p "$RUN_ROOT" "$RESULT_DIR" "$MANIFEST_DIR" "$TMP_WORK"
   export TMPDIR="$TMP_WORK"
   require_nvme_path "$TMPDIR"
@@ -107,6 +135,8 @@ write_environment_manifest() {
     echo "--- uname ---"; uname -a
     echo "--- lscpu ---"; lscpu
     echo "--- numactl ---"; numactl --hardware
+    echo "--- requested NUMA policy ---"; echo "physcpubind=$CPUSET membind=$NUMA_NODE"
+    echo "--- node cpulist ---"; cat "/sys/devices/system/node/node${NUMA_NODE}/cpulist"
     echo "--- mounts ---"; findmnt -T "$ROOT" -o TARGET,SOURCE,FSTYPE,OPTIONS
     echo "--- block devices ---"; lsblk -o NAME,MODEL,SERIAL,SIZE,ROTA,TYPE,MOUNTPOINTS
     echo "--- cpu governor ---"; cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>&1 || true
@@ -142,10 +172,17 @@ on_error() {
   write_state "${CURRENT_PHASE:-preflight}" failed "exit=$code"
   printf 'FAILED exit=%s phase=%s utc=%s\n' "$code" "${CURRENT_PHASE:-preflight}" \
     "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >"$RESULT_DIR/FAILED"
+  notify_owner "Dynamic Vamana F0 failed: $SYSTEM/$ATTEMPT" \
+    "phase=${CURRENT_PHASE:-preflight} exit=$code result=$RESULT_DIR"
   exit "$code"
 }
 
 enable_error_trap() { trap on_error ERR; }
+
+notify_owner() {
+  [[ "${ATLAS_NOTIFY_EMAIL:-1}" == 1 ]] || return 0
+  "$CHAT/formal/notify_owner.sh" "$1" "$2" || note "MailSender notification failed; preserving primary result"
+}
 
 assert_fresh_attempt() {
   if [[ -f "$RESULT_DIR/F0_OK" ]]; then
@@ -165,6 +202,7 @@ run_scoped() {
   [[ "$phase" == query ]] && worker_threads=$QUERY_THREADS
   CURRENT_PHASE=$phase
   write_state "$phase" running
+  printf '%s\n' "$unit" >"$RESULT_DIR/${phase}_systemd_unit.txt"
   # A root-managed transient scope is required because this host has no usable
   # unprivileged user bus. `sudo -n` intentionally fails fast if the operator
   # has not pre-authenticated/pre-provisioned the dedicated cgroup launcher.
@@ -174,6 +212,7 @@ run_scoped() {
     timeout --signal=TERM --kill-after=120s "$timeout_seconds" \
     env TMPDIR="$TMP_WORK" LD_LIBRARY_PATH="$LIBS" \
       OPENBLAS_NUM_THREADS="$worker_threads" OMP_NUM_THREADS="$worker_threads" \
+      numactl --physcpubind="$CPUSET" --membind="$NUMA_NODE" \
       "$CHAT/resource_probe.py" --output "$output" --interval-ms 100 \
       --space-root "$space_root" -- bash -c \
       'log=$1; shift; exec "$@" >"$log" 2>&1' bash "$RESULT_DIR/${phase}.log" "$@"

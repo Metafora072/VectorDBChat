@@ -9,16 +9,40 @@ CHAT=${ATLAS_CHAT_ROOT:-/home/ubuntu/pz/VectorDB/chat/codex/share/dynamic_vamana
 DATASET="$ROOT/datasets/sift10m"
 RAW="$ROOT/raw/sift10m"
 MANIFEST="$ROOT/manifests/sift10m_preparation.json"
+CONVERSION_MANIFEST="$RAW/conversion_provenance.json"
 BASE_ROWS=10000000
 QUERY_ROWS=${SIFT10M_QUERY_ROWS:-10000}
 SEED=20260713
 
 fail() { echo "prepare_sift10m: $*" >&2; exit 1; }
+notify_owner() {
+  [[ "${ATLAS_NOTIFY_EMAIL:-1}" == 1 ]] || return 0
+  "$CHAT/formal/notify_owner.sh" "$1" "$2" || true
+}
+on_error() {
+  local code=$?
+  notify_owner "Dynamic Vamana SIFT10M preparation failed" "exit=$code root=$ROOT"
+  exit "$code"
+}
+trap on_error ERR
 require_nvme_path() {
-  case "$1" in
-    /home/ubuntu/pz/VectorDB/data/*) ;;
+  local canonical source majmin
+  canonical=$(realpath -m "$1")
+  case "$canonical" in
+    /home/ubuntu/pz/VectorDB/data|/home/ubuntu/pz/VectorDB/data/*) ;;
     *) fail "refusing non-NVMe path: $1" ;;
   esac
+  source=$(findmnt -rn -T "$canonical" -o SOURCE | head -n1)
+  majmin=$(findmnt -rn -T "$canonical" -o MAJ:MIN | head -n1)
+  [[ "$source" == "${ATLAS_NVME_SOURCE:-/dev/nvme8n1}" && "$majmin" == "${ATLAS_NVME_MAJMIN:-259:10}" ]] \
+    || fail "path is not the expected experiment NVMe: $canonical ($source $majmin)"
+}
+check_free_space() {
+  local free
+  free=$(df -PB1 "$ROOT" | awk 'NR==2 {print $4}')
+  [[ "$free" =~ ^[0-9]+$ ]] || fail "cannot determine free space"
+  (( free >= ${ATLAS_MIN_FREE_BYTES:-300000000000} )) \
+    || fail "NVMe free bytes $free below preparation guard"
 }
 download_if_missing() {
   local destination=$1 url=$2
@@ -26,8 +50,13 @@ download_if_missing() {
   [[ -n "$url" ]] || fail "missing $destination; set the corresponding SIFT10M_*_URL or *_INPUT"
   command -v curl >/dev/null || fail "curl is required to fetch an explicitly supplied source URL"
   mkdir -p "$(dirname "$destination")"
+  if [[ -f "${destination}.partial.url" ]] && [[ "$(<"${destination}.partial.url")" != "$url" ]]; then
+    fail "refusing to resume a partial download from a different URL: $destination"
+  fi
+  printf '%s' "$url" >"${destination}.partial.url"
   curl --fail --location --continue-at - --output "${destination}.partial" "$url"
   mv "${destination}.partial" "$destination"
+  rm -f "${destination}.partial.url"
 }
 materialize_bvecs() {
   local input=$1 output=$2 rows=$3
@@ -42,12 +71,7 @@ require_nvme_path "$DATASET"
 export TMPDIR="$ROOT/tmp/sift10m-preparation"
 require_nvme_path "$TMPDIR"
 mkdir -p "$RAW" "$DATASET" "$ROOT/manifests" "$TMPDIR"
-
-if [[ -f "$DATASET/DATA_PREPARED_OK" ]]; then
-  [[ -f "$DATASET/manifest.json" && -f "$MANIFEST" ]] || fail "incomplete prepared marker; refuse overwrite"
-  echo "already prepared: $DATASET"
-  exit 0
-fi
+check_free_space
 
 base_input=${SIFT10M_BASE_INPUT:-$RAW/bigann_base.bvecs}
 query_input=${SIFT10M_QUERY_INPUT:-$RAW/bigann_query.bvecs}
@@ -64,41 +88,42 @@ fi
 
 base_fbin="$RAW/base.10m.fbin"
 query_fbin="$RAW/query.fbin"
-materialize_bvecs "$base_input" "$base_fbin" "$BASE_ROWS"
-materialize_bvecs "$query_input" "$query_fbin" "$QUERY_ROWS"
+provenance_args=(--base-source "$base_input" --query-source "$query_input" \
+  --base-fbin "$base_fbin" --query-fbin "$query_fbin" \
+  --base-expected-sha256 "${SIFT10M_BASE_EXPECTED_SHA256:-}" \
+  --query-expected-sha256 "${SIFT10M_QUERY_EXPECTED_SHA256:-}")
+
+if [[ -f "$DATASET/DATA_PREPARED_OK" ]]; then
+  [[ -f "$DATASET/manifest.json" && -f "$MANIFEST" ]] || fail "incomplete prepared marker; refuse overwrite"
+  python3 "$CHAT/sift10m_provenance.py" verify --manifest "$MANIFEST" "${provenance_args[@]}"
+  echo "already prepared and provenance-verified: $DATASET"
+  exit 0
+fi
+
+if [[ -e "$base_fbin" || -e "$query_fbin" ]]; then
+  [[ -f "$CONVERSION_MANIFEST" ]] || fail "canonical file exists without conversion provenance; refuse reuse"
+  python3 "$CHAT/sift10m_provenance.py" verify --manifest "$CONVERSION_MANIFEST" "${provenance_args[@]}"
+else
+  check_free_space
+  materialize_bvecs "$base_input" "$base_fbin" "$BASE_ROWS"
+  materialize_bvecs "$query_input" "$query_fbin" "$QUERY_ROWS"
+  python3 "$CHAT/sift10m_provenance.py" record --manifest "$CONVERSION_MANIFEST" \
+    "${provenance_args[@]}" --base-url "${SIFT10M_BASE_URL:-}" --query-url "${SIFT10M_QUERY_URL:-}"
+fi
 
 if [[ -e "$DATASET/manifest.json" || -n "$(find "$DATASET" -mindepth 1 -maxdepth 1 -print -quit)" ]]; then
   fail "dataset directory is non-empty without DATA_PREPARED_OK; choose a new ATLAS_ROOT or inspect it manually"
 fi
 
+check_free_space
 python3 "$CHAT/prepare_dataset.py" \
   --name sift10m --source "$base_fbin" --query "$query_fbin" --output "$DATASET" \
   --total "$BASE_ROWS" --active 8000000 --seed "$SEED" --full-name full_10m.bin
 python3 "$CHAT/prepare_update_smoke.py" --dataset "$DATASET" --count 100
 python3 "$CHAT/hash_manifest.py" "$DATASET" "$ROOT/manifests/sift10m_dataset_sha256.json"
 
-python3 - "$MANIFEST" "$base_input" "$query_input" "$base_fbin" "$query_fbin" <<'PY'
-import json, os, sys, time
-from pathlib import Path
-
-output, base_source, query_source, base_fbin, query_fbin = map(Path, sys.argv[1:])
-payload = {
-    "schema": "dynamic-vamana-sift10m-preparation-v1",
-    "created_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-    "corpus": "standard BIGANN/SIFT prefix, first 10,000,000 vectors",
-    "base_source": str(base_source),
-    "query_source": str(query_source),
-    "base_source_url": os.environ.get("SIFT10M_BASE_URL"),
-    "query_source_url": os.environ.get("SIFT10M_QUERY_URL"),
-    "base_fbin": str(base_fbin),
-    "query_fbin": str(query_fbin),
-    "base_source_bytes": base_source.stat().st_size,
-    "query_source_bytes": query_source.stat().st_size,
-    "base_fbin_bytes": base_fbin.stat().st_size,
-    "query_fbin_bytes": query_fbin.stat().st_size,
-    "seed": 20260713,
-}
-output.write_text(json.dumps(payload, indent=2) + "\n")
-PY
+python3 "$CHAT/sift10m_provenance.py" record --manifest "$MANIFEST" \
+  "${provenance_args[@]}" --base-url "${SIFT10M_BASE_URL:-}" --query-url "${SIFT10M_QUERY_URL:-}"
 touch "$DATASET/DATA_PREPARED_OK"
+notify_owner "Dynamic Vamana SIFT10M preparation complete" "dataset=$DATASET manifest=$MANIFEST"
 echo "prepared: $DATASET"
