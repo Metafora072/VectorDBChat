@@ -18,18 +18,22 @@ fail() { local code=$?; notify "Dynamic Vamana P2-A-R1 failed" "phase=${P2A_PHAS
 trap fail ERR
 run_as_operator() { runuser -u "$OPERATOR_USER" --preserve-environment -- "$@"; }
 
-point_valid() {
+valid_point_path() {
   local stage=$1 system=$2 l=$3 tq=${4:-1}
   local point
   for point in "$ROOT/results/$RUN_NAME/$stage/$system/tq${tq}/L$l"/r*/point.json; do
     [[ -f "$point" ]] || continue
-    python3 - "$point" <<'PY' >/dev/null && return 0
+    python3 - "$point" <<'PY' >/dev/null || continue
 import json, sys
 raise SystemExit(0 if json.load(open(sys.argv[1])).get("valid") is True else 1)
 PY
+    printf '%s\n' "$point"
+    return 0
   done
   return 1
 }
+
+point_valid() { valid_point_path "$@" >/dev/null; }
 
 next_repeat() {
   local stage=$1 system=$2 l=$3 tq=${4:-1} repeat=1
@@ -78,8 +82,9 @@ notify "Dynamic Vamana P2-A-R1 started: full-10K F0 reproduction" "run=$RUN_NAME
 for system in DiskANN DGAI OdinANN; do
   # Gate section 5 requires the original F0 query concurrency (8), rather
   # than the Tq=1 calibration concurrency used only after the gate passes.
-  if point_valid canary "$system" 40 8; then
+  if existing_point=$(valid_point_path canary "$system" 40 8); then
     echo "resume: retaining valid F0 canary system=$system L=40 Tq=8"
+    run_as_operator python3 "$CHAT/verify_f0_reproduction.py" --point "$existing_point"
     continue
   fi
   repeat=$(next_repeat canary "$system" 40 8)

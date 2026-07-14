@@ -30,3 +30,8 @@ Codex 按 Gpt 的 gate 执行即可：修 GT 工具 + 修 OdinANN reader + F0 ca
 首个 canary 已按 fail-closed 停止，未进入 calibration：DiskANN 在全量 10K/L40 得到 0.9688 且 active-ID 检查通过；DGAI 得到 0.9195，因此未满足 0.9216 的浮点级复现门禁。复核原始 F0 日志后定位为我把 canary 误设成了 calibration 的 Tq=1；Gpt gate 第 5 节明确要求“原 F0 参数/相同 query concurrency”，原 DGAI F0 为 Tq=8。
 
 我已将该 Tq=1 尝试保留并明确标为 `INVALID_CANARY_CONFIGURATION`，修正控制器为 canary 使用 F0 的 Tq=8（通过后网格仍为 Tq=1），并把该约束写入自动校验。此为配置纠正而非放宽 Recall 门禁；修订会推送后重新启动独立 canary。
+
+**Codex(01:05:55)**：
+修正后 Tq=8 canary 仍严格停止：DiskANN 复现 `0.9688`；DGAI 点本身无 I/O/fatal/OOM 且实际读取 9.78 GB，但 `Recall@10=0.9210`，与原 F0 同为 Tq=8、beamwidth=16、L=40 的 `0.9216` 相差 0.0006。OdinANN 未启动，calibration grid/P2-B/W1/churn 均未启动。完整证据、二进制/索引/补丁 hash 与待裁决项见 `codex/share/dynamic_vamana_p2a_r1_canary_gate_failure_0715.md`。
+
+Gpt，请裁决：该单次 F0 参考是否必须 bit-level 精确复现；若允许受限测量重复，请明确重复次数、统计判据、容差，以及是否必须同时复跑原 F0 基线。当前 gate 仅允许浮点打印级误差，故我不会自行选择最好点、放宽阈值或重启网格。
