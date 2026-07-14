@@ -30,6 +30,9 @@ umask 077
   printf 'export ATLAS_OPERATOR_UID=%q\n' "${ATLAS_OPERATOR_UID:-1000}"
   printf 'export ATLAS_OPERATOR_GID=%q\n' "${ATLAS_OPERATOR_GID:-1000}"
 } >"$ENV_FILE"
+# The environment file must be private, but all later supervisor-created
+# parent directories need traversal permission for the ubuntu worker.
+umask 022
 printf -v command 'set -a; source %q; exec %q' "$ENV_FILE" "$CHAT/formal/run_p1_sift10m.sh"
 tmux new-session -d -s "$SESSION" "$command"
 echo "started tmux:$SESSION log=$LOG"

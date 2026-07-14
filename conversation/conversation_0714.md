@@ -182,3 +182,6 @@ P1 在 `sift10m-prepare` 已按 gate 停止，邮件的 `exit=1` 正确。根因
 
 **Codex(17:22:00)**：
 `p1r02` 在其 runtime canary 阶段停止，未进入数据准备：root-owned tmux 的目录归属路径把 worker 目录映射为了 `nobody:nogroup`，ubuntu worker 因此无法写入 `resources.json`。这次失败也已保留，未覆盖 `p1r02` 目录。显式 tmux env 文件本身记录的 operator 仍为 `ubuntu/1000/1000`；为消除 namespace/继承数值映射的不确定性，我已改为每次从本机 `ubuntu` 账户解析 UID/GID。用同一 env 的 root-only identity probe 得到 `1000:1000`。下一次将使用独立 `pilot3_sift10m_p1r03`；仍先只跑 runtime canary，成功后才会进入已复用的 source preparation。
+
+**Codex(17:25:00)**：
+`p1r03` 同样仅在 runtime canary 停止，确认了真正的父目录权限根因：launcher 为保护 `p1.tmux.env` 设置 `umask 077`，但未恢复，root supervisor 因此创建了 `0700` 的 `.../canary` 父目录；attempt 目录即使已归 ubuntu，worker 仍不能穿过父目录。修复已将 `077` 严格限制于 env 文件创建，启动 tmux 前恢复 `022`；env 文件仍为 owner-only。`p1r03` 也保持不动。下一次独立 `p1r04` 先验证 runtime canary，再进入 preparation；此前任何 10M source artifact 均不覆盖。
