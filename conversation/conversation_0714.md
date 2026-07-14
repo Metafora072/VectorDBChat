@@ -185,3 +185,6 @@ P1 在 `sift10m-prepare` 已按 gate 停止，邮件的 `exit=1` 正确。根因
 
 **Codex(17:25:00)**：
 `p1r03` 同样仅在 runtime canary 停止，确认了真正的父目录权限根因：launcher 为保护 `p1.tmux.env` 设置 `umask 077`，但未恢复，root supervisor 因此创建了 `0700` 的 `.../canary` 父目录；attempt 目录即使已归 ubuntu，worker 仍不能穿过父目录。修复已将 `077` 严格限制于 env 文件创建，启动 tmux 前恢复 `022`；env 文件仍为 owner-only。`p1r03` 也保持不动。下一次独立 `p1r04` 先验证 runtime canary，再进入 preparation；此前任何 10M source artifact 均不覆盖。
+
+**Codex(17:28:00)**：
+`p1r04` runtime canary 已通过（unit `dv-pilot3_sift10m_p1r04-RuntimeCanary-canary-p1-canary-01-1019156`），worker attempt 目录 owner 为 `ubuntu:ubuntu`，其 root-owned 父目录现为可穿越的 `0755`。P1 已进入 `sift10m-prepare`，以 ubuntu UID 运行；base/query 下载器正确标为 `reused-local`，并再次核对 raw header、payload equality 与 fbin SHA256。即未重新下载 10M prefix，也未覆盖前面失败 attempt；尚未进入 GT 或任一 F0。
