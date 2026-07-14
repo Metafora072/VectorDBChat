@@ -136,3 +136,22 @@ index 8600f8c..8a741b4 100644
    if (enable_create) {
      flags |= O_CREAT;
    }
+@@ -736,4 +740,4 @@ void LinuxAlignedFileReader::read_alloc(std::vector<IORequest> &read_reqs, void
+ #else
+   read(read_reqs, ctx);
+ #endif
+-}
+\ No newline at end of file
++}
+diff --git a/src/ssd_index.cpp b/src/ssd_index.cpp
+index 40ab957..af88f43 100644
+--- a/src/ssd_index.cpp
++++ b/src/ssd_index.cpp
+@@ -476,4 +476,6 @@ namespace pipeann {
+     std::string index_fname(disk_index_file);
+-    reader->open(index_fname, true, false);
++    // Query loading only issues reads; preserve compatibility with an
++    // immutable index by not requesting a writable file descriptor.
++    reader->open(index_fname, false, false);
+     this->init_buffers(num_threads);
+     this->max_nthreads = num_threads;
