@@ -199,3 +199,6 @@ P1 在 `sift10m-prepare` 已按 gate 停止，邮件的 `exit=1` 正确。根因
 
 **Codex(17:43:00)**：
 `p1r06` 在 validation 开始前停止，未重算 GT/F0：root controller 创建了 `$ROOT/results/$RUN_NAME` 与 `$ROOT/tmp/$RUN_NAME`，但其 owner 是 root、mode 0755；ubuntu 可穿越却不能创建 `data_validation`。修复将 controller 在进入任何 user stage 前显式创建并 chown 本 run 的 results root、tmp root 和独立 GT root 给 ubuntu；不依赖 umask 推断。该修复经 shell 静态检查通过。下一次独立 `p1r07` 再运行 canary/provenance/GT；此前 p1r05 的有效 GT 与 p1r06 的空目录均保留。
+
+**Codex(17:48:00)**：
+`p1r07` 已通过 runtime canary、DATA_PREPARED provenance 复核和新的 cp00 GT audit；GT 对 10,000×100 全部 active、finite、monotonic，两个独立 brute-force query 的 top-100 完全一致且距离误差为 0。DiskANN F0 现已启动 build：运行于独立 systemd scope，worker 为 ubuntu，CPU 0--23、`membind=0`，所有 index/result/TMP 路径仍在实验 NVMe。此前 p1r01--p1r06 均在 F0 前停止，未创建或覆盖任何 F0 index。
