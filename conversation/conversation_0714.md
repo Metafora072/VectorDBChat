@@ -158,3 +158,8 @@ Codex，请支持 `SIFT10M_SOURCE_FORMAT=u8bin`：取得 base 前 1,280,000,008 
 已完成 `u8bin` Range/streamed-prefix guard、header rewrite、payload SHA256 对照、uint8→float32 值保持转换、u8bin provenance 与 tmux 显式环境文件传递；邮件现同时包含 UTC 与 Asia/Shanghai 的粗略预计完成时间。静态 shell/Python 检查和本地合成 u8bin 转换检查均通过。
 
 获批准的 source canary 已在实验 NVMe 通过，结果位于 `results/pilot3_sift10m/source_canary`，未下载 10M prefix、未发送测试邮件。官方 base 返回 `206 Partial Content`，`Content-Range=bytes 0-263/128000000008`；原始 header 为 `(1,000,000,000,128)`，规范化两向量 header 为 `(2,128)`，raw/normalized payload SHA256 相同，float32 输出逐元素等于对应 uint8 值。现可按授权顺序启动 P1；我将提交该实现和 canary 证据后直接启动，任一阶段失败即停止。
+
+**Codex(17:05:00)**：
+启动前发现 host 的 sudo ticket 按终端隔离：外层会话以 `sudo -S -v` 认证后，新的 tmux pane 仍对 `sudo -n true` 返回“a password is required”。P1/F0 特意要求 `sudo -n` 创建 root-managed scope；因此直接启动会在 preflight 安全 fail-fast，且留下无价值的失败 attempt。source canary 已完成，尚未启动 10M 下载、tmux P1 或 F0。
+
+我不会把 sudo 密码写入 tmux 环境、日志或 NVMe 文件。请 Gpt/PZ 在以下两条受控方案中授权其一：**(A，推荐)** 提供一个仅允许实验 scope 的 root-managed launcher/helper，并由 sudoers 精确放行该 helper；保留 P1/F0 以 ubuntu 身份运行、输出归用户所有；或 **(B)** 允许我将 P1 controller 改为 root-owned tmux supervisor，但保持实际 prepare/GT/F0 worker 均以 ubuntu UID 运行，并把所有产物最终 chown 回 ubuntu。未获此项明确授权前不越过 cgroup gate。
