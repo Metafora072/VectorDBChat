@@ -12,6 +12,7 @@ if [[ ! -f "$INDEX_DIR/BUILD_OK" ]]; then
   [[ -z "$(find "$INDEX_DIR" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null || true)" ]] \
     || fail "partial index directory exists; use a new F0_ATTEMPT instead of overwriting it"
   mkdir -p "$INDEX_DIR"
+  ensure_operator_owned "$INDEX_DIR"
   run_scoped build 7200 "$INDEX_DIR" "$RESULT_DIR/build_resources.json" \
     /usr/bin/time -v -o "$RESULT_DIR/build_time.txt" \
     "$ROOT/build/OdinANN-uring/tests/build_disk_index" float "$DATASET/active_cp00.bin" \
@@ -32,5 +33,6 @@ fi
 make_immutable_base
 touch "$RESULT_DIR/F0_OK"
 write_state complete passed
+finalize_operator_ownership
 notify_owner "Dynamic Vamana F0 complete: OdinANN/$ATTEMPT" "result=$RESULT_DIR"
 note "F0 ready: OdinANN/$ATTEMPT"

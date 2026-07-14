@@ -16,6 +16,7 @@ for path in "$ROOT" "$RUN_ROOT" "$RESULT_DIR" "$MANIFEST_DIR" "$TMP_WORK"; do
   require_nvme_path "$path"
 done
 mkdir -p "$RUN_ROOT" "$RESULT_DIR" "$MANIFEST_DIR" "$TMP_WORK"
+ensure_operator_owned "$RUN_ROOT" "$RESULT_DIR" "$MANIFEST_DIR" "$TMP_WORK"
 check_numa_binding
 write_environment_manifest
 assert_fresh_attempt
@@ -26,7 +27,7 @@ run_scoped canary 60 "$RUN_ROOT" "$RESULT_DIR/resources.json" \
   --nvme-file "$CANARY_FILE" --hold-seconds 3
 
 unit=$(<"$RESULT_DIR/canary_systemd_unit.txt")
-python3 - "$RESULT_DIR/resources.json" "$CANARY_PAYLOAD" "$CANARY_FILE" "$(id -u)" \
+python3 - "$RESULT_DIR/resources.json" "$CANARY_PAYLOAD" "$CANARY_FILE" "$OPERATOR_UID" \
   "${ATLAS_NVME_MAJMIN:-259:10}" "$unit" "$CPUSET" "$NUMA_NODE" "$RESULT_DIR/canary_validation.json" <<'PY'
 import json, sys
 from pathlib import Path
@@ -74,10 +75,11 @@ PY
 
 # --collect should release the transient scope. A surviving unit is evidence of
 # an incomplete cleanup, not a reason to continue toward P1.
-if sudo -n systemctl show "$unit" --property=LoadState --value 2>/dev/null | grep -qx loaded; then
+if root_managed systemctl show "$unit" --property=LoadState --value 2>/dev/null | grep -qx loaded; then
   fail "transient scope was not collected: $unit"
 fi
 touch "$RESULT_DIR/F0_OK"
 write_state complete passed
+finalize_operator_ownership
 notify_owner "Dynamic Vamana cgroup/NUMA canary complete" "result=$RESULT_DIR unit=$unit"
 note "runtime canary passed: $unit"

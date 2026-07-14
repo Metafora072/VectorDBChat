@@ -20,5 +20,11 @@ if [[ -n "${P1_EXPECTED_FINISH_SHANGHAI:-}" ]]; then
   message+=$'\n'
   message+="expected_finish_shanghai=${P1_EXPECTED_FINISH_SHANGHAI}"
 fi
-python3 /home/ubuntu/.codex/skills/mailsender/scripts/mailsender.py \
-  --subject "$1" --message "$message"
+if (( EUID == 0 )); then
+  runuser -u "${ATLAS_OPERATOR_USER:-ubuntu}" -- \
+    python3 /home/ubuntu/.codex/skills/mailsender/scripts/mailsender.py \
+      --subject "$1" --message "$message"
+else
+  python3 /home/ubuntu/.codex/skills/mailsender/scripts/mailsender.py \
+    --subject "$1" --message "$message"
+fi

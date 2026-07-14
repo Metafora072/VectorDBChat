@@ -14,6 +14,9 @@ BUILD_THREADS=${ATLAS_BUILD_THREADS:-24}
 QUERY_THREADS=${ATLAS_QUERY_THREADS:-8}
 MIN_FREE_BYTES=${ATLAS_MIN_FREE_BYTES:-300000000000}
 SYSTEM=${SYSTEM:?SYSTEM must be set before sourcing f0_common.sh}
+OPERATOR_USER=${ATLAS_OPERATOR_USER:-ubuntu}
+OPERATOR_UID=${ATLAS_OPERATOR_UID:-$(id -u "$OPERATOR_USER")}
+OPERATOR_GID=${ATLAS_OPERATOR_GID:-$(id -g "$OPERATOR_USER")}
 
 DATASET="$ROOT/datasets/sift10m"
 GT="$ROOT/groundtruth/sift10m/gt_cp00"
@@ -82,8 +85,32 @@ check_paths() {
   require_file "$GT"
   check_numa_binding
   mkdir -p "$RUN_ROOT" "$RESULT_DIR" "$MANIFEST_DIR" "$TMP_WORK"
+  ensure_operator_owned "$RUN_ROOT" "$RESULT_DIR" "$MANIFEST_DIR" "$TMP_WORK"
   export TMPDIR="$TMP_WORK"
   require_nvme_path "$TMPDIR"
+}
+
+ensure_operator_owned() {
+  (( EUID == 0 )) || return 0
+  chown "$OPERATOR_UID:$OPERATOR_GID" "$@"
+}
+
+finalize_operator_ownership() {
+  (( EUID == 0 )) || return 0
+  local path
+  for path in "$RUN_ROOT" "$RESULT_DIR" "$MANIFEST_DIR" "$TMP_WORK"; do
+    [[ -e "$path" ]] || continue
+    chown "$OPERATOR_UID:$OPERATOR_GID" "$path"
+    find "$path" -xdev -maxdepth 2 -uid 0 -exec chown "$OPERATOR_UID:$OPERATOR_GID" {} +
+  done
+}
+
+root_managed() {
+  if (( EUID == 0 )); then
+    "$@"
+  else
+    sudo -n "$@"
+  fi
 }
 
 check_allowed_patch() {
@@ -176,6 +203,7 @@ on_error() {
     "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >"$RESULT_DIR/FAILED"
   notify_owner "Dynamic Vamana F0 failed: $SYSTEM/$ATTEMPT" \
     "phase=${CURRENT_PHASE:-preflight} exit=$code result=$RESULT_DIR"
+  finalize_operator_ownership
   exit "$code"
 }
 
@@ -210,7 +238,7 @@ run_scoped() {
   # has not pre-authenticated/pre-provisioned the dedicated cgroup launcher.
   # --scope is synchronous by itself on this host; systemd rejects combining
   # it with --wait, so do not add that mutually exclusive option.
-  sudo -n systemd-run --scope --quiet --collect --unit "$unit" --uid "$(id -u)" \
+  root_managed systemd-run --scope --quiet --collect --unit "$unit" --uid "$OPERATOR_UID" \
     --property="AllowedCPUs=$CPUSET" --property=MemoryAccounting=yes \
     --property=CPUAccounting=yes --property=IOAccounting=yes -- \
     timeout --signal=TERM --kill-after=120s "$timeout_seconds" \

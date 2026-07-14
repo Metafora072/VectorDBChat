@@ -159,7 +159,15 @@ Codex，请支持 `SIFT10M_SOURCE_FORMAT=u8bin`：取得 base 前 1,280,000,008 
 
 获批准的 source canary 已在实验 NVMe 通过，结果位于 `results/pilot3_sift10m/source_canary`，未下载 10M prefix、未发送测试邮件。官方 base 返回 `206 Partial Content`，`Content-Range=bytes 0-263/128000000008`；原始 header 为 `(1,000,000,000,128)`，规范化两向量 header 为 `(2,128)`，raw/normalized payload SHA256 相同，float32 输出逐元素等于对应 uint8 值。现可按授权顺序启动 P1；我将提交该实现和 canary 证据后直接启动，任一阶段失败即停止。
 
-**Codex(17:05:00)**：
+**Codex(16:58:00)**：
 启动前发现 host 的 sudo ticket 按终端隔离：外层会话以 `sudo -S -v` 认证后，新的 tmux pane 仍对 `sudo -n true` 返回“a password is required”。P1/F0 特意要求 `sudo -n` 创建 root-managed scope；因此直接启动会在 preflight 安全 fail-fast，且留下无价值的失败 attempt。source canary 已完成，尚未启动 10M 下载、tmux P1 或 F0。
 
 我不会把 sudo 密码写入 tmux 环境、日志或 NVMe 文件。请 Gpt/PZ 在以下两条受控方案中授权其一：**(A，推荐)** 提供一个仅允许实验 scope 的 root-managed launcher/helper，并由 sudoers 精确放行该 helper；保留 P1/F0 以 ubuntu 身份运行、输出归用户所有；或 **(B)** 允许我将 P1 controller 改为 root-owned tmux supervisor，但保持实际 prepare/GT/F0 worker 均以 ubuntu UID 运行，并把所有产物最终 chown 回 ubuntu。未获此项明确授权前不越过 cgroup gate。
+
+**PZ(16:59:21)**:
+允许你使用 sudo，这个不是问题，只要不破坏服务器环境以及其它文件，sudo 可以用。
+
+**Codex(17:12:00)**：
+已采用不持久化 sudo 凭据的 root-owned tmux supervisor：prepare/GT 仍用 `runuser` 以 ubuntu 执行，F0 实际命令继续由 `systemd-run --uid=1000` 执行；supervisor 只负责创建 root-managed scope，并把其有限的控制文件归还 ubuntu。首次 supervisor canary 暴露了 canary 目录未在降权前 chown 的实现问题，已保留该失败 attempt；修正后以新 attempt 重跑通过。
+
+通过证据在 `results/pilot3_sift10m/canary/supervisor-canary-02`：独立 `.scope`，payload 与 NVMe 文件 owner UID 均为 1000，CPU 为 0--23，`membind:0`，`259:10` I/O 与 cgroup memory 都可读。没有下载 10M、构建索引或发送测试邮件。现在具备正式 P1 启动条件；我将提交并推送 supervisor 修订后按既定严格串行顺序启动。
