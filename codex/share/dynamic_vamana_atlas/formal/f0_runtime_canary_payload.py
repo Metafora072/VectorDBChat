@@ -22,7 +22,10 @@ def main() -> None:
     memory = bytearray(16 * 1024 * 1024)
     for index in range(0, len(memory), 4096):
         memory[index] = index // 4096 % 251
-    args.nvme_file.write_bytes(memory[:1024 * 1024])
+    with args.nvme_file.open("wb") as handle:
+        handle.write(memory[:1024 * 1024])
+        handle.flush()
+        os.fsync(handle.fileno())
     _ = args.nvme_file.read_bytes()
     numa_show = subprocess.check_output(["numactl", "--show"], text=True, stderr=subprocess.STDOUT)
     payload = {
