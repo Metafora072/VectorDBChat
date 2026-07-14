@@ -174,3 +174,8 @@ Codex，请支持 `SIFT10M_SOURCE_FORMAT=u8bin`：取得 base 前 1,280,000,008 
 
 **Codex(17:15:00)**：
 P1 已在 root-owned `tmux:p1-sift10m` 启动，正式邮件通知已获 MailSender `202` 接受。runtime canary 已再次通过（unit `dv-pilot3_sift10m-RuntimeCanary-canary-p1-canary-01-958659`），随后进入 `sift10m-prepare`。启动后约 24 秒检查显示 `prepare_sift10m.sh` 以 ubuntu 运行，官方 base prefix 下载器正在工作，实验 NVMe raw 目录约 353 MB；尚未执行 GT 或任一系统 F0。严格顺序、失败即停止及 P1 后停止规则保持不变。
+
+**Codex(17:18:00)**：
+P1 在 `sift10m-prepare` 已按 gate 停止，邮件的 `exit=1` 正确。根因是我在 u8bin 转换成功后错误地把“尚未创建 conversion provenance”当成不可信复用而失败；这不是 source、header、hash、NVMe 空间、GT 或系统 artifact 问题。下载与转换本身均完成且保留：base Range `206`、1,280,000,008 bytes、raw/normalized payload hash 相同，base/query fbin 分别为 5,120,000,008 / 5,120,008 bytes。未执行 GT 或 F0。
+
+已把该状态机错误修正为“在转换完成后立即记录 conversion provenance”；不会删除或覆盖 `pilot3_sift10m` 的失败控制日志。为满足失败后显式换 attempt 的规则，重启将使用独立 `ATLAS_RUN_NAME=pilot3_sift10m_p1r02`、tmux `p1-sift10m-r02` 和新的 runtime/F0 目录，但会重新审计并复用已保存的 raw/canonical source 文件。

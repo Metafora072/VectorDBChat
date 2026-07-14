@@ -138,11 +138,10 @@ case "$FORMAT" in
   *) fail "unsupported SIFT10M_SOURCE_FORMAT=$FORMAT (expected u8bin or bvecs)" ;;
 esac
 
-if [[ -e "$base_fbin" || -e "$query_fbin" ]]; then
-  [[ -f "$CONVERSION_MANIFEST" ]] || fail "canonical file exists without conversion provenance; refuse reuse"
-  python3 "$CHAT/sift10m_provenance.py" record --manifest "$CONVERSION_MANIFEST" "${provenance_args[@]}" \
-    --base-url "$record_base_url" --query-url "$record_query_url"
-fi
+# Conversion is completed above before this point.  Record its provenance now;
+# interrupted preparations are safely recomputed rather than trusted by name.
+python3 "$CHAT/sift10m_provenance.py" record --manifest "$CONVERSION_MANIFEST" "${provenance_args[@]}" \
+  --base-url "$record_base_url" --query-url "$record_query_url"
 
 if [[ -e "$DATASET/manifest.json" || -n "$(find "$DATASET" -mindepth 1 -maxdepth 1 -print -quit)" ]]; then
   fail "dataset directory is non-empty without DATA_PREPARED_OK; choose a new ATLAS_ROOT or inspect it manually"
