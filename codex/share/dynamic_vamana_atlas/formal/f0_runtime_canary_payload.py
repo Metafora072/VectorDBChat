@@ -13,7 +13,15 @@ from pathlib import Path
 
 def read_memory_events() -> dict[str, int]:
     events: dict[str, int] = {}
-    for line in Path("/sys/fs/cgroup/memory.events").read_text().splitlines():
+    rel = None
+    for line in Path("/proc/self/cgroup").read_text().splitlines():
+        hierarchy, controllers, path = line.split(":", 2)
+        if hierarchy == "0" and controllers == "":
+            rel = path
+            break
+    if rel is None:
+        raise RuntimeError("cannot resolve unified cgroup path")
+    for line in (Path("/sys/fs/cgroup") / rel.lstrip("/") / "memory.events").read_text().splitlines():
         fields = line.split()
         if len(fields) == 2 and fields[1].isdigit():
             events[fields[0]] = int(fields[1])

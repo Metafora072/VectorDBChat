@@ -27,7 +27,7 @@ export P1_EXPECTED_FINISH_SHANGHAI="roughly $(TZ=Asia/Shanghai date -d '+50 minu
 
 P2_PHASE=memory-events-canary
 notify "Dynamic Vamana P2 started: memory-events canary" "run=$RUN_NAME; log=$LOG"
-F0_ATTEMPT=events-canary-01 "$CHAT/formal/f0_runtime_canary.sh"
+F0_ATTEMPT=${P2_CANARY_ATTEMPT:-events-canary-01} "$CHAT/formal/f0_runtime_canary.sh"
 
 P2_PHASE=prepare-query-prefix
 run_as_operator python3 "$CHAT/make_binary_prefix.py" --input "$ROOT/datasets/sift10m/query.bin" \
