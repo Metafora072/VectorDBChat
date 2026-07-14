@@ -16,7 +16,9 @@ umask 077
   printf 'export ATLAS_RUN_NAME=%q\n' "$RUN_NAME"
   printf 'export ATLAS_OPERATOR_USER=%q\n' "${ATLAS_OPERATOR_USER:-ubuntu}"
   printf 'export ATLAS_NOTIFY_EMAIL=%q\n' "${ATLAS_NOTIFY_EMAIL:-1}"
-  printf 'export P2_CANARY_ATTEMPT=%q\n' "${P2_CANARY_ATTEMPT:-events-canary-01}"
+  # events-canary-01 is retained as a known failed diagnostic attempt; reuse
+  # the already-passed event-02 canary when resuming P2.
+  printf 'export P2_CANARY_ATTEMPT=%q\n' "${P2_CANARY_ATTEMPT:-events-canary-02}"
 } >"$ENV_FILE"
 umask 022
 printf -v command 'set -a; source %q; exec %q' "$ENV_FILE" "$CHAT/formal/run_p2_calibration.sh"

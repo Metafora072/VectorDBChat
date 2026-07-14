@@ -18,6 +18,23 @@ fail() { local code=$?; notify "Dynamic Vamana P2 failed" "phase=${P2_PHASE:-pre
 trap fail ERR
 run_as_operator() { runuser -u "$OPERATOR_USER" --preserve-environment -- "$@"; }
 
+# A completed point is immutable evidence: retain it and resume only the
+# missing points.  A failed partial attempt receives a fresh rN directory so
+# its logs cannot be overwritten by the retry.
+point_complete() {
+  local system=$1 l=$2
+  compgen -G "$ROOT/results/$RUN_NAME/raw/$system/tq1/L$l/r*/point.json" >/dev/null
+}
+
+next_repeat() {
+  local system=$1 l=$2 repeat=1
+  while [[ -e "$ROOT/results/$RUN_NAME/raw/$system/tq1/L$l/r$repeat" || \
+           -e "$ROOT/formal/$RUN_NAME/raw/$system/tq1/L$l/r$repeat" ]]; do
+    ((repeat += 1))
+  done
+  printf '%s\n' "$repeat"
+}
+
 export ATLAS_GT_DIR="$ROOT/groundtruth/sift10m/$VALIDATION_RUN"
 export ATLAS_VALIDATION_RUN_NAME=$VALIDATION_RUN
 export ATLAS_NOTIFY_EMAIL=1
@@ -38,7 +55,13 @@ run_as_operator python3 "$CHAT/make_binary_prefix.py" --input "$ROOT/groundtruth
 for system in DiskANN DGAI OdinANN; do
   P2_PHASE="calibration-$system"
   for L in 20 40 80 120 160 240 320; do
-    P2_SYSTEM="$system" P2_L="$L" P2_TQ=1 P2_REPEAT=1 "$CHAT/formal/p2_query_point.sh"
+    if point_complete "$system" "$L"; then
+      echo "resume: retaining completed point system=$system L=$L"
+      continue
+    fi
+    repeat=$(next_repeat "$system" "$L")
+    echo "resume: running missing point system=$system L=$L repeat=$repeat"
+    P2_SYSTEM="$system" P2_L="$L" P2_TQ=1 P2_REPEAT="$repeat" "$CHAT/formal/p2_query_point.sh"
   done
   notify "Dynamic Vamana P2 calibration complete: $system" "run=$RUN_NAME; seven Tq=1 L points complete; log=$LOG"
 done

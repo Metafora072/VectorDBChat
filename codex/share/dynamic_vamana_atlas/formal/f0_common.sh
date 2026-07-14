@@ -144,7 +144,7 @@ check_sources() {
     1f3ef6b49df4293708be6988f73ea22c5a3e99d6fe0e7e03b2390ec42fd99354
   check_allowed_patch "$dgai_repo" a0179b876a4bd453336dc2893b46ae890f680555 \
     "$CHAT/patches/DGAI_mkl_cblas_compat.patch" \
-    cc5a1d06a5902c0d8fcdbe24e1e2c2a770e3070b3c9ad5b426c6d54d00604319
+    b22fd75663129be7e396e503639c588bc8eb6627044eab3039e17b610319bce9
   check_allowed_patch "$odin_repo" 9e7a193dc3f38ad12063bfe50aa5885efb4e8d3b \
     "$CHAT/patches/OdinANN_system_uring_cblas.patch" \
     97af1345dd5ecb3e66e20597caf1aabfd8b4be52f2fcd56f6c11468f7eb41ee7

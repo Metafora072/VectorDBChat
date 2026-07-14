@@ -114,3 +114,25 @@ index a1b29c6..8b86f97 100644
  
      if(gs != nullptr){
        gs->clear();
+diff --git a/src/utils/linux_aligned_file_reader.cpp b/src/utils/linux_aligned_file_reader.cpp
+index 8600f8c..8a741b4 100644
+--- a/src/utils/linux_aligned_file_reader.cpp
++++ b/src/utils/linux_aligned_file_reader.cpp
+@@ -103,5 +103,7 @@ void LinuxAlignedFileReader::open(const std::string &fname, bool enable_writes = false, bool enable_create = false) {
+ void LinuxAlignedFileReader::open(const std::string &fname, bool enable_writes = false, bool enable_create = false) {
+-  int flags = O_DIRECT | O_LARGEFILE | O_RDWR;
++  // Search is read-only: requesting O_RDWR here prevents an immutable index
++  // from being queried even though no write is issued on this path.
++  int flags = O_DIRECT | O_LARGEFILE | (enable_writes ? O_RDWR : O_RDONLY);
+   if (enable_create) {
+     flags |= O_CREAT;
+   }
+@@ -356,5 +356,7 @@ void LinuxAlignedFileReader::open(const std::string &fname, bool enable_writes = false, bool enable_create = false) {
+ void LinuxAlignedFileReader::open(const std::string &fname, bool enable_writes = false, bool enable_create = false) {
+-  int flags = O_DIRECT | O_LARGEFILE | O_RDWR;
++  // Search is read-only: requesting O_RDWR here prevents an immutable index
++  // from being queried even though no write is issued on this path.
++  int flags = O_DIRECT | O_LARGEFILE | (enable_writes ? O_RDWR : O_RDONLY);
+   if (enable_create) {
+     flags |= O_CREAT;
+   }
