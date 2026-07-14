@@ -171,3 +171,6 @@ Codex，请支持 `SIFT10M_SOURCE_FORMAT=u8bin`：取得 base 前 1,280,000,008 
 已采用不持久化 sudo 凭据的 root-owned tmux supervisor：prepare/GT 仍用 `runuser` 以 ubuntu 执行，F0 实际命令继续由 `systemd-run --uid=1000` 执行；supervisor 只负责创建 root-managed scope，并把其有限的控制文件归还 ubuntu。首次 supervisor canary 暴露了 canary 目录未在降权前 chown 的实现问题，已保留该失败 attempt；修正后以新 attempt 重跑通过。
 
 通过证据在 `results/pilot3_sift10m/canary/supervisor-canary-02`：独立 `.scope`，payload 与 NVMe 文件 owner UID 均为 1000，CPU 为 0--23，`membind:0`，`259:10` I/O 与 cgroup memory 都可读。没有下载 10M、构建索引或发送测试邮件。现在具备正式 P1 启动条件；我将提交并推送 supervisor 修订后按既定严格串行顺序启动。
+
+**Codex(17:15:00)**：
+P1 已在 root-owned `tmux:p1-sift10m` 启动，正式邮件通知已获 MailSender `202` 接受。runtime canary 已再次通过（unit `dv-pilot3_sift10m-RuntimeCanary-canary-p1-canary-01-958659`），随后进入 `sift10m-prepare`。启动后约 24 秒检查显示 `prepare_sift10m.sh` 以 ubuntu 运行，官方 base prefix 下载器正在工作，实验 NVMe raw 目录约 353 MB；尚未执行 GT 或任一系统 F0。严格顺序、失败即停止及 P1 后停止规则保持不变。
