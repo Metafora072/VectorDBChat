@@ -17,14 +17,16 @@ QUERY="$ROOT/datasets/sift10m/query.bin"
 GT="$ROOT/groundtruth/sift10m/$VALIDATION_RUN_NAME/gt_cp00"
 
 case "$SYSTEM" in
-  DiskANN) PREFIX="$ROOT/formal/pilot3_sift10m_p1r07/f0/DiskANN/p1r07-01/index/index"; BIN="$ROOT/build/DiskANN/apps/search_disk_index" ;;
-  DGAI) PREFIX="$ROOT/formal/pilot3_sift10m_p1r08/f0/DGAI/p1r08-dgai-01/index/index"; BIN="$ROOT/build/DGAI/tests/search_disk_index" ;;
-  OdinANN) PREFIX="$ROOT/formal/pilot3_sift10m_p1r08/f0/OdinANN/p1r08-odin-01/index/index"; BIN="$ROOT/build/OdinANN-uring/tests/search_disk_index" ;;
+  DiskANN) PREFIX="$ROOT/formal/pilot3_sift10m_p1r07/f0/DiskANN/p1r07-01/index/index"; BIN="$ROOT/build/DiskANN/apps/search_disk_index"; PATCH=DiskANN_system_blas.patch; SOURCE_REPO="$ROOT/src/DiskANN-cpp_main" ;;
+  DGAI) PREFIX="$ROOT/formal/pilot3_sift10m_p1r08/f0/DGAI/p1r08-dgai-01/index/index"; BIN="$ROOT/build/DGAI/tests/search_disk_index"; PATCH=DGAI_mkl_cblas_compat.patch; SOURCE_REPO="$ROOT/src/DGAI-clean" ;;
+  OdinANN) PREFIX="$ROOT/formal/pilot3_sift10m_p1r08/f0/OdinANN/p1r08-odin-01/index/index"; BIN="$ROOT/build/OdinANN-uring/tests/search_disk_index"; PATCH=OdinANN_system_uring_cblas.patch; SOURCE_REPO="$ROOT/src/OdinANN-PipeANN" ;;
   *) fail "unknown P2-A-R1 system: $SYSTEM" ;;
 esac
 
 check_paths; check_sources; write_environment_manifest; enable_error_trap
 require_file "$QUERY"; require_file "$GT"; require_executable "$BIN"
+ARTIFACT_MANIFEST="$ROOT/manifests/$RUN_NAME/artifacts/$SYSTEM.json"
+require_file "$ARTIFACT_MANIFEST"
 [[ ! -e "$RESULT_DIR/point.json" ]] || fail "immutable P2-A-R1 point already exists: $RESULT_DIR"
 {
   echo "schema=dynamic-vamana-p2a-r1-provenance-v1"
@@ -61,6 +63,9 @@ fi
 python3 "$CHAT/parse_p2_point.py" --system "$SYSTEM" --query-threads "$P2A_TQ" --L "$P2A_L" --repeat "$P2A_REPEAT" \
   --log "$RESULT_DIR/driver.log" --timing "$RESULT_DIR/timing.json" --resources "$RESULT_DIR/resources.json" \
   --query-file "$QUERY" --gt-file "$GT" --output "$RESULT_DIR/point.json"
+python3 "$CHAT/freeze_artifact_identity.py" --system "$SYSTEM" --binary "$BIN" --index "${PREFIX}_disk.index" \
+  --query "$QUERY" --groundtruth "$GT" --compat-patch "$CHAT/patches/$PATCH" --source-repo "$SOURCE_REPO" \
+  --output "$ARTIFACT_MANIFEST" --attach-point "$RESULT_DIR/point.json"
 python3 - "$RESULT_DIR/point.json" <<'PY'
 import json, sys
 point = json.load(open(sys.argv[1]))
