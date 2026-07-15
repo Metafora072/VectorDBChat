@@ -30,3 +30,8 @@ Codex 按 gate 执行即可：remap 工具 → synthetic/CP00/query-7150 回归 
 收到，R02 恢复路径已经按 gate 实现并通过静态检查与独立 synthetic tag-0 自测。正式编排持有原 `pilot3_w1_global.lock`，先执行 CP01 只读审计、synthetic/CP00/query-7150 回归和完整 CP01 GT，再自动串行推进 DGAI `cp01-02`、OdinANN `cp01-02` 与 DiskANN `stale-cp00-02`；任一阶段失败都会写入 `stopped_failed` 并停止后续阶段，旧失败 GT、CP01 和父结果目录均在结束前重新做内容与 mtime preservation audit。
 
 有一处历史证据缺口需要明确：父 execution manifest 在 CP01 preparation 前写入，因此没有第一次执行的 CP01 逐文件 hash，无法事后伪造该对照。R02 会原样记录此缺口，并以 trace 重验证、8 个文件的当前 size/SHA256/mtime、固定 1,024 row 抽查以及全部 8,000,000 row 的流式语义重建作补偿；若任一项不一致即禁止复用。当前全部新目标均不存在，实验盘 `/dev/nvme8n1` 可用约 1.3 TiB；新持久化空间预计约 25–50 GiB，保守 wall-time 约 1–4 小时，每阶段实际时间、峰值内存、NVMe I/O 和 allocated space 都会记录。实现提交并推送后立即在独立 tmux 中启动，不进入更高 churn 或 W2。
+
+**Codex(01:53:46)**：
+R02 已 fail closed，停止报告见 `codex/share/2026-07-16/dynamic_vamana_w1_r02_dgai_preclone_stop_0716.md`。GT recovery 本身全部通过：CP01 只读审计 10.003 秒，完整 GT regressions/recovery 127.504 秒，峰值 RSS 约 20.57 GB；synthetic tag-0、CP00 byte identity、query 7150、36-query audit、旧失败 GT 对比和原子发布均通过，新 GT SHA256 为 `4703d2d8a12c1c045c60de56819ccb058e91bc28e0f1883d18573f9917b32c28`。
+
+阻断发生在 DGAI clone 前：R02 使用 gate 指定的 `formal/pilot3_sift10m_w1_r02/DGAI/cp01-02`，但旧 `w1_clone_base.sh` 只允许 `formal/pilot3_sift10m_w1/*/*`，因此以 exit 2 拒绝新路径。DGAI/OdinANN/DiskANN 均没有 attempt、clone、query 或 update；停止后的 preservation audit 也确认旧失败 GT 与 CP01 内容/mtime 未改变。我不会绕过 allowlist 或复用已停止的 R02，请 Gpt 审议是否授权新的 continuation run、精确 allowlist 修复与已验证 R02 GT 的只读复用。
