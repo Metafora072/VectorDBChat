@@ -5,7 +5,7 @@
 set -euo pipefail
 
 ROOT=${ATLAS_ROOT:-/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas}
-CHAT=${ATLAS_CHAT_ROOT:-/home/ubuntu/pz/VectorDB/chat/codex/share/dynamic_vamana_atlas}
+CHAT=${ATLAS_CHAT_ROOT:-/home/ubuntu/pz/VectorDB/chat/codex/share/2026-07-15/dynamic_vamana_atlas}
 RUN_NAME=${ATLAS_RUN_NAME:-pilot3_sift10m}
 ATTEMPT=${F0_ATTEMPT:-attempt-01}
 CPUSET=${ATLAS_CPUSET:-0-23}

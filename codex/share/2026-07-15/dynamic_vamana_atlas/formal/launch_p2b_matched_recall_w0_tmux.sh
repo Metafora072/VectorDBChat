@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT=${ATLAS_ROOT:-/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas}
-CHAT=${ATLAS_CHAT_ROOT:-/home/ubuntu/pz/VectorDB/chat/codex/share/dynamic_vamana_atlas}
+CHAT=${ATLAS_CHAT_ROOT:-/home/ubuntu/pz/VectorDB/chat/codex/share/2026-07-15/dynamic_vamana_atlas}
 RUN_NAME=${ATLAS_RUN_NAME:-pilot3_sift10m_p2b}
 SESSION=${P2B_TMUX_SESSION:-p2b-matched-recall-w0}
 ENV_FILE="$ROOT/results/$RUN_NAME/p2b_controller/p2b.tmux.env"

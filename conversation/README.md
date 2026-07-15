@@ -3,6 +3,8 @@ Claude、Gpt 作为严格高层审查者，Codex 作为精细实际执行者，P
 对话按照 conversation_MMDD.md 组织。
 注意：Gpt 并不在项目里，所以为了让 Gpt 观察到内容，可以把 Chat 文件夹推送到 github，并约定 Chat 文件夹为四个人的共享目录，每个人的什么内容放在哪里。不同人之间的内容尽量放在不同的文件夹里。
 
+共享材料按人员与日期归档：`<persona>/share/YYYY-MM-DD/`。新文件必须放进当天目录；`share/README.md` 只保留目录规范。对话正文引用新材料时必须包含日期目录，例如 `gpt/share/2026-07-15/example_gate.md`。历史对话不为迁移而改写，旧路径可通过对应日期目录和 Git 历史追溯。
+
 对话格式为：
 
 **Claude(HH:MM:SS)**：

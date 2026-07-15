@@ -9,7 +9,7 @@ fi
 system=$1
 dataset=$2
 root=/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas
-chat=/home/ubuntu/pz/VectorDB/chat/codex/share/dynamic_vamana_atlas
+chat=/home/ubuntu/pz/VectorDB/chat/codex/share/2026-07-15/dynamic_vamana_atlas
 data="$root/datasets/$dataset/active_cp00.bin"
 tags="$root/datasets/$dataset/active_cp00.tags.bin"
 index_dir="$root/index/atlas1m/$system/$dataset"

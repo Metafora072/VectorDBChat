@@ -9,7 +9,7 @@ fi
 system=$1
 dataset=$2
 root=/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas
-chat=/home/ubuntu/pz/VectorDB/chat/codex/share/dynamic_vamana_atlas
+chat=/home/ubuntu/pz/VectorDB/chat/codex/share/2026-07-15/dynamic_vamana_atlas
 source_index="$root/index/atlas1m/$system/$dataset"
 attempt=${ATLAS_ATTEMPT:-1}
 trace_kind=${ATLAS_TRACE_KIND:-replace_new}
