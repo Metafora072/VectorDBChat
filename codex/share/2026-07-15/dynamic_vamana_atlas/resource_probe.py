@@ -166,6 +166,7 @@ def main() -> None:
             peak_smaps[key] = max(peak_smaps.get(key, 0), value)
         samples.append(
             {
+                "monotonic_ns": time.monotonic_ns(),
                 "elapsed_ms": round((time.monotonic() - start) * 1000, 3),
                 "process_count": len(pids),
                 "tree_rss_kb": tree_rss_kb,

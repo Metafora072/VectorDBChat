@@ -6,7 +6,10 @@ from pathlib import Path
 import numpy as np
 def main()->None:
  p=argparse.ArgumentParser();p.add_argument('--probes',type=Path,required=True);p.add_argument('--result-tags',type=Path,required=True);p.add_argument('--active-tags',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
- spec=json.loads(a.probes.read_text())['probes'];raw=a.result_tags.read_bytes()
+ payload=json.loads(a.probes.read_text()); spec=payload['probes']; positions=payload.get('positions'); raw=a.result_tags.read_bytes()
+ if positions is not None:
+  if len(positions)!=9 or positions[0]!=0 or positions[-1] <= 0 or positions!=sorted(set(positions)): raise ValueError('invalid deterministic probe positions')
+  if len(spec)!=18: raise ValueError('expected exactly 18 insert/delete probes')
  if len(raw)<8:raise ValueError('short result-ID output')
  nq,k=struct.unpack('<II',raw[:8])
  if nq!=len(spec) or k<1 or len(raw)!=8+nq*k*4:raise ValueError('result-ID output layout mismatch')

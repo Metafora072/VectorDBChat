@@ -12,20 +12,22 @@ case "$system" in
   OdinANN) base="$root/formal/pilot3_sift10m_p1r08/f0/OdinANN/p1r08-odin-01/index";;
   *) echo "unsupported dynamic system: $system" >&2; exit 2;;
 esac
-[[ -f "$base/IMMUTABLE_BASE_OK" ]] || { echo "base is not immutable: $base" >&2; exit 1; }
+base=$(realpath "$base"); [[ -f "$base/IMMUTABLE_BASE_OK" ]] || { echo "base is not immutable: $base" >&2; exit 1; }
+[[ $(findmnt -rn -T "$base" -o MAJ:MIN) == "${ATLAS_NVME_MAJMIN:-259:10}" && $(findmnt -rn -T "$(dirname "$target")" -o MAJ:MIN) == "${ATLAS_NVME_MAJMIN:-259:10}" ]] || { echo 'base/target not on experiment NVMe' >&2; exit 1; }
 [[ ! -e "$target" ]] || { echo "refusing to reuse/overwrite attempt: $target" >&2; exit 1; }
 mkdir -p "$(dirname "$target")"
 tmp="${target}.partial.$$"; trap 'rm -rf "$tmp"' EXIT
 mkdir "$tmp"
-find "$base" -type f -printf '%P\t%s\t' -exec sha256sum {} \; >"${tmp}.base_before.tsv"
+find "$base" -type f -printf '%P\t%s\t' -exec sha256sum {} \; >"$tmp/base_before.tsv"
 if ! cp -a --reflink=always "$base/." "$tmp/index" 2>/dev/null; then
   rm -rf "$tmp/index"; cp -a --reflink=auto "$base/." "$tmp/index"
   clone_mode=copy_or_filesystem_reflink_auto
 else
   clone_mode=reflink
 fi
-find "$base" -type f -printf '%P\t%s\t' -exec sha256sum {} \; >"${tmp}.base_after.tsv"
-cmp -s "${tmp}.base_before.tsv" "${tmp}.base_after.tsv" || { echo 'base hash changed during clone' >&2; exit 1; }
-find "$tmp/index" -type f -printf '%P\t%s\t' -exec sha256sum {} \; >"${tmp}.clone_initial.tsv"
-printf 'schema=dynamic-vamana-w1-clone-v1\nsystem=%s\nclone_mode=%s\nbase=%s\n' "$system" "$clone_mode" "$base" >"${tmp}.clone_manifest.txt"
+find "$base" -type f -printf '%P\t%s\t' -exec sha256sum {} \; >"$tmp/base_after.tsv"
+cmp -s "$tmp/base_before.tsv" "$tmp/base_after.tsv" || { echo 'base hash changed during clone' >&2; exit 1; }
+find "$tmp/index" -type f -printf '%P\t%s\t' -exec sha256sum {} \; >"$tmp/clone_initial.tsv"
+cut -f1,2 "$tmp/base_before.tsv" >"$tmp/base_shape.tsv"; cut -f1,2 "$tmp/clone_initial.tsv" >"$tmp/clone_shape.tsv"; cmp -s "$tmp/base_shape.tsv" "$tmp/clone_shape.tsv" || { echo 'clone/base file manifest mismatch' >&2; exit 1; }
+printf '{"schema":"dynamic-vamana-w1-clone-v2","system":"%s","clone_mode":"%s","base":"%s"}\n' "$system" "$clone_mode" "$base" >"$tmp/clone_manifest.json"
 mv "$tmp" "$target"; trap - EXIT

@@ -76,6 +76,11 @@ def main() -> None:
     p.add_argument("--groundtruth", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--audit-query-ids", default="0,17")
+    p.add_argument("--base-file", type=Path)
+    p.add_argument("--tags-file", type=Path)
+    p.add_argument("--query-file", type=Path)
+    p.add_argument("--truthset-file", type=Path)
+    p.add_argument("--checkpoint", type=int)
     p.add_argument(
         "--checkpoints",
         default="0,5,10,20",
@@ -83,7 +88,10 @@ def main() -> None:
     )
     args = p.parse_args()
 
-    queries = read_float_bin(args.dataset / "query.bin")
+    explicit = (args.base_file, args.tags_file, args.query_file, args.truthset_file, args.checkpoint)
+    if any(value is not None for value in explicit) and not all(value is not None for value in explicit):
+        raise ValueError("explicit GT validation requires base/tags/query/truthset/checkpoint together")
+    queries = read_float_bin(args.query_file if all(explicit) else args.dataset / "query.bin")
     audit_qids = [int(value) for value in args.audit_query_ids.split(",")]
     report: dict[str, object] = {
         "schema": "dynamic-vamana-atlas-gt-validation-v1",
@@ -92,14 +100,14 @@ def main() -> None:
         "checkpoints": [],
     }
 
-    checkpoints = tuple(int(value) for value in args.checkpoints.split(",") if value)
+    checkpoints = (args.checkpoint,) if all(explicit) else tuple(int(value) for value in args.checkpoints.split(",") if value)
     if not checkpoints or any(pct not in (0, 1, 5, 10, 20) for pct in checkpoints):
         raise ValueError("--checkpoints must be a non-empty subset of 0,1,5,10,20")
     for pct in checkpoints:
         cp = f"cp{pct:02d}"
-        base = read_float_bin(args.dataset / f"active_{cp}.bin")
-        tags = read_tags(args.dataset / f"active_{cp}.tags.bin")
-        ids, dists = read_truthset(args.groundtruth / f"gt_{cp}")
+        base = read_float_bin(args.base_file if all(explicit) else args.dataset / f"active_{cp}.bin")
+        tags = read_tags(args.tags_file if all(explicit) else args.dataset / f"active_{cp}.tags.bin")
+        ids, dists = read_truthset(args.truthset_file if all(explicit) else args.groundtruth / f"gt_{cp}")
         if ids.shape != (queries.shape[0], 100):
             raise ValueError(f"unexpected GT shape for {cp}: {ids.shape}")
         if base.shape[0] != tags.size or base.shape[1] != queries.shape[1]:

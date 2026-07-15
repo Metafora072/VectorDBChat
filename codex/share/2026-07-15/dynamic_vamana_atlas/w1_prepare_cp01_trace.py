@@ -69,6 +69,9 @@ def main() -> None:
             except StopIteration as exc: raise ValueError('source trace shorter than 80K') from exc
     deletes = np.asarray([int(r['delete_tag']) for r in rows], dtype='<u4')
     inserts = np.asarray([int(r['insert_tag']) for r in rows], dtype='<u4')
+    source_rows = np.asarray([int(r['insert_source_row']) for r in rows], dtype='<u4')
+    if not np.array_equal(inserts, source_rows):
+        raise ValueError('W1 mapping rule requires insert_source_row == insert_tag')
     if np.unique(deletes).size != a.count or np.unique(inserts).size != a.count: raise ValueError('trace tags are not unique')
     if np.intersect1d(deletes, inserts).size or not np.all(np.isin(deletes, active)) or np.any(np.isin(inserts, active)):
         raise ValueError('trace does not form a replace-new transition')
@@ -82,12 +85,14 @@ def main() -> None:
         w = csv.writer(f, delimiter='\t'); w.writerow(['op_seq','delete_tag','insert_tag','insert_source_row'])
         for i, r in enumerate(rows): w.writerow([i, deletes[i], inserts[i], r.get('insert_source_row', inserts[i])])
     write_bin(out / 'active_cp01.tags.bin', expected)
-    positions = sorted(set([0, a.count - 1] + [round(i * (a.count - 1) / 7) for i in range(1, 7)]))
+    positions = sorted(set([0, a.count - 1] + [round(i * (a.count - 1) / 8) for i in range(1, 8)]))
+    if len(positions) != 9:
+        raise ValueError(f'expected nine deterministic probe positions, got {positions}')
     probes = []
     for pos in positions:
         probes += [{'ordinal': len(probes), 'op_seq': pos, 'kind': 'insert', 'query_tag': int(inserts[pos]), 'expected_tag': int(inserts[pos])},
                    {'ordinal': len(probes) + 1, 'op_seq': pos, 'kind': 'delete', 'query_tag': int(deletes[pos]), 'forbidden_tag': int(deletes[pos])}]
-    (out / 'visibility_probes.json').write_text(json.dumps({'schema':'dynamic-vamana-w1-probes-v1','selection':'first,last,seven equally spaced trace positions','probes':probes}, indent=2) + '\n')
+    (out / 'visibility_probes.json').write_text(json.dumps({'schema':'dynamic-vamana-w1-probes-v2','selection':'first,last,seven internal positions round(i*(N-1)/8), i=1..7','positions':positions,'mapping_rule':'insert_source_row == insert_tag','probes':probes}, indent=2) + '\n')
     if a.materialize_active:
         materialize_vectors(ds / 'full_10m.bin', expected, out / 'active_cp01.bin')
         full_n, dim = header(ds / 'full_10m.bin'); full = np.memmap(ds / 'full_10m.bin', dtype='<f4', mode='r', offset=8, shape=(full_n, dim))
@@ -100,7 +105,7 @@ def main() -> None:
                 'initial_active_set_sha256':sha(ds/'active_cp00.tags.bin'),'delete_tag_sha256':hashlib.sha256(deletes.tobytes()).hexdigest(),
                 'insert_tag_sha256':hashlib.sha256(inserts.tobytes()).hexdigest(),'binary_trace_sha256':sha(trace),
                 'expected_cp01_active_set_sha256':sha(out/'active_cp01.tags.bin'),'expected_active_cardinality':int(expected.size),
-                'source_trace_sha256':sha(ds/'replace_new_trace.csv')}
+                'source_trace_sha256':sha(ds/'replace_new_trace.csv'),'probe_positions':positions,'insert_vector_mapping':'full_corpus[insert_source_row], verified insert_source_row == insert_tag'}
     (out / 'replace_cp01_manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     print(json.dumps(manifest, indent=2))
 
