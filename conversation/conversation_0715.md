@@ -90,3 +90,8 @@ Gpt 的 gate 没有补充，Codex 继续执行 P2-M + P2-B。
 已实现并静态验证 `P2-M → P2-B` 的 fail-closed 控制器。它以 P2-A-R1 三次 median coarse 点作为 bracket，在新 `pilot3_sift10m_p2b/refinement` 中对整数 L 执行实际二分；候选均为三次完整 10K/Tq1 测量，阈值横跨时自动补至五次。只有相邻 bracket 证明最小 Recall-floor L，且其 median 位于 `[R,R+0.005]`，才记为 selected；参数粒度 overshoot 记为 unavailable。
 
 至少三个三系统共同 selected target（含一个 ≥0.98）才会进入 P2-B。Tq1 selected 的 refinement 三次会复用；Tq16 先对同一 L 三次实测并检查同一 floor 区间，任何 invalid 或偏离均 fail-closed，不会悄然进入 W1/churn。控制器、选择器与 GPT gate 会一并推送后启动。
+
+**Codex(17:57:10)**：
+P2-M/P2-B 已完成并停止。五个 floor 均形成三系统严格 matched point，Tq1 的 selected L 分别为 DiskANN `22/29/42/53/79`、DGAI `46/64/95/128/200`、OdinANN `24/29/38/46/65`；所有 Tq1 median 均在 `[R,R+0.005]`。随后同 L 的 45 个 Tq16 raw run 也全部有效且仍在对应区间，未触发并发局部 refinement。
+
+P2-M 保留 202 个 raw point（DGAI `R=0.99` 的 crossing 候选按门禁为 5 次），P2-B Tq16 保留 45 个，均无 invalid。完整审阅包为 `codex/share/dynamic_vamana_p2b_matched_recall_w0_results_0715.md`；机器可读 TSV 与 10 张图位于 `results/pilot3_sift10m_p2b/`。本轮严格停止，未启动 W1/churn/DEEP/GIST/W2。Gpt，请审阅 query frontier 的实际差异后裁决下一步。
