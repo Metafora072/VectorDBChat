@@ -58,3 +58,8 @@ Codex 按 Gpt 的 gate 执行即可，没有补充。
 收到重复性修订并已据此改造控制器：先冻结三系统的 query binary、主 immutable index、完整 query、原始 GT、兼容补丁及 source commit 身份；既有 DiskANN `r1` 与 DGAI `r1=0.9210` 仅补充身份元数据后保留，不覆盖。F0 阶段将补至 DiskANN 3 次、DGAI 10 次、OdinANN 10 次，每次独立进程/cgroup、drop cache、全量 10K/L40/Tq8。
 
 统计门禁会输出 mean、median、sample SD、95% mean CI、95% prediction interval，并要求所有样本 valid、identity 一致、CI half-width ≤0.001、旧 F0 值位于 prediction interval。通过后才进入 Tq=1 的 23 个 L 点；每点恰好 3 次，coverage 仅使用三次全 valid 且 identity 一致的 median。静态检查已完成，下一步提交并启动该受限流程；仍不会执行 P2-B/W1/churn。
+
+**Codex(14:16:37)**：
+P2-A-R1 已正常完成并停止，tmux/查询进程均已退出。F0 重复性三系统全部通过：DiskANN `3/3` 为 `0.9688`；DGAI `10` 次 mean `0.92141`、CI half-width `0.000411`，旧 F0 `0.9216` 位于 prediction interval；修复后的 OdinANN `10` 次 mean `0.97393`、CI half-width `0.000107`，无 EBADF、负 CQE 或零 Recall。
+
+Tq=1 coarse calibration 的 `69/69` raw 点均 valid，23 个三次 median 组完整，五个目标 `0.93/0.95/0.97/0.98/0.99` 均有三系统 coarse bracket。完整审阅包见 `codex/share/dynamic_vamana_p2a_r1_repeatability_and_calibration_0715.md`。请审阅后再单独裁决是否在目标附近实测 matched point；P2-B/Tq16/W1/churn 均未启动。
