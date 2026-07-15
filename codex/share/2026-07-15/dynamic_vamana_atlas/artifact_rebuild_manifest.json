@@ -1,21 +1,107 @@
 {
-  "schema": "dynamic-vamana-w1-artifact-rebuild-v1",
+  "schema": "dynamic-vamana-w1-artifact-rebuild-v2",
   "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
   "cmake": "3.28.3",
+  "source_date_epoch": 1721001600,
+  "canonical_flags": [
+    "-ffile-prefix-map=<clean-source>=/usr/src/dynamic-vamana/<system>",
+    "-fdebug-prefix-map=<clean-source>=/usr/src/dynamic-vamana/<system>",
+    "-fmacro-prefix-map=<clean-source>=/usr/src/dynamic-vamana/<system>",
+    "-ffile-prefix-map=<clean-build>=/usr/src/dynamic-vamana-build/<system>",
+    "-fdebug-prefix-map=<clean-build>=/usr/src/dynamic-vamana-build/<system>",
+    "-fmacro-prefix-map=<clean-build>=/usr/src/dynamic-vamana-build/<system>",
+    "-DCMAKE_SKIP_RPATH=ON",
+    "CCACHE_DISABLE=1",
+    "TZ=UTC",
+    "LC_ALL=C"
+  ],
   "systems": {
     "DGAI": {
       "upstream_commit": "a0179b876a4bd453336dc2893b46ae890f680555",
-      "patch_order": ["DGAI_mkl_cblas_compat.patch", "DGAI_w1_result_ids.patch", "DGAI_w1_canary_driver.patch", "DGAI_w1_canary_cmake.patch"],
-      "cmake": ["-DCMAKE_BUILD_TYPE=Release", "-DBLAS_LIBRARIES=/usr/lib/x86_64-linux-gnu/libblas.so.3"],
-      "binary_sha256": {"w1_canary": "0633b456ec96dca5d0e0778eeeb9dbe7cf9ef3a8edf72e7cb614d5d6cd1172bd", "search_disk_index": "3f082994cd535b2757692dd28c495449ddec656c001a97c78adc04ef85e73c90"}
+      "patch_order": [
+        "DGAI_mkl_cblas_compat.patch",
+        "DGAI_w1_result_ids.patch",
+        "DGAI_w1_canary_driver.patch",
+        "DGAI_w1_canary_cmake.patch"
+      ],
+      "patch_sha256": {
+        "DGAI_mkl_cblas_compat.patch": "049677e181bec2990fe985cec0c503c014fd2af5f383dc9fcc004c0fe6004cfd",
+        "DGAI_w1_result_ids.patch": "f3ea75505285e82f5fad234da0c27bc20fdef5281ade18adbab4c7236dc5fbf8",
+        "DGAI_w1_canary_driver.patch": "c9a90b31a4d51ce80dbcff70ce4c321238237d7c82d5dc380f0fb7a6b73ad0e3",
+        "DGAI_w1_canary_cmake.patch": "3d4c20a42ee868acabac28cb8122ff822a2e1ab027206b6ac5a85e43a151a748"
+      },
+      "cmake": ["-DCMAKE_BUILD_TYPE=Release", "-DCMAKE_SKIP_RPATH=ON", "-DBLAS_LIBRARIES=/usr/lib/x86_64-linux-gnu/libblas.so.3"],
+      "io_engine": "aio",
+      "canonical_install": {
+        "w1_canary": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/build/w1-canonical-v4/install/DGAI/w1_canary",
+        "search_disk_index": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/build/w1-canonical-v4/install/DGAI/search_disk_index"
+      },
+      "binary_sha256": {
+        "w1_canary": "6ba762d385492a867d7c1f2c9383a6f662fd00d107b66038e5eb8538c701adc9",
+        "search_disk_index": "778a02b929adfd138ca90caa05c5876d7d683290743d061b5d6777710d01ed5e"
+      },
+      "identity_evidence": {
+        "cmake_log": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/build/w1-canonical-v4/evidence/run1/DGAI/cmake.log",
+        "compile_commands": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/build/w1-canonical-v4/evidence/run1/DGAI/compile_commands.json"
+      },
+      "formal_base": {
+        "realpath": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/formal/pilot3_sift10m_p1r08/f0/DGAI/p1r08-dgai-01/index",
+        "manifest_sha256": "980ce1c3ed6eb5bef4a595c74dab641b5cd5da5a606786c753d3d00cd5ddcaa5"
+      }
     },
     "OdinANN": {
       "upstream_commit": "9e7a193dc3f38ad12063bfe50aa5885efb4e8d3b",
-      "patch_order": ["OdinANN_system_uring_cblas.patch", "OdinANN_w1_result_ids.patch", "OdinANN_w1_canary_driver.patch", "OdinANN_w1_canary_cmake.patch"],
-      "cmake": ["-DCMAKE_BUILD_TYPE=Release", "-DIO_ENGINE=aio", "-DBLAS_LIBRARIES=/usr/lib/x86_64-linux-gnu/libblas.so.3"],
-      "binary_sha256": {"w1_canary": "22603731af0dce8b84ff67302d1881a2bf8ba39dedbe8d415d2e52657b746f24", "search_disk_index": "414fee1f68829b7b2443c690a627b19e034d9cf1ccea93cbfa04e049f57ae65c"}
+      "patch_order": [
+        "OdinANN_system_uring_cblas.patch",
+        "OdinANN_uring_runtime_compat.patch",
+        "OdinANN_uring_strict.patch",
+        "OdinANN_w1_result_ids.patch",
+        "OdinANN_w1_canary_driver.patch",
+        "OdinANN_w1_canary_cmake.patch"
+      ],
+      "patch_sha256": {
+        "OdinANN_system_uring_cblas.patch": "6a716905d2644aaaafc1c2ad18242b5a6d73e80162e13ad88b65bccb1eba3e27",
+        "OdinANN_uring_runtime_compat.patch": "2bdab2b928c32c81a9062fd9b798bf9e08ddb35b30f0241ca117867c8a7c964e",
+        "OdinANN_uring_strict.patch": "25902f5f24aac492c51e7280a0856f1ace6181d514e05c1c8f3952a64ea06f3f",
+        "OdinANN_w1_result_ids.patch": "cf3da673226fdf1981ade9b5e6f9aba13f6fc1edf8c5cfa3b711b4802ba90fbe",
+        "OdinANN_w1_canary_driver.patch": "1bd90c57c06bf7c6cfb3b7a230353c5e1cfb008afb4ada3c46e87cf933c29b25",
+        "OdinANN_w1_canary_cmake.patch": "e4af7eda193f17b394f76108e62a297f35c619683c2c9acff73c1ffebc47e931"
+      },
+      "cmake": ["-DCMAKE_BUILD_TYPE=Release", "-DCMAKE_SKIP_RPATH=ON", "-DIO_ENGINE=uring", "-DBLAS_LIBRARIES=/usr/lib/x86_64-linux-gnu/libblas.so.3"],
+      "io_engine": "uring",
+      "canonical_install": {
+        "w1_canary": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/build/w1-canonical-v4/install/OdinANN/w1_canary",
+        "search_disk_index": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/build/w1-canonical-v4/install/OdinANN/search_disk_index"
+      },
+      "binary_sha256": {
+        "w1_canary": "647ddb05495bc767881f5354fb09684cdedf7f4718cd6ccdb0743e5ae6443eb8",
+        "search_disk_index": "36c17a96266998aee3505619a8b8c7260898b7565faaa4d5cf0237ad91c5082c"
+      },
+      "identity_evidence": {
+        "cmake_log": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/build/w1-canonical-v4/evidence/run1/OdinANN/cmake.log",
+        "compile_commands": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/build/w1-canonical-v4/evidence/run1/OdinANN/compile_commands.json",
+        "w1_canary_ldd": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/build/w1-canonical-v4/evidence/run1/OdinANN/w1_canary.ldd",
+        "search_disk_index_ldd": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/build/w1-canonical-v4/evidence/run1/OdinANN/search_disk_index.ldd"
+      },
+      "formal_base": {
+        "realpath": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/formal/pilot3_sift10m_p1r08/f0/OdinANN/p1r08-odin-01/index",
+        "manifest_sha256": "50d5aacb142bf352c0fb63920cc85573fdced5dccf9d7c5dd16586442b3a0a4e"
+      }
     }
   },
-  "linked_libraries": {"DGAI": ["libaio", "libblas", "libgomp"], "OdinANN": ["libtcmalloc.so.9.9.5", "libaio", "libblas", "libgomp"]},
-  "clean_checkout": {"git_apply_check": "pass for every listed patch", "target_build": "pass for w1_canary and search_disk_index", "byte_identical_binary_hash": "pending canonical debug-prefix-map rebuild; ordinary Release binaries embed build/source paths"}
+  "clean_checkout": {
+    "run1": "pass",
+    "run2": "pass",
+    "byte_identical_all_four_targets": true,
+    "result": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/build/w1-canonical-v4/rebuild_result.json"
+  },
+  "formal_inputs": {
+    "full_corpus": {"realpath": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift10m/full_10m.bin", "size_bytes": 5120000008, "sha256": "91846887bbede67c4f9ddb0c47617b44e2efa32007cb32f24262d0033a55784b"},
+    "query": {"realpath": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift10m/query.bin", "size_bytes": 5120008, "sha256": "a2cb2d182b19db70240ebd4bce3b75b8994ea9927a112d4bf0e955815bdac548"},
+    "active_cp00_vectors": {"realpath": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift10m/active_cp00.bin", "size_bytes": 4096000008, "sha256": "fe8d1f9fdd4a662f56f5ed3ad2cffb78420361a8aba311f68c394e8aa7b1019e"},
+    "active_cp00_tags": {"realpath": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift10m/active_cp00.tags.bin", "size_bytes": 32000008, "sha256": "fb9d35876d863963f6809e827e38c86d418c7e56c5beef7e49d9fe2614eacb99"},
+    "gt_cp00": {"realpath": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/groundtruth/sift10m/pilot3_sift10m_p1r07/gt_cp00", "size_bytes": 8000008, "sha256": "87e2656a8cd720180170fd4c111171d9169f8202d58901541727a392c64b7d6c"},
+    "source_trace": {"realpath": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift10m/replace_new_trace.csv", "size_bytes": 69867236, "sha256": "bcc24d0328cfb404a14ad50023e81077b0ed06c76f5aeec56761931f02e33d05"},
+    "compute_groundtruth": {"realpath": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/build/DiskANN/apps/utils/compute_groundtruth", "sha256": "8b5769329a793dc9a6b2a4c89f5093f270d20fc567e33bc22b35a47390359663"}
+  }
 }

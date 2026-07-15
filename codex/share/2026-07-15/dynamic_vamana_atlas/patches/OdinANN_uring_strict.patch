@@ -1,0 +1,19 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index aec997a..b3a9e21 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -70,10 +70,12 @@ try_run(
+ 	SOURCES "${PROJECT_SOURCE_DIR}/tests/test_uring.cpp"
+ )
+ 
+-if(IO_ENGINE STREQUAL "aio" OR NOT PIPEANN_IO_URING_COMPILE_RESULT OR NOT "${PIPEANN_IO_URING_RUN_RESULT}" STREQUAL "0")
+-	# AIO is specified or uring is unavailable.
++if(IO_ENGINE STREQUAL "aio")
+ 	set(IO_ENGINE "aio" CACHE STRING "I/O engine: uring, aio, or spdk" FORCE)
+ 	message(STATUS "Using AIO for asynchronous I/O, compatible but slower.")
++elseif(NOT PIPEANN_IO_URING_COMPILE_RESULT OR NOT "${PIPEANN_IO_URING_RUN_RESULT}" STREQUAL "0")
++	message(FATAL_ERROR
++		"IO_ENGINE=${IO_ENGINE} requested but the io_uring runtime check failed; refusing AIO fallback")
+ else()
+ 	if(IO_ENGINE STREQUAL "spdk")
+ 		include_directories(${PROJECT_SOURCE_DIR}/third_party/liburing/src/include)

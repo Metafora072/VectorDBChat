@@ -8,6 +8,7 @@ import json
 import os
 import subprocess
 import time
+import statistics
 from pathlib import Path
 
 
@@ -145,25 +146,22 @@ def main() -> None:
     peak_tree_rss_kb = 0
     peak_tree_io_bytes = {"read_bytes": 0, "write_bytes": 0}
     peak_smaps: dict[str, int] = {}
+    interval_seconds = args.interval_ms / 1000
+    next_sample = time.monotonic()
     while proc.poll() is None:
         pids = process_tree(proc.pid)
         tree_rss_kb = 0
         tree_io_bytes = {"read_bytes": 0, "write_bytes": 0}
-        aggregate: dict[str, int] = {}
         for pid in pids:
             status = read_kv(Path(f"/proc/{pid}/status"))
             tree_rss_kb += status.get("VmRSS", 0)
             proc_io = read_proc_io(Path(f"/proc/{pid}/io"))
             for key in tree_io_bytes:
                 tree_io_bytes[key] += proc_io.get(key, 0)
-            smaps = read_kv(Path(f"/proc/{pid}/smaps_rollup"))
-            for key, value in smaps.items():
-                aggregate[key] = aggregate.get(key, 0) + value
         peak_tree_rss_kb = max(peak_tree_rss_kb, tree_rss_kb)
         for key, value in tree_io_bytes.items():
             peak_tree_io_bytes[key] = max(peak_tree_io_bytes[key], value)
-        for key, value in aggregate.items():
-            peak_smaps[key] = max(peak_smaps.get(key, 0), value)
+        io_stat = read_cgroup_io(cg / "io.stat") if cg else []
         samples.append(
             {
                 "monotonic_ns": time.monotonic_ns(),
@@ -171,15 +169,16 @@ def main() -> None:
                 "process_count": len(pids),
                 "tree_rss_kb": tree_rss_kb,
                 "process_tree_io_bytes": tree_io_bytes,
-                "smaps_rollup_kb": aggregate,
+                "smaps_rollup_kb": {},
                 "cgroup_memory_current": read_int(cg / "memory.current") if cg else None,
                 "cgroup_memory_peak": read_int(cg / "memory.peak") if cg else None,
                 "cgroup_memory_events": read_kv(cg / "memory.events") if cg else {},
-                "cgroup_io_stat": read_cgroup_io(cg / "io.stat") if cg else [],
-                "index_space": directory_space(args.space_root),
+                "cgroup_io_stat": io_stat,
+                "index_space": None,
             }
         )
-        time.sleep(args.interval_ms / 1000)
+        next_sample += interval_seconds
+        time.sleep(max(0, next_sample - time.monotonic()))
     returncode = proc.wait()
     # Keep a post-command cgroup sample.  Phase collectors need the first
     # sample after a terminal marker instead of a nearest pre-exit sample.
@@ -199,9 +198,18 @@ def main() -> None:
         }
     )
     meminfo_after = read_kv(Path("/proc/meminfo"))
+    gaps_ms = [
+        (right["monotonic_ns"] - left["monotonic_ns"]) / 1_000_000
+        for left, right in zip(samples, samples[1:])
+    ]
     report = {
         "schema": "dynamic-vamana-atlas-resource-probe-v1",
         "sampling_interval_ms": args.interval_ms,
+        "requested_sampling_interval_ms": args.interval_ms,
+        "observed_sampling_period_ms": {
+            "median": statistics.median(gaps_ms) if gaps_ms else None,
+            "maximum": max(gaps_ms) if gaps_ms else None,
+        },
         "command": command,
         "returncode": returncode,
         "elapsed_seconds": time.monotonic() - start,

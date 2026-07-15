@@ -1,0 +1,31 @@
+diff --git a/tests/test_uring.cpp b/tests/test_uring.cpp
+index f1428d7..03ec024 100644
+--- a/tests/test_uring.cpp
++++ b/tests/test_uring.cpp
+@@ -32,9 +32,5 @@ static int setup_ring(unsigned flags) {
+ }
+ 
+ int main() {
+-  int ret = setup_ring(0);
+-  if (ret != 0) {
+-    return ret;
+-  }
+-  return setup_ring(IORING_SETUP_SQPOLL);
++  return setup_ring(0);
+ }
+diff --git a/src/search/pipe_search_common.h b/src/search/pipe_search_common.h
+index 10c299a..48839a9 100644
+--- a/src/search/pipe_search_common.h
++++ b/src/search/pipe_search_common.h
+@@ -37,11 +37,7 @@ namespace diskann {
+                                              std::vector<Neighbor> &full_retset, QueryStats *stats,
+                                              InsertContext *insert_ctx, float range_partial, NodeOut *node_out) {
+     QueryBuffer *query_buf = pop_query_buf(query1);
+-#ifdef USE_URING
+-    void *ctx = reader->get_ctx(IORING_SETUP_SQPOLL);
+-#else
+     void *ctx = reader->get_ctx();
+-#endif
+ 
+     if (beam_width > MAX_N_SECTOR_READS) {
+       LOG(ERROR) << "Beamwidth can not be higher than MAX_N_SECTOR_READS";
