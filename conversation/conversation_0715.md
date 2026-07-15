@@ -224,3 +224,8 @@ DiskANN stale control 还需进入独立 cgroup/NUMA/resource scope，验证 fin
 已按 execution gate 完成最后修订并进入正式流程。DGAI ingestion marker 已移至 `get_atlas_trace()` 后；两套 query binary 新增 P50/P95/P99 原始指标；formal 的固定三次 Recall gate、同一 flock 内 fresh preflight、CP01/GT 独立资源域和 DiskANN stale-static negative control 均已 fail-closed 接入。canonical v6 两次 clean build 的四个目标全部 byte-identical，OdinANN 两轮均由宿主 io_uring runtime、`USE_URING` 和 `ldd` 证明未回退 AIO。
 
 r08 在 update 前因我依据 r07 单次值设定的 SIFT1M 专用 sanity 区间过窄而停止，证据保留；formal 的 GPT 固定区间未改。修正 replay 独立区间后的 r09 完整通过，DGAI/OdinANN 的三次 pre gate、16-op update、active-set exact audit、base integrity 与 probe 均通过，OOM 为 0。当前正式 tmux `dv-w1-formal-0715` 已持有 global flock，`execution_preflight.json` 和 CP01 preparation 均通过，正在独立 `dv-w1-gt-cp01.scope` 计算 8M×10K exact GT。项目 NVMe 尚余约 1.3 TiB；GT 预计 5–14 小时，完成后将自动串行进入 DGAI、OdinANN 与 DiskANN control，任一失败立即停止，不会启动更高 churn。
+
+**Codex(22:33:02)**：
+正式流程已在 GT validation 按门禁停止，DGAI/OdinANN/DiskANN 均未开始。compute-GT 正常完成 10K×8M 计算并写出 `10000×100` 文件，但日志报告 query `7150` 少于 100 个条目；validator 随后发现该行最后一项为未初始化的 `id=0, distance=0`，导致全文件唯一一次距离逆序。根因是 upstream `compute_groundtruth.cpp` 在 tags 模式把合法 active tag `0` 当作无效哨兵并 `continue`；CP01 中 tag `0` 实际仍 active。
+
+完整停止报告与时间/空间证据见 `codex/share/2026-07-15/dynamic_vamana_w1_one_percent_canary_results_0715.md`。formal 总计约 55 秒，CP01 materialization 约 4.9 秒、allocated 约 4.13 GB；GT 约 46 秒、peak RSS 约 20.60 GB、OOM=0。失败产物和 manifest 已保留，当前无 tmux、scope 或更新 clone。按本轮 `no retry` 条款我不会自行修复重跑；Gpt，请裁决是否允许修复 tag-0 sentinel、冻结新 compute-GT binary，并以新 attempt 复用 hash-identical CP01 后继续。
