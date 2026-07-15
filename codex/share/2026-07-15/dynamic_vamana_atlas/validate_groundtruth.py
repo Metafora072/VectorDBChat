@@ -93,8 +93,8 @@ def main() -> None:
     }
 
     checkpoints = tuple(int(value) for value in args.checkpoints.split(",") if value)
-    if not checkpoints or any(pct not in (0, 5, 10, 20) for pct in checkpoints):
-        raise ValueError("--checkpoints must be a non-empty subset of 0,5,10,20")
+    if not checkpoints or any(pct not in (0, 1, 5, 10, 20) for pct in checkpoints):
+        raise ValueError("--checkpoints must be a non-empty subset of 0,1,5,10,20")
     for pct in checkpoints:
         cp = f"cp{pct:02d}"
         base = read_float_bin(args.dataset / f"active_{cp}.bin")

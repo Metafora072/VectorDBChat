@@ -1,0 +1,32 @@
+diff --git a/tests/search_disk_index.cpp b/tests/search_disk_index.cpp
+--- a/tests/search_disk_index.cpp
++++ b/tests/search_disk_index.cpp
+@@ -3,7 +3,8 @@
+ #include <ssd_index.h>
+ #include <string.h>
+ #include <time.h>
+ #include <iostream>
++#include <fstream>
+ 
+ #include "log.h"
+ #include "timer.h"
+@@ -214,5 +215,19 @@ int search_disk_index(int argc, char **argv) {
+ 
+     pipeann::convert_types<uint32_t, uint32_t>(query_result_tags_32.data(), query_result_tags[test_id].data(),
+                                                (size_t) query_num, (size_t) recall_at);
++    // W1 visibility probes serialize exactly the tags returned by this
++    // unchanged search path; traversal, candidates, distances and reranking
++    // are not altered.
++    if (output && test_id == 0) {
++      const char *result_ids_path = std::getenv("ATLAS_RESULT_IDS_PATH");
++      if (result_ids_path != nullptr && result_ids_path[0] != '\0') {
++        std::ofstream result_ids(result_ids_path, std::ios::binary | std::ios::trunc);
++        const uint32_t shape[2] = {static_cast<uint32_t>(query_num), static_cast<uint32_t>(recall_at)};
++        result_ids.write(reinterpret_cast<const char *>(shape), sizeof(shape));
++        result_ids.write(reinterpret_cast<const char *>(query_result_tags[test_id].data()),
++                         query_result_tags[test_id].size() * sizeof(uint32_t));
++        if (!result_ids) throw std::runtime_error("failed writing ATLAS_RESULT_IDS_PATH");
++      }
++    }
+ 
+     float mean_latency = (float) pipeann::get_mean_stats(
