@@ -1,0 +1,53 @@
+diff --git a/tests/w1_canary.cpp b/tests/w1_canary.cpp
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/tests/w1_canary.cpp
+@@ -0,0 +1,47 @@
++// W1 infrastructure driver.  Existing insert/delete/save APIs are retained.
++#define main odin_legacy_overall_performance_main
++#include "overall_performance.cpp"
++#undef main
++
++#include <cstdlib>
++#include <fstream>
++
++namespace {
++uint64_t mono_ns() { return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count(); }
++void mark(const char *name) {
++  const char *path = std::getenv("ATLAS_W1_MARKERS"); if (!path || !*path) throw std::runtime_error("ATLAS_W1_MARKERS is required");
++  std::ofstream out(path, std::ios::app); if (!out) throw std::runtime_error("cannot open marker file"); out << "{\"marker\":\"" << name << "\",\"monotonic_ns\":" << mono_ns() << "}\n";
++  if (!out) throw std::runtime_error("cannot write marker");
++}
++template <typename T>
++void write_probe(DynamicIndex<T> &index, const std::string &query_file, const std::string &output, uint64_t L) {
++  T *query = nullptr; size_t nq = 0, dim = 0; pipeann::load_bin<T>(query_file, query, nq, dim); constexpr uint32_t k = 10;
++  std::vector<uint32_t> tags(nq * k, std::numeric_limits<uint32_t>::max()); std::vector<float> dists(nq * k, std::numeric_limits<float>::max());
++#pragma omp parallel for schedule(dynamic) num_threads(NUM_SEARCH_THREADS)
++  for (int64_t i = 0; i < static_cast<int64_t>(nq); ++i) index.search(query + i * dim, k, L, tags.data() + i * k, dists.data() + i * k);
++  std::ofstream out(output, std::ios::binary | std::ios::trunc); uint32_t shape[2] = {static_cast<uint32_t>(nq), k};
++  out.write(reinterpret_cast<const char *>(shape), sizeof(shape)); out.write(reinterpret_cast<const char *>(tags.data()), tags.size() * sizeof(uint32_t));
++  if (!out) throw std::runtime_error("failed writing probe result IDs");
++  delete[] query;
++}
++template <typename T>
++void probe(const std::string &prefix, const std::string &query, const std::string &output) {
++  pipeann::IndexBuildParameters params; params.L = 128; DynamicIndex<T> index(128, pipeann::Metric::L2, &params); index.load(prefix, true); index.omp_set_num_threads(NUM_SEARCH_THREADS); write_probe(index, query, output, 64);
++}
++template <typename T>
++void run(const std::string &data, const std::string &prefix, const std::string &trace, const std::string &probe_query, const std::string &online_out) {
++  pipeann::IndexBuildParameters params; params.L = 128; DynamicIndex<T> index(128, pipeann::Metric::L2, &params); mark("clone_ready"); index.load(prefix, true); index.omp_set_num_threads(NUM_SEARCH_THREADS); mark("index_loaded");
++  std::vector<T> vectors; std::vector<unsigned> deletes, inserts; get_atlas_trace<T, unsigned>(data, trace.c_str(), deletes, inserts, vectors); mark("ingest_begin");
++  auto inserted = std::async(std::launch::async, insertion_kernel<T, unsigned>, vectors.data(), std::ref(index), std::ref(inserts), size_t(128));
++  auto deleted = std::async(std::launch::async, deletion_kernel<T, unsigned>, vectors.data(), std::ref(index), std::ref(deletes), size_t(128));
++  inserted.get(); deleted.get(); mark("ingest_end"); mark("online_visibility_probe_begin"); write_probe(index, probe_query, online_out, 64); mark("online_visibility_verified");
++  mark("publish_begin"); if (!index.save(prefix, NUM_MERGE_THREADS)) throw std::runtime_error("DynamicIndex::save failed"); mark("publish_end");
++}
++}
++int main(int argc, char **argv) {
++  try {
++    if (argc == 5 && std::string(argv[1]) == "probe") { probe<float>(argv[2], argv[3], argv[4]); return 0; }
++    if (argc == 7 && std::string(argv[1]) == "run") { run<float>(argv[2], argv[3], argv[4], argv[5], argv[6]); return 0; }
++    std::cerr << "usage: w1_canary run DATA PREFIX TRACE PROBES ONLINE_RESULT | w1_canary probe PREFIX PROBES RESULT\n"; return 2;
++  } catch (const std::exception &e) { std::cerr << "w1_canary fatal: " << e.what() << '\n'; return 1; }
++}

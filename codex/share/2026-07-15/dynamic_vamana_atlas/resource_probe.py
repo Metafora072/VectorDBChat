@@ -181,9 +181,27 @@ def main() -> None:
         )
         time.sleep(args.interval_ms / 1000)
     returncode = proc.wait()
+    # Keep a post-command cgroup sample.  Phase collectors need the first
+    # sample after a terminal marker instead of a nearest pre-exit sample.
+    samples.append(
+        {
+            "monotonic_ns": time.monotonic_ns(),
+            "elapsed_ms": round((time.monotonic() - start) * 1000, 3),
+            "process_count": 0,
+            "tree_rss_kb": 0,
+            "process_tree_io_bytes": {},
+            "smaps_rollup_kb": {},
+            "cgroup_memory_current": read_int(cg / "memory.current") if cg else None,
+            "cgroup_memory_peak": read_int(cg / "memory.peak") if cg else None,
+            "cgroup_memory_events": read_kv(cg / "memory.events") if cg else {},
+            "cgroup_io_stat": read_cgroup_io(cg / "io.stat") if cg else [],
+            "index_space": directory_space(args.space_root),
+        }
+    )
     meminfo_after = read_kv(Path("/proc/meminfo"))
     report = {
         "schema": "dynamic-vamana-atlas-resource-probe-v1",
+        "sampling_interval_ms": args.interval_ms,
         "command": command,
         "returncode": returncode,
         "elapsed_seconds": time.monotonic() - start,

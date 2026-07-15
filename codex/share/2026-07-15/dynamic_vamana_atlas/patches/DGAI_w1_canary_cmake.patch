@@ -1,0 +1,14 @@
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index 2034cd0..19aaec2 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -24,6 +24,9 @@ target_link_libraries(change_pts ${PROJECT_NAME})
+ add_executable(overall_performance overall_performance.cpp)
+ target_link_libraries(overall_performance ${PROJECT_NAME})
+ 
++add_executable(w1_canary w1_canary.cpp)
++target_link_libraries(w1_canary ${PROJECT_NAME})
++
+ add_executable(mixed_workload mixed_workload.cpp)
+ target_link_libraries(mixed_workload ${PROJECT_NAME})
+

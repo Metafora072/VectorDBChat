@@ -2,32 +2,29 @@
 # Clone one immutable W0 index into a distinct NVMe W1 attempt directory.
 set -euo pipefail
 
-[[ ${W1_EXECUTE_AUTHORIZED:-0} == 1 ]] || { echo 'W1 gate not granted; refusing clone' >&2; exit 64; }
-[[ $# == 2 ]] || { echo "usage: $0 SYSTEM ATTEMPT_DIR" >&2; exit 2; }
-system=$1; target=$(realpath -m "$2")
+[[ ${W1_EXECUTE_AUTHORIZED:-0} == 1 || ${W1_FORMAL_PATH_AUTHORIZED:-0} == 1 ]] || { echo 'W1 gate not granted; refusing clone' >&2; exit 64; }
+[[ $# == 3 ]] || { echo "usage: $0 SYSTEM BASE_INDEX_DIR ATTEMPT_DIR" >&2; exit 2; }
+system=$1; base=$(realpath "$2"); target=$(realpath -m "$3")
 root=${ATLAS_ROOT:-/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas}
-case "$target" in "$root"/formal/pilot3_sift10m_w1/*) ;; *) echo 'attempt must be under formal/pilot3_sift10m_w1' >&2; exit 2;; esac
-case "$system" in
-  DGAI) base="$root/formal/pilot3_sift10m_p1r08/f0/DGAI/p1r08-dgai-01/index";;
-  OdinANN) base="$root/formal/pilot3_sift10m_p1r08/f0/OdinANN/p1r08-odin-01/index";;
-  *) echo "unsupported dynamic system: $system" >&2; exit 2;;
-esac
-base=$(realpath "$base"); [[ -f "$base/IMMUTABLE_BASE_OK" ]] || { echo "base is not immutable: $base" >&2; exit 1; }
+chat=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+case "$target" in "$root"/formal/pilot3_w1_*/*) ;; *) echo 'attempt must be under formal/pilot3_w1_*' >&2; exit 2;; esac
+case "$system" in DGAI|OdinANN) ;; *) echo "unsupported dynamic system: $system" >&2; exit 2;; esac
+[[ -f "$base/IMMUTABLE_BASE_OK" || -f "$base/BUILD_OK" ]] || { echo "base lacks immutable/build marker: $base" >&2; exit 1; }
 [[ $(findmnt -rn -T "$base" -o MAJ:MIN) == "${ATLAS_NVME_MAJMIN:-259:10}" && $(findmnt -rn -T "$(dirname "$target")" -o MAJ:MIN) == "${ATLAS_NVME_MAJMIN:-259:10}" ]] || { echo 'base/target not on experiment NVMe' >&2; exit 1; }
 [[ ! -e "$target" ]] || { echo "refusing to reuse/overwrite attempt: $target" >&2; exit 1; }
 mkdir -p "$(dirname "$target")"
 tmp="${target}.partial.$$"; trap 'rm -rf "$tmp"' EXIT
 mkdir "$tmp"
-find "$base" -type f -printf '%P\t%s\t' -exec sha256sum {} \; >"$tmp/base_before.tsv"
+python3 "$chat/w1_file_manifest.py" --root "$base" --output "$tmp/base_before.tsv"
 if ! cp -a --reflink=always "$base/." "$tmp/index" 2>/dev/null; then
   rm -rf "$tmp/index"; cp -a --reflink=auto "$base/." "$tmp/index"
   clone_mode=copy_or_filesystem_reflink_auto
 else
   clone_mode=reflink
 fi
-find "$base" -type f -printf '%P\t%s\t' -exec sha256sum {} \; >"$tmp/base_after.tsv"
+python3 "$chat/w1_file_manifest.py" --root "$base" --output "$tmp/base_after.tsv"
 cmp -s "$tmp/base_before.tsv" "$tmp/base_after.tsv" || { echo 'base hash changed during clone' >&2; exit 1; }
-find "$tmp/index" -type f -printf '%P\t%s\t' -exec sha256sum {} \; >"$tmp/clone_initial.tsv"
-cut -f1,2 "$tmp/base_before.tsv" >"$tmp/base_shape.tsv"; cut -f1,2 "$tmp/clone_initial.tsv" >"$tmp/clone_shape.tsv"; cmp -s "$tmp/base_shape.tsv" "$tmp/clone_shape.tsv" || { echo 'clone/base file manifest mismatch' >&2; exit 1; }
+python3 "$chat/w1_file_manifest.py" --root "$tmp/index" --output "$tmp/clone_initial.tsv"
+cmp -s "$tmp/base_before.tsv" "$tmp/clone_initial.tsv" || { echo 'clone/base content manifest mismatch' >&2; exit 1; }
 printf '{"schema":"dynamic-vamana-w1-clone-v2","system":"%s","clone_mode":"%s","base":"%s"}\n' "$system" "$clone_mode" "$base" >"$tmp/clone_manifest.json"
 mv "$tmp" "$target"; trap - EXIT

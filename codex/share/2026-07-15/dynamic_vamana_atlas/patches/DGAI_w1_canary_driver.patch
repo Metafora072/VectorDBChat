@@ -1,0 +1,69 @@
+diff --git a/tests/w1_canary.cpp b/tests/w1_canary.cpp
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/tests/w1_canary.cpp
+@@ -0,0 +1,63 @@
++// W1 infrastructure driver.  It reuses the artifact's existing update kernels
++// verbatim and adds only trace/marker/probe orchestration.
++#define main dgai_legacy_overall_performance_main
++#include "overall_performance.cpp"
++#undef main
++
++#include <cstdlib>
++#include <fstream>
++
++namespace {
++uint64_t mono_ns() { return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count(); }
++void mark(const char *name, const char *reason = nullptr) {
++  const char *path = std::getenv("ATLAS_W1_MARKERS");
++  if (!path || !*path) throw std::runtime_error("ATLAS_W1_MARKERS is required");
++  std::ofstream out(path, std::ios::app);
++  if (!out) throw std::runtime_error("cannot open marker file");
++  out << "{\"marker\":\"" << name << "\",\"monotonic_ns\":" << mono_ns();
++  if (reason) out << ",\"reason\":\"" << reason << "\"";
++  out << "}\n";
++  if (!out) throw std::runtime_error("cannot write marker");
++}
++template <typename T>
++void probe(const std::string &prefix, const std::string &query_file, const std::string &output, uint64_t L) {
++  pipeann::Parameters paras; paras.Set<unsigned>("L_disk", 75); paras.Set<unsigned>("R_disk", 32);
++  paras.Set<float>("alpha_disk", 1.2); paras.Set<unsigned>("C", 160); paras.Set<unsigned>("beamwidth", 16);
++  paras.Set<unsigned>("nodes_to_cache", 0); paras.Set<unsigned>("num_threads", 32);
++  pipeann::DistanceL2 dist; pipeann::DynamicSSDIndex<T, unsigned> index(paras, prefix, prefix, &dist, pipeann::Metric::L2, 2, 0);
++  T *query = nullptr; size_t nq = 0, dim = 0, aligned = 0; pipeann::load_aligned_bin<T>(query_file, query, nq, dim, aligned);
++  constexpr uint32_t k = 10; std::vector<unsigned> tags(nq * k, std::numeric_limits<unsigned>::max());
++  std::vector<float> dists(nq * k, std::numeric_limits<float>::max()); std::vector<pipeann::QueryStats> stats(nq);
++#pragma omp parallel for schedule(dynamic) num_threads(NUM_SEARCH_THREADS)
++  for (int64_t i = 0; i < static_cast<int64_t>(nq); ++i)
++    index.search(query + i * aligned, k, 0, L, 16, tags.data() + i * k, dists.data() + i * k, stats.data() + i, true);
++  std::ofstream out(output, std::ios::binary | std::ios::trunc); uint32_t shape[2] = {static_cast<uint32_t>(nq), k};
++  out.write(reinterpret_cast<const char *>(shape), sizeof(shape)); out.write(reinterpret_cast<const char *>(tags.data()), tags.size() * sizeof(unsigned));
++  if (!out) throw std::runtime_error("failed writing probe result IDs");
++  delete[] query;
++}
++template <typename T>
++void run(const std::string &data, const std::string &prefix, const std::string &trace) {
++  pipeann::Parameters paras; paras.Set<unsigned>("L_disk", 75); paras.Set<unsigned>("R_disk", 32);
++  paras.Set<float>("alpha_disk", 1.2); paras.Set<unsigned>("C", 160); paras.Set<unsigned>("beamwidth", 16);
++  paras.Set<unsigned>("nodes_to_cache", 0); paras.Set<unsigned>("num_threads", 32);
++  pipeann::DistanceL2 dist; mark("clone_ready"); pipeann::DynamicSSDIndex<T, unsigned> index(paras, prefix, prefix, &dist, pipeann::Metric::L2, 2, 0); mark("index_loaded");
++  // Query compatibility opens immutable indexes read-only; this private clone
++  // must use the native writable update handle before invoking update APIs.
++  index._disk_index->reader->close();
++  index._disk_index->reader->open(prefix + "_disk.index", true, false);
++  std::vector<T> vectors; std::vector<unsigned> deletes, inserts; mark("ingest_begin");
++  get_atlas_trace<T, unsigned>(data, trace.c_str(), deletes, inserts, vectors);
++  insertion_kernel<T, unsigned>(vectors.data(), std::ref(index), std::ref(inserts), 128);
++  deletion_kernel<T, unsigned>(vectors.data(), std::ref(index), std::ref(deletes), 128); mark("ingest_end");
++  mark("online_visibility_unsupported", "requires_final_merge_and_reload"); mark("publish_begin");
++  merge_kernel<T, unsigned>(index, const_cast<std::string &>(prefix)); mark("publish_end");
++}
++}
++int main(int argc, char **argv) {
++  try {
++    if (argc == 5 && std::string(argv[1]) == "probe") { probe<float>(argv[2], argv[3], argv[4], 64); return 0; }
++    if (argc == 5 && std::string(argv[1]) == "run") { run<float>(argv[2], argv[3], argv[4]); return 0; }
++    std::cerr << "usage: w1_canary run DATA PREFIX TRACE | w1_canary probe PREFIX QUERIES RESULT\n"; return 2;
++  } catch (const std::exception &e) { std::cerr << "w1_canary fatal: " << e.what() << '\n'; return 1; }
++}

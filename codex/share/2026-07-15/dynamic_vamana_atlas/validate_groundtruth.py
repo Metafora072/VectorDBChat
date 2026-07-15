@@ -91,7 +91,8 @@ def main() -> None:
     explicit = (args.base_file, args.tags_file, args.query_file, args.truthset_file, args.checkpoint)
     if any(value is not None for value in explicit) and not all(value is not None for value in explicit):
         raise ValueError("explicit GT validation requires base/tags/query/truthset/checkpoint together")
-    queries = read_float_bin(args.query_file if all(explicit) else args.dataset / "query.bin")
+    explicit_mode = all(value is not None for value in explicit)
+    queries = read_float_bin(args.query_file if explicit_mode else args.dataset / "query.bin")
     audit_qids = [int(value) for value in args.audit_query_ids.split(",")]
     report: dict[str, object] = {
         "schema": "dynamic-vamana-atlas-gt-validation-v1",
@@ -100,14 +101,14 @@ def main() -> None:
         "checkpoints": [],
     }
 
-    checkpoints = (args.checkpoint,) if all(explicit) else tuple(int(value) for value in args.checkpoints.split(",") if value)
+    checkpoints = (args.checkpoint,) if explicit_mode else tuple(int(value) for value in args.checkpoints.split(",") if value)
     if not checkpoints or any(pct not in (0, 1, 5, 10, 20) for pct in checkpoints):
         raise ValueError("--checkpoints must be a non-empty subset of 0,1,5,10,20")
     for pct in checkpoints:
         cp = f"cp{pct:02d}"
-        base = read_float_bin(args.base_file if all(explicit) else args.dataset / f"active_{cp}.bin")
-        tags = read_tags(args.tags_file if all(explicit) else args.dataset / f"active_{cp}.tags.bin")
-        ids, dists = read_truthset(args.truthset_file if all(explicit) else args.groundtruth / f"gt_{cp}")
+        base = read_float_bin(args.base_file if explicit_mode else args.dataset / f"active_{cp}.bin")
+        tags = read_tags(args.tags_file if explicit_mode else args.dataset / f"active_{cp}.tags.bin")
+        ids, dists = read_truthset(args.truthset_file if explicit_mode else args.groundtruth / f"gt_{cp}")
         if ids.shape != (queries.shape[0], 100):
             raise ValueError(f"unexpected GT shape for {cp}: {ids.shape}")
         if base.shape[0] != tags.size or base.shape[1] != queries.shape[1]:

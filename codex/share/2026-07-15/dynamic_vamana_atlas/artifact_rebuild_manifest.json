@@ -1,0 +1,21 @@
+{
+  "schema": "dynamic-vamana-w1-artifact-rebuild-v1",
+  "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "cmake": "3.28.3",
+  "systems": {
+    "DGAI": {
+      "upstream_commit": "a0179b876a4bd453336dc2893b46ae890f680555",
+      "patch_order": ["DGAI_mkl_cblas_compat.patch", "DGAI_w1_result_ids.patch", "DGAI_w1_canary_driver.patch", "DGAI_w1_canary_cmake.patch"],
+      "cmake": ["-DCMAKE_BUILD_TYPE=Release", "-DBLAS_LIBRARIES=/usr/lib/x86_64-linux-gnu/libblas.so.3"],
+      "binary_sha256": {"w1_canary": "0633b456ec96dca5d0e0778eeeb9dbe7cf9ef3a8edf72e7cb614d5d6cd1172bd", "search_disk_index": "3f082994cd535b2757692dd28c495449ddec656c001a97c78adc04ef85e73c90"}
+    },
+    "OdinANN": {
+      "upstream_commit": "9e7a193dc3f38ad12063bfe50aa5885efb4e8d3b",
+      "patch_order": ["OdinANN_system_uring_cblas.patch", "OdinANN_w1_result_ids.patch", "OdinANN_w1_canary_driver.patch", "OdinANN_w1_canary_cmake.patch"],
+      "cmake": ["-DCMAKE_BUILD_TYPE=Release", "-DIO_ENGINE=aio", "-DBLAS_LIBRARIES=/usr/lib/x86_64-linux-gnu/libblas.so.3"],
+      "binary_sha256": {"w1_canary": "22603731af0dce8b84ff67302d1881a2bf8ba39dedbe8d415d2e52657b746f24", "search_disk_index": "414fee1f68829b7b2443c690a627b19e034d9cf1ccea93cbfa04e049f57ae65c"}
+    }
+  },
+  "linked_libraries": {"DGAI": ["libaio", "libblas", "libgomp"], "OdinANN": ["libtcmalloc.so.9.9.5", "libaio", "libblas", "libgomp"]},
+  "clean_checkout": {"git_apply_check": "pass for every listed patch", "target_build": "pass for w1_canary and search_disk_index", "byte_identical_binary_hash": "pending canonical debug-prefix-map rebuild; ordinary Release binaries embed build/source paths"}
+}
