@@ -14,6 +14,7 @@ artifact="$old/artifact_rebuild_manifest.json"; scratch="$root/tmp/${run}_prefli
 manifest="$result/execution_manifest.json"; phase=initializing
 gt_report="$new/../dynamic_vamana_w1_gt_recovery_results_0716.md"
 final_report="$new/../dynamic_vamana_w1_one_percent_canary_r02_results_0716.md"
+controller_log=${ATLAS_CONTROLLER_LOG_PATH:-}
 
 notify() {
   [[ ${ATLAS_NOTIFY_EMAIL:-1} == 1 ]] || return 0
@@ -60,6 +61,7 @@ W1_ALLOWED_SESSION=${W1_ALLOWED_SESSION:-} python3 "$new/w1_recovery_preflight.p
   --artifact-manifest "$artifact" --parent-execution "$parent" --cp01-reuse "$scratch/cp01_reuse_validation.json" \
   --output "$result/preflight/execution_preflight.json" --runtime-canary-passed
 cp "$scratch/trace_revalidation.json" "$scratch/cp01_reuse_validation.json" "$scratch/cp01_reuse_resources.json" "$result/preflight/"
+if [[ -n $controller_log && -f $controller_log ]]; then ln -s "$controller_log" "$result/formal_controller.log"; fi
 chown -R ubuntu:ubuntu "$result"
 python3 "$new/w1_recovery_execution_manifest.py" --root "$root" --artifact-manifest "$artifact" \
   --preflight "$result/preflight/execution_preflight.json" --cp01-reuse "$result/preflight/cp01_reuse_validation.json" \
