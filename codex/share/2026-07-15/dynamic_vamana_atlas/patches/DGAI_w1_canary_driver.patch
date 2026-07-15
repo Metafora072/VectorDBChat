@@ -52,8 +52,8 @@ index 0000000..0000000
 +  // must use the native writable update handle before invoking update APIs.
 +  index._disk_index->reader->close();
 +  index._disk_index->reader->open(prefix + "_disk.index", true, false);
-+  std::vector<T> vectors; std::vector<unsigned> deletes, inserts; mark("ingest_begin");
-+  get_atlas_trace<T, unsigned>(data, trace.c_str(), deletes, inserts, vectors);
++  std::vector<T> vectors; std::vector<unsigned> deletes, inserts;
++  get_atlas_trace<T, unsigned>(data, trace.c_str(), deletes, inserts, vectors); mark("ingest_begin");
 +  insertion_kernel<T, unsigned>(vectors.data(), std::ref(index), std::ref(inserts), 128);
 +  deletion_kernel<T, unsigned>(vectors.data(), std::ref(index), std::ref(deletes), 128); mark("ingest_end");
 +  mark("online_visibility_unsupported", "requires_final_merge_and_reload"); mark("publish_begin");

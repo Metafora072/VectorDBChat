@@ -5,7 +5,7 @@ set -euo pipefail
 
 root=${ATLAS_ROOT:-/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas}
 chat=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-out=${W1_CANONICAL_ROOT:-$root/build/w1-canonical-v4}
+out=${W1_CANONICAL_ROOT:-$root/build/w1-canonical-v6}
 [[ $(findmnt -rn -T "$root" -o MAJ:MIN | awk 'NR==1{print;exit}') == "${ATLAS_NVME_MAJMIN:-259:10}" ]] || { echo 'experiment root not on NVMe' >&2; exit 1; }
 [[ ! -e "$out" ]] || { echo "canonical rebuild output already exists: $out" >&2; exit 1; }
 mkdir -p "$out/runs" "$out/install/DGAI" "$out/install/OdinANN" "$out/evidence"
@@ -22,6 +22,7 @@ commit[OdinANN]=9e7a193dc3f38ad12063bfe50aa5885efb4e8d3b
 patches_DGAI=(
   DGAI_mkl_cblas_compat.patch
   DGAI_w1_result_ids.patch
+  DGAI_w1_query_metrics.patch
   DGAI_w1_canary_driver.patch
   DGAI_w1_canary_cmake.patch
 )
@@ -30,6 +31,7 @@ patches_OdinANN=(
   OdinANN_uring_runtime_compat.patch
   OdinANN_uring_strict.patch
   OdinANN_w1_result_ids.patch
+  OdinANN_w1_query_metrics.patch
   OdinANN_w1_canary_driver.patch
   OdinANN_w1_canary_cmake.patch
 )

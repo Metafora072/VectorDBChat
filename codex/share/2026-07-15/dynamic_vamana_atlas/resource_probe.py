@@ -132,6 +132,7 @@ def main() -> None:
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--interval-ms", type=int, default=50)
     p.add_argument("--space-root", type=Path)
+    p.add_argument("--space-interval-seconds", type=float, default=0.0)
     p.add_argument("command", nargs=argparse.REMAINDER)
     args = p.parse_args()
     command = args.command[1:] if args.command[:1] == ["--"] else args.command
@@ -139,6 +140,7 @@ def main() -> None:
         raise SystemExit("missing command")
 
     meminfo_before = read_kv(Path("/proc/meminfo"))
+    space_before = directory_space(args.space_root)
     start = time.monotonic()
     proc = subprocess.Popen(command)
     cg = cgroup_path(proc.pid)
@@ -148,6 +150,7 @@ def main() -> None:
     peak_smaps: dict[str, int] = {}
     interval_seconds = args.interval_ms / 1000
     next_sample = time.monotonic()
+    next_space_sample = start
     while proc.poll() is None:
         pids = process_tree(proc.pid)
         tree_rss_kb = 0
@@ -162,6 +165,11 @@ def main() -> None:
         for key, value in tree_io_bytes.items():
             peak_tree_io_bytes[key] = max(peak_tree_io_bytes[key], value)
         io_stat = read_cgroup_io(cg / "io.stat") if cg else []
+        now = time.monotonic()
+        sample_space = None
+        if args.space_root and args.space_interval_seconds > 0 and now >= next_space_sample:
+            sample_space = directory_space(args.space_root)
+            next_space_sample = now + args.space_interval_seconds
         samples.append(
             {
                 "monotonic_ns": time.monotonic_ns(),
@@ -174,7 +182,7 @@ def main() -> None:
                 "cgroup_memory_peak": read_int(cg / "memory.peak") if cg else None,
                 "cgroup_memory_events": read_kv(cg / "memory.events") if cg else {},
                 "cgroup_io_stat": io_stat,
-                "index_space": None,
+                "index_space": sample_space,
             }
         )
         next_sample += interval_seconds
@@ -223,6 +231,7 @@ def main() -> None:
         "page_cache_before_kb": meminfo_before.get("Cached"),
         "page_cache_after_kb": meminfo_after.get("Cached"),
         "space_root": str(args.space_root) if args.space_root else None,
+        "space_before": space_before,
         "samples": samples,
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)

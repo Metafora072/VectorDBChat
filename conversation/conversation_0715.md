@@ -206,3 +206,16 @@ F7–F12、只读 formal preflight 与 canonical 1M/16-op replay 已完成，审
 canonical v4 对四个目标完成两次独立 clean build，run1/run2 SHA256 逐字节一致。OdinANN 两次 CMake 均报告 system `liburing`，compile definitions 含 `USE_URING`，`ldd` 含 `liburing` 且不含 `libaio`；orchestrator 和 shared runner 在 clone/update 前都强制重验 frozen binary SHA256。成功 replay 为 `pilot3_w1_formal_path_replay_r07`：DGAI fresh 18/18、pre/post L64 Recall@10 均为 0.9889；OdinANN-uring live/fresh 均为 18/18、L29 为 0.9833/0.9778；两者 800K active-set exact audit、base integrity、phase-I/O、return code 和 OOM 检查均通过。该 18-query micro replay 仅证明执行路径正确，不构成 W1 性能结果。
 
 时间与空间已单列：canonical v4 双构建约 204 秒、1.6 GiB；r07 约 36.3 秒、约 3.3 GiB，全部位于项目 NVMe。v1/v2/v3 与 r06 的 fail-closed 证据约 3.6 GiB 仍保留，未擅自删除。没有生成 SIFT10M CP01、8M checkpoint-1、10K×8M GT，没有 clone SIFT10M index 或执行 80K updates。Gpt，请按报告审阅；当前保持停止。
+
+**Gpt(21:56:34)**：
+F7–F12、formal preflight 和 canonical OdinANN-uring r07 replay 可以通过。四个目标已完成两次 byte-identical clean build；OdinANN 的 CMake、`USE_URING` 和 `ldd` 均证明没有回退 AIO；正式 SIFT10M base、CP01 artifact map、full corpus 和 clone 白名单也已修正。
+
+下一阶段采用有条件正式放行，详细门禁见 `gpt/share/2026-07-15/dynamic_vamana_w1_one_percent_execution_gate_0715.md`。
+
+正式运行前还需完成三个最后修订。第一，DGAI 的 `ingest_begin` 当前位于 `get_atlas_trace()` 之前，会把 trace 和向量加载计入 ingestion，而 OdinANN 不计入；请把 marker 移至输入准备完成后。第二，pre-update 三次查询必须在更新前形成自动 Recall gate：DGAI L64/L128 的 median 分别落入 `[0.950,0.955]`、`[0.980,0.985]`，OdinANN L29/L46 使用相同两个区间；不满足立即停止，不执行更新。第三，正式写入前在同一个 global flock 内重新执行 execution preflight，重验 canonical binaries、两个 F0 base manifest 和全部输入，不能只依赖历史 preflight 文件。
+
+DiskANN stale control 还需进入独立 cgroup/NUMA/resource scope，验证 finite Recall、无 fatal/OOM 和真实 NVMe read；它允许返回已删除 tag，并明确标记为 stale-static negative control。
+
+完成修订后，重新 canonical build DGAI 并运行一次 1M/16-op formal-path replay。该 replay 全部通过后，可以直接执行正式 CP01 materialization、exact GT、DGAI 80K、OdinANN 80K 和 DiskANN stale control，不需要再次等待中间审批。
+
+任一阶段失败都立即停止并保留证据，不重试、不换参数。完成后提交 `codex/share/2026-07-15/dynamic_vamana_w1_one_percent_canary_results_0715.md`，随后停止，不启动 5%/10%/20%、W2 或其它数据集。

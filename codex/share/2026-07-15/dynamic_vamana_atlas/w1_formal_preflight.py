@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -38,6 +39,7 @@ def main() -> None:
     parser.add_argument("--artifact-manifest", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--runtime-canary-passed", action="store_true")
+    parser.add_argument("--execution", action="store_true")
     args = parser.parse_args()
     root = args.root.resolve()
     manifest = json.loads(args.artifact_manifest.read_text())
@@ -45,6 +47,7 @@ def main() -> None:
     bases = {
         "DGAI": root / "formal/pilot3_sift10m_p1r08/f0/DGAI/p1r08-dgai-01/index",
         "OdinANN": root / "formal/pilot3_sift10m_p1r08/f0/OdinANN/p1r08-odin-01/index",
+        "DiskANN": root / "formal/pilot3_sift10m_p1r07/f0/DiskANN/p1r07-01/index",
     }
     cp01 = root / "datasets/sift10m/w1_cp01"
     formal_root = root / "formal/pilot3_sift10m_w1"
@@ -57,14 +60,44 @@ def main() -> None:
         "gt_cp00": root / "groundtruth/sift10m/pilot3_sift10m_p1r07/gt_cp00",
         "source_trace": root / "datasets/sift10m/replace_new_trace.csv",
         "compute_groundtruth": root / "build/DiskANN/apps/utils/compute_groundtruth",
+        "diskann_query": root / "build/DiskANN/apps/search_disk_index",
         "notification_helper": Path(__file__).resolve().parent / "formal/notify_owner.sh",
     }
     for name, path in {**bases, **inputs}.items():
         if not path.exists():
             raise SystemExit(f"missing preflight input {name}: {path}")
-    for target in (cp01, formal_root):
+    gt_cp01 = root / "groundtruth/sift10m/w1"
+    for target in (cp01, gt_cp01, formal_root):
         if target.exists():
             raise SystemExit(f"formal output target already exists: {target}")
+    if args.execution:
+        forbidden_results = [formal_result / system for system in ("DGAI", "OdinANN", "DiskANN")]
+        if any(path.exists() for path in forbidden_results):
+            raise SystemExit("formal attempt/stale-control result already exists")
+        allowed_session = os.environ.get("W1_ALLOWED_SESSION", "")
+        sessions = subprocess.run(["tmux", "list-sessions", "-F", "#{session_name}"], text=True, capture_output=True).stdout.splitlines()
+        stale_sessions = [name for name in sessions if "w1" in name.lower() and name != allowed_session]
+        scopes = subprocess.run(["systemctl", "list-units", "--type=scope", "--state=running", "--no-legend", "--plain"], text=True, capture_output=True).stdout.splitlines()
+        stale_scopes = [line for line in scopes if "dv-w1" in line.lower()]
+        ancestors: set[int] = set()
+        pid = os.getpid()
+        while pid > 1:
+            ancestors.add(pid)
+            try:
+                pid = int(Path(f"/proc/{pid}/stat").read_text().split()[3])
+            except (FileNotFoundError, ValueError, IndexError):
+                break
+        process_rows = subprocess.run(["ps", "-eo", "pid=,args="], check=True, text=True, capture_output=True).stdout.splitlines()
+        pattern = re.compile(r"w1_canary|w1_run_system_canary|w1_diskann_stale_control")
+        stale_processes = []
+        for row in process_rows:
+            fields = row.strip().split(maxsplit=1)
+            if len(fields) == 2 and int(fields[0]) not in ancestors and pattern.search(fields[1]):
+                stale_processes.append(row.strip())
+        if stale_sessions or stale_scopes or stale_processes:
+            raise SystemExit(f"existing W1 execution state: sessions={stale_sessions}, scopes={stale_scopes}, processes={stale_processes}")
+    else:
+        stale_sessions = stale_scopes = stale_processes = []
 
     device_lines = subprocess.run(
         ["findmnt", "-rn", "-T", str(root), "-o", "MAJ:MIN"],
@@ -109,9 +142,22 @@ def main() -> None:
         if path.is_file()
     }
     expected_inputs = manifest["formal_inputs"]
-    for name in ("full_corpus", "query", "active_cp00_vectors", "active_cp00_tags"):
+    for name in ("full_corpus", "query", "active_cp00_vectors", "active_cp00_tags", "gt_cp00", "source_trace", "compute_groundtruth"):
         if input_checks[name]["sha256"] != expected_inputs[name]["sha256"]:
             raise SystemExit(f"formal input hash mismatch: {name}")
+    diskann = manifest["systems"]["DiskANN"]
+    if input_checks["diskann_query"]["sha256"] != diskann["binary_sha256"]["search_disk_index"]:
+        raise SystemExit("DiskANN query binary identity mismatch")
+    frozen_binaries = {}
+    for system in ("DGAI", "OdinANN"):
+        frozen_binaries[system] = {}
+        for name, value in manifest["systems"][system]["canonical_install"].items():
+            path = Path(value).resolve()
+            actual = digest(path)
+            expected = manifest["systems"][system]["binary_sha256"][name]
+            if actual != expected:
+                raise SystemExit(f"{system} canonical binary hash mismatch: {name}")
+            frozen_binaries[system][name] = {"realpath": str(path), "sha256": actual}
 
     artifact_map = {
         "micro": {
@@ -133,9 +179,10 @@ def main() -> None:
         },
     }
     result = {
-        "schema": "dynamic-vamana-w1-formal-preflight-v1",
+        "schema": "dynamic-vamana-w1-formal-preflight-v2",
         "status": "pass",
         "read_only": True,
+        "execution_snapshot": args.execution,
         "experiment_device": device,
         "free_bytes": free,
         "global_lock_held": os.environ.get("W1_GLOBAL_LOCK_HELD") == "1",
@@ -146,22 +193,17 @@ def main() -> None:
         },
         "formal_output_targets": {
             "cp01": {"realpath": str(cp01), "exists": cp01.exists()},
+            "gt_cp01": {"realpath": str(gt_cp01), "exists": gt_cp01.exists()},
             "attempt_root": {"realpath": str(formal_root), "exists": formal_root.exists()},
             "result_root_before_preflight": {"realpath": str(formal_result), "may_contain_preflight_only": True},
         },
         "artifact_map": artifact_map,
         "formal_bases": base_checks,
         "formal_inputs": input_checks,
-        "frozen_binaries": {
-            system: {
-                name: {
-                    "realpath": value,
-                    "sha256": manifest["systems"][system]["binary_sha256"][name],
-                }
-                for name, value in manifest["systems"][system]["canonical_install"].items()
-            }
-            for system in ("DGAI", "OdinANN")
-        },
+        "frozen_binaries": frozen_binaries,
+        "stale_execution_checks": {"allowed_session": os.environ.get("W1_ALLOWED_SESSION", ""),
+                                    "other_w1_sessions": stale_sessions, "running_w1_scopes": stale_scopes,
+                                    "running_w1_workers": stale_processes},
     }
     if not result["global_lock_held"]:
         raise SystemExit("global lock marker absent")

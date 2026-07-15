@@ -1,0 +1,32 @@
+diff --git a/tests/search_disk_index.cpp b/tests/search_disk_index.cpp
+--- a/tests/search_disk_index.cpp
++++ b/tests/search_disk_index.cpp
+@@ -180,6 +180,11 @@ int search_disk_index(int argc, char **argv) {
+     float mean_latency = (float) pipeann::get_mean_stats(
+         stats, query_num, [](const pipeann::QueryStats &stats) { return stats.total_us; });
+ 
++    float latency_50 = (float) pipeann::get_percentile_stats(
++        stats, query_num, 0.50f, [](const pipeann::QueryStats &stats) { return stats.total_us; });
++    float latency_95 = (float) pipeann::get_percentile_stats(
++        stats, query_num, 0.95f, [](const pipeann::QueryStats &stats) { return stats.total_us; });
++
+     float latency_99 = (float) pipeann::get_percentile_stats(
+         stats, query_num, 0.99f, [](const pipeann::QueryStats &stats) { return stats.total_us; });
+ 
+@@ -201,6 +206,16 @@ int search_disk_index(int argc, char **argv) {
+                                                    (uint32_t) recall_at);
+       }
+ 
++      const char *metrics_path = std::getenv("ATLAS_QUERY_METRICS_PATH");
++      if (metrics_path != nullptr && metrics_path[0] != '\0') {
++        std::ofstream metrics(metrics_path, std::ios::trunc);
++        metrics << "{\"qps\":" << qps << ",\"mean_latency_us\":" << mean_latency
++                << ",\"p50_latency_us\":" << latency_50 << ",\"p95_latency_us\":" << latency_95
++                << ",\"p99_latency_us\":" << latency_99 << ",\"mean_ios\":" << mean_ios
++                << ",\"recall_at_10_percent\":" << recall << "}\n";
++        if (!metrics) throw std::runtime_error("failed writing ATLAS_QUERY_METRICS_PATH");
++      }
++
+       std::cout << std::setw(10) << L
+                 << std::setw(12) << beamwidth << std::setw(12) << qps << std::setw(12) << mean_latency << std::setw(12)
+                 << latency_99 << std::setw(12) << mean_hops << std::setw(12) << mean_ios;

@@ -38,17 +38,19 @@ query_point() {
   local phase=$1 query=$2 gt=$3 active=$4 l=$5 rep=$6
   local out="$result/${phase}_L${l}_r${rep}"
   local ids="$out.result_ids.bin" log="$out.log"
-  case "${v[system]}" in
-    DGAI) ATLAS_RESULT_IDS_PATH="$ids" "${v[query-binary]}" float "$prefix" 1 16 "$query" "$gt" 10 l2 2 0 23 "$l" >"$log" 2>&1;;
-    OdinANN) ATLAS_RESULT_IDS_PATH="$ids" "${v[query-binary]}" float "$prefix" 1 16 "$query" "$gt" 10 l2 pq 2 0 "$l" >"$log" 2>&1;;
-  esac
-  python3 "$chat/validate_query_result.py" --result "$ids" --active-tags "$active" --query "$query" --log "$log" --output "$out.validation.json"
+  "$chat/resource_probe.py" --output "$out.resources.json" --interval-ms 25 --space-root "$work/index" -- \
+    "$chat/w1_query_worker.sh" "${v[system]}" "${v[query-binary]}" "$prefix" "$query" "$gt" "$ids" "$log" "$l" "$active"
 }
 
-# A formal policy point is repeated three times; the authorized micro replay uses one exact micro query process per L.
-repeats=3; [[ ${v[mode]} == micro ]] && repeats=1
+# Both the automated replay and formal execution exercise the exact three-run
+# pre-update gate.  Post-update points use the same repeat count.
+repeats=3
 IFS=, read -r -a pre_ls <<<"${v[pre-ls]}"; IFS=, read -r -a post_ls <<<"${v[post-ls]}"
 for l in "${pre_ls[@]}"; do for ((r=1;r<=repeats;r++)); do query_point pre_cp00 "${v[cp0-query]}" "${v[cp0-gt]}" "$work/index/index_disk.index.tags" "$l" "$r"; done; done
+python3 "$chat/w1_preupdate_gate.py" --system "${v[system]}" --mode "${v[mode]}" --result-dir "$result" \
+  --binary "${v[query-binary]}" --index-manifest "$work/base_before.tsv" --query "${v[cp0-query]}" \
+  --gt "${v[cp0-gt]}" --active-tags "$work/index/index_disk.index.tags" --ls "${v[pre-ls]}" \
+  --device "$nvme" --output "$result/preupdate_gate.json"
 
 data_file=$(realpath "${v[full-corpus]}")
 python3 - "$work/attempt_artifacts.json" "$data_file" "${v[trace]}" "${v[expected-active-tags]}" "${v[probe-queries]}" "${v[probe-spec]}" <<'PY'
@@ -63,7 +65,7 @@ out=Path(sys.argv[1]); names=('full_corpus','trace','expected_active_tags','prob
 paths=[Path(x).resolve() for x in sys.argv[2:]]
 out.write_text(json.dumps({'schema':'dynamic-vamana-w1-attempt-artifacts-v1','artifacts':{n:{'realpath':str(p),'size_bytes':p.stat().st_size,'sha256':sha(p)} for n,p in zip(names,paths)}},indent=2)+'\n')
 PY
-"$chat/resource_probe.py" --output "$result/resources.json" --interval-ms 25 --space-root "$work" -- \
+"$chat/resource_probe.py" --output "$result/resources.json" --interval-ms 25 --space-root "$work" --space-interval-seconds 1 -- \
   "$chat/w1_system_worker.sh" "${v[system]}" "${v[driver]}" "$data_file" "$prefix" "${v[trace]}" "${v[probe-queries]}" "$markers" "$result/fresh.bin"
 "$chat/w1_dump_active_tags.py" --tags "$work/index/index_disk.index.tags" --expected "${v[expected-active-tags]}" --expected-count "$(python3 -c 'import struct,sys; print(struct.unpack("<I",open(sys.argv[1],"rb").read(4))[0])' "${v[expected-active-tags]}")" --output "$result/active_audit.json"
 "$chat/w1_visibility_probe.py" --probes "${v[probe-spec]}" --result-tags "$result/fresh.bin" --active-tags "${v[expected-active-tags]}" --output "$result/fresh_probe.json"
