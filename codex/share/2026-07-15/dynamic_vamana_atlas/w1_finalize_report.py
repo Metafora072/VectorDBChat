@@ -67,6 +67,7 @@ def main() -> None:
     p.add_argument("--cp01-resource", type=Path)
     p.add_argument("--gt-resource", type=Path)
     p.add_argument("--recovery", action="store_true")
+    p.add_argument("--continuation", action="store_true")
     a = p.parse_args()
     if a.output.exists():
         raise SystemExit("formal report overwrite refused")
@@ -88,7 +89,8 @@ def main() -> None:
     (raw / "artifact_index.json").write_text(json.dumps({"schema": "dynamic-vamana-w1-artifact-index-v1",
         "dynamic_system_results": {system: str((result_root / system / a.attempt).resolve()) for system in canaries},
         "diskann_control": str((result_root / 'DiskANN' / a.stale_attempt).resolve()),
-        "preparation": str((result_root / 'preparation').resolve())}, indent=2) + "\n")
+        "preparation": ({"cp01_resource": str(cp01_resource.resolve()), "gt_resource": str(gt_resource.resolve())}
+                        if a.continuation else str((result_root / 'preparation').resolve()))}, indent=2) + "\n")
     with (result_root / "summary.tsv").open("w", newline="") as stream:
         fields = list(queries[0]) if queries else []
         writer = csv.DictWriter(stream, fieldnames=fields, delimiter="\t"); writer.writeheader(); writer.writerows(queries)
@@ -98,15 +100,16 @@ def main() -> None:
             for l in sorted({row["L"] for row in queries if row["system"] == system and row["phase"] == phase}):
                 subset = [row for row in queries if row["system"] == system and row["phase"] == phase and row["L"] == l]
                 aggregate.append({"system": system, "phase": phase, "L": l, "runs": subset})
-    title_suffix = "R02 GT 恢复后" if a.recovery else ""
-    method = ("本次执行复用已通过只读语义审计的 CP01，并使用 location-ID GT 后置映射恢复 checkpoint-1 exact GT。"
-              if a.recovery else "本次执行重新生成 CP01 与 checkpoint-1 exact GT。")
+    title_suffix = "R03 Continuation " if a.continuation else ("R02 GT 恢复后" if a.recovery else "")
+    method = ("本次 continuation 重新核验并只读复用 R02 已恢复的 checkpoint-1 exact GT 与 CP01，从 DGAI 系统阶段开始。"
+              if a.continuation else ("本次执行复用已通过只读语义审计的 CP01，并使用 location-ID GT 后置映射恢复 checkpoint-1 exact GT。"
+              if a.recovery else "本次执行重新生成 CP01 与 checkpoint-1 exact GT。"))
     lines = [f"# Dynamic Vamana W1 1% Replace-New Canary {title_suffix}实验结果", "",
              "## 结论", "", "本次 SIFT10M checkpoint-1 1% replace-new canary 全流程通过。DGAI 与 OdinANN 均完成 80K 删除和 80K 插入，持久化 active tag 与预期 checkpoint-1 active set 精确一致；DiskANN 仅作为 `stale-static negative control`，不参与动态更新吞吐排名。该结果只支持固定策略下的 1% churn stability 结论，不构成 checkpoint-1 matched-Recall frontier。", "",
              "## 方法与执行边界", "", f"实验在项目 NVMe 上持有单一 global flock 串行执行。{method}门禁通过后，依次执行 DGAI、OdinANN 与 DiskANN stale-static control。正式 trace 使用 seed `20260713`，包含 80,000 个唯一删除和 80,000 个唯一插入，最终 active cardinality 为 8,000,000。DGAI ingestion 仅覆盖原生 insert/delete API，trace 解析、clone、load、publish 与 probe 均排除在该区间之外。", "",
              "## Preparation 与 GT 资源", "", "| 阶段 | Wall time(s) | Peak RSS(B) | cgroup memory peak(B) | NVMe read(B) | NVMe write(B) | Peak allocated(B) |", "|---|---:|---:|---:|---:|---:|---:|",
-             f"| {'CP01 reuse audit' if a.recovery else 'CP01 preparation'} | {fmt(prep['elapsed_seconds'])} | {prep['peak_rss_bytes']} | {prep['cgroup_memory_peak_bytes']} | {prep['nvme_read_bytes']} | {prep['nvme_write_bytes']} | {prep['peak_allocated_bytes']} |",
-             f"| checkpoint-1 exact GT{' recovery' if a.recovery else ''} | {fmt(gt['elapsed_seconds'])} | {gt['peak_rss_bytes']} | {gt['cgroup_memory_peak_bytes']} | {gt['nvme_read_bytes']} | {gt['nvme_write_bytes']} | {gt['peak_allocated_bytes']} |", "",
+             f"| {'CP01 R02 reuse audit (source evidence)' if a.continuation else ('CP01 reuse audit' if a.recovery else 'CP01 preparation')} | {fmt(prep['elapsed_seconds'])} | {prep['peak_rss_bytes']} | {prep['cgroup_memory_peak_bytes']} | {prep['nvme_read_bytes']} | {prep['nvme_write_bytes']} | {prep['peak_allocated_bytes']} |",
+             f"| {'R02 checkpoint-1 GT recovery (source evidence)' if a.continuation else ('checkpoint-1 exact GT recovery' if a.recovery else 'checkpoint-1 exact GT')} | {fmt(gt['elapsed_seconds'])} | {gt['peak_rss_bytes']} | {gt['cgroup_memory_peak_bytes']} | {gt['nvme_read_bytes']} | {gt['nvme_write_bytes']} | {gt['peak_allocated_bytes']} |", "",
              "以上两项属于实验准备开销，不与动态系统 update cost 比较。", "", "## Correctness 与可见性", "", "| 系统 | Active set exact | Fresh probes | Online probes | Online visibility |", "|---|---|---:|---:|---|"]
     for system, data in canaries.items():
         fresh_rows = data["visibility_probe"]["rows"]
@@ -131,8 +134,8 @@ def main() -> None:
     lines += ["", "每个点均包含 3 次 raw value；完整逐次数据位于 `summary.tsv`，pre-update gate 的 identity、合法区间与逐次 NVMe 读取证据位于各系统的 `preupdate_gate.json`。", "", "## DiskANN stale-static negative control", "", "| L | Repeat | Recall@10 | NVMe read(B) |", "|---:|---:|---:|---:|"]
     for row in stale["points"]:
         lines.append(f"| {row['L']} | {row['repetition']} | {row['recall_at_10']:.4f} | {row['nvme_read_bytes']} |")
-    preflight_kind = "recovery preflight" if a.recovery else "fresh execution preflight"
-    recovery_evidence = (f"CP01 reuse 位于 `{result_root / 'preflight/cp01_reuse_validation.json'}`，最终 preservation audit 位于 `{result_root / 'preflight/preservation_final.json'}`，GT recovery evidence 位于 `{result_root / 'preparation/gt_recovery_resources.json'}`。" if a.recovery else "")
+    preflight_kind = "continuation preflight" if a.continuation else ("recovery preflight" if a.recovery else "fresh execution preflight")
+    recovery_evidence = (f"Clone capability tests 位于 `{result_root / 'preflight/clone_target_tests.json'}`，最终 reuse preservation audit 位于 `{result_root / 'preflight/preservation_final.json'}`；R02 source resource evidence 位于 `{cp01_resource}` 与 `{gt_resource}`。" if a.continuation else (f"CP01 reuse 位于 `{result_root / 'preflight/cp01_reuse_validation.json'}`，最终 preservation audit 位于 `{result_root / 'preflight/preservation_final.json'}`，GT recovery evidence 位于 `{result_root / 'preparation/gt_recovery_resources.json'}`。" if a.recovery else ""))
     lines += ["", "DiskANN 使用 immutable checkpoint-0 index 对 checkpoint-1 GT 查询，允许返回 checkpoint-1 已删除 tag。该数据仅用于展示 stale static baseline 的退化，不与 DGAI 或 OdinANN 的更新吞吐进行排名。", "", "## 有效性边界", "", "本次实验固定使用 DGAI `L=64/128`、OdinANN `L=29/46` 与 DiskANN `L=29/53`，query thread 数均为 1。结果未执行 checkpoint-1 Recall refinement，也未覆盖 5% 以上 replacement、mixed query/update workload、DEEP、GIST 或 W2。因此，后续实验必须由本轮 1% canary 的独立审议决定，不得由本脚本自动推进。", "", "## 证据索引", "", f"执行证据根目录为 `{result_root}`。机器汇总位于 `{result_root / 'summary.tsv'}`，原始产物索引位于 `{raw / 'artifact_index.json'}`，{preflight_kind} 位于 `{result_root / 'preflight/execution_preflight.json'}`。{recovery_evidence}", ""]
     a.output.write_text("\n".join(lines))
     manifest_path = result_root / "execution_manifest.json"; manifest = load(manifest_path)

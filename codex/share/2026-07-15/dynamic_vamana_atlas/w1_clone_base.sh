@@ -5,17 +5,34 @@ set -euo pipefail
 [[ ${W1_EXECUTE_AUTHORIZED:-0} == 1 || ${W1_FORMAL_PATH_AUTHORIZED:-0} == 1 ]] || { echo 'W1 gate not granted; refusing clone' >&2; exit 64; }
 [[ $# == 3 ]] || { echo "usage: $0 SYSTEM BASE_INDEX_DIR ATTEMPT_DIR" >&2; exit 2; }
 system=$1; base=$(realpath "$2"); target=$(realpath -m "$3")
-root=${ATLAS_ROOT:-/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas}
+root=$(realpath "${ATLAS_ROOT:-/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas}")
 chat=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+case "$system" in DGAI|OdinANN) ;; *) echo "unsupported dynamic system: $system" >&2; exit 2;; esac
+r03_expected="$root/formal/pilot3_sift10m_w1_r03/$system/cp01-03"
 case "$target" in
   "$root"/formal/pilot3_w1_formal_path_replay_*/*/*) ;;
   "$root"/formal/pilot3_sift10m_w1/*/*) ;;
+  "$r03_expected")
+    [[ -n ${W1_ALLOWED_CLONE_TARGET:-} ]] || { echo 'R03 exact clone target capability absent' >&2; exit 2; }
+    allowed=$(realpath -m "$W1_ALLOWED_CLONE_TARGET")
+    [[ "$target" == "$allowed" && "$target" == "$r03_expected" ]] || { echo 'R03 clone target/capability mismatch' >&2; exit 2; }
+    [[ $(basename "$target") == cp01-03 && $(basename "$(dirname "$target")") == "$system" ]] || { echo 'R03 system/attempt mismatch' >&2; exit 2; }
+    ;;
   *) echo 'attempt must be under an explicit W1 replay or SIFT10M W1 path' >&2; exit 2;;
 esac
-case "$system" in DGAI|OdinANN) ;; *) echo "unsupported dynamic system: $system" >&2; exit 2;; esac
 [[ -f "$base/IMMUTABLE_BASE_OK" || -f "$base/BUILD_OK" ]] || { echo "base lacks immutable/build marker: $base" >&2; exit 1; }
-[[ $(findmnt -rn -T "$base" -o MAJ:MIN | awk 'NR==1{print;exit}') == "${ATLAS_NVME_MAJMIN:-259:10}" && $(findmnt -rn -T "$(dirname "$target")" -o MAJ:MIN | awk 'NR==1{print;exit}') == "${ATLAS_NVME_MAJMIN:-259:10}" ]] || { echo 'base/target not on experiment NVMe' >&2; exit 1; }
+target_mount_probe=$target
+while [[ ! -e $target_mount_probe ]]; do
+  parent=$(dirname "$target_mount_probe")
+  [[ $parent != "$target_mount_probe" ]] || { echo 'cannot resolve target mount ancestor' >&2; exit 1; }
+  target_mount_probe=$parent
+done
+[[ $(findmnt -rn -T "$base" -o MAJ:MIN | awk 'NR==1{print;exit}') == "${ATLAS_NVME_MAJMIN:-259:10}" && $(findmnt -rn -T "$target_mount_probe" -o MAJ:MIN | awk 'NR==1{print;exit}') == "${ATLAS_NVME_MAJMIN:-259:10}" ]] || { echo 'base/target not on experiment NVMe' >&2; exit 1; }
 [[ ! -e "$target" ]] || { echo "refusing to reuse/overwrite attempt: $target" >&2; exit 1; }
+if [[ ${W1_CLONE_PREFLIGHT_ONLY:-0} == 1 ]]; then
+  printf 'clone target preflight passed: system=%s target=%s\n' "$system" "$target"
+  exit 0
+fi
 mkdir -p "$(dirname "$target")"
 tmp="${target}.partial.$$"; trap 'rm -rf "$tmp"' EXIT
 mkdir "$tmp"
