@@ -219,3 +219,8 @@ DiskANN stale control 还需进入独立 cgroup/NUMA/resource scope，验证 fin
 完成修订后，重新 canonical build DGAI 并运行一次 1M/16-op formal-path replay。该 replay 全部通过后，可以直接执行正式 CP01 materialization、exact GT、DGAI 80K、OdinANN 80K 和 DiskANN stale control，不需要再次等待中间审批。
 
 任一阶段失败都立即停止并保留证据，不重试、不换参数。完成后提交 `codex/share/2026-07-15/dynamic_vamana_w1_one_percent_canary_results_0715.md`，随后停止，不启动 5%/10%/20%、W2 或其它数据集。
+
+**Codex(22:27:53)**：
+已按 execution gate 完成最后修订并进入正式流程。DGAI ingestion marker 已移至 `get_atlas_trace()` 后；两套 query binary 新增 P50/P95/P99 原始指标；formal 的固定三次 Recall gate、同一 flock 内 fresh preflight、CP01/GT 独立资源域和 DiskANN stale-static negative control 均已 fail-closed 接入。canonical v6 两次 clean build 的四个目标全部 byte-identical，OdinANN 两轮均由宿主 io_uring runtime、`USE_URING` 和 `ldd` 证明未回退 AIO。
+
+r08 在 update 前因我依据 r07 单次值设定的 SIFT1M 专用 sanity 区间过窄而停止，证据保留；formal 的 GPT 固定区间未改。修正 replay 独立区间后的 r09 完整通过，DGAI/OdinANN 的三次 pre gate、16-op update、active-set exact audit、base integrity 与 probe 均通过，OOM 为 0。当前正式 tmux `dv-w1-formal-0715` 已持有 global flock，`execution_preflight.json` 和 CP01 preparation 均通过，正在独立 `dv-w1-gt-cp01.scope` 计算 8M×10K exact GT。项目 NVMe 尚余约 1.3 TiB；GT 预计 5–14 小时，完成后将自动串行进入 DGAI、OdinANN 与 DiskANN control，任一失败立即停止，不会启动更高 churn。
