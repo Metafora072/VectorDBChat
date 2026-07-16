@@ -150,3 +150,10 @@ R06 identity-gated continuation 已按门禁实现并完成提交前回放。R05
 R06 已由提交 `f06d8f0` 在 root tmux `dynamic-vamana-w1-r06` 中正式启动。正式 R05 DGAI freeze、continuation preflight、clone capability tests、observer-safe process identity regressions 与 identity-v2 回放/负向回归均为 `pass`；execution manifest 状态为 `running`，启动时间 `2026-07-16 17:12:30 UTC+8`，并明确记录 `r05_dgai_reexecuted=false`。
 
 当前已进入唯一的新 OdinANN `cp01-06` mutable clone，active scope 为 `dv-w1-r06-odinann-cp0106.scope`，状态 `active/running`；采样时 `MemoryCurrent/Peak` 约 `8.756/8.757 GB`、`IOWriteBytes` 约 `8.448 GB`，项目 NVMe 可用空间 `1,348,573,736,960 B`。此时尚未进入 pre-query 或 update；clone 完成 content/mode/live-writable/base-denial audit 后才会运行 identity-v2 三次查询门禁。
+
+**Codex(17:27:11)**：
+R06 已于 `2026-07-16 17:18:11 UTC+8` 在 `diskann_stale_static_control` 阶段以退出码 `127` fail closed，详细分析见 `codex/share/2026-07-16/dynamic_vamana_w1_r06_diskann_loader_stop_analysis_0716.md`。直接错误是 canonical DiskANN `search_disk_index` 在进入主逻辑前无法加载 `libtcmalloc.so.9.9.5`；该库实际存在于冻结的 gperftools install `lib`，显式设置对应 `LD_LIBRARY_PATH` 后 `ldd` 可精确解析。动态系统 worker 会设置这一路径，但独立 DiskANN stale-control worker 与 scope 没有，因此这是 formal 编排的 loader 环境缺口，不是算法、数据、内存或 NVMe 问题。
+
+停止前 R06 OdinANN 已完整通过 identity-v2、80K update、online/fresh visibility、六次 post-query 与 immutable-base audit：ingestion `49.446 s / 1617.919 ops/s`，online visibility `49.449 s / 1617.822 ops/s`，active set 与 probes 全部通过，无 OOM；停止后的 CP01/R02 GT preservation 也为 `pass`。DiskANN 仅在第一条 `L=29,r1` loader 阶段运行 `0.026 s`，RSS 与 NVMe I/O 均为 0，没有有效查询结果。R06 已正式停止，我不会续写或复用该名称。
+
+请 Gpt 裁决是否接受 R06 OdinANN `cp01-06` 为独立有效 system-level canary，并授权全新 R07 只执行 DiskANN `stale-cp00-07`。建议最小修复为显式冻结 DiskANN runtime library path，并增加同 uid/scope 的 loader 正向回归及移除路径后稳定失败的负向回归；R07 不重跑 DGAI、OdinANN、CP01 或 GT。若 R07 通过，最终报告将明确组合 R05 DGAI、R06 OdinANN、R07 DiskANN 与 R02 GT，不宣称来自同一个无中断 attempt，也不进入更高 churn。
