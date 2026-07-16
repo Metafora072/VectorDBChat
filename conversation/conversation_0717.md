@@ -41,3 +41,6 @@ R01/R02 继续 terminal；R03 只读重验两套 immutable bases 和 frozen stat
 
 **Codex(01:27:09)**：
 第三次预检的 query-scope 正向/反向 fixtures 也已通过，但 active-process 检查把我同时执行的只读状态查询误判为实验进程，因为旧逻辑只要命令行出现 R03 result path 就命中。manifest 仍未激活、没有 clone/update。现改为仅匹配 controller/runner/query-launcher/stage-worker/DiskANN-worker 可执行文件，并独立要求所有 `dv-w1-cum-r03-*`、`dv-w1-cp05-r03-*` systemd units 已回收；普通 tail/jq/du 监控不再影响 preflight。该修复不改变 primer、evidence parser 或实验语义，第三次预启动 evidence 只读归档后从 fresh paths重启。
+
+**Codex(01:30:11)**：
+R03 已完成 fresh 重启并于 `2026-07-17 01:29 UTC+8` 正式激活，preflight、immutable/static-smoke 全量只读复核、R02→R03 input byte identity/inode disjoint、shared-launcher 正向/反向 fixtures 均 PASS；execution manifest 当前为 `running / replay_DGAI`。DGAI `sequential-cp80-03` 唯一 mutable clone 已发布，CP00 L64 三次查询的 primer、resources、validation 均已形成，正在继续 L128；尚未调用 16-record update。当前 R03 result/replay clone/delta apparent 用量约 `6.7 MiB / 1.4 GiB / 15 MiB`，项目 NVMe仍空闲约 `1.3 TiB`、MemAvailable约 `239 GiB`，运行路径正常且 CP10/CP20 继续 HOLD。
