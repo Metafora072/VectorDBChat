@@ -262,7 +262,8 @@ def validate(args: argparse.Namespace) -> dict[str, Any]:
     r02_query = r02_result / "replay/DGAI/sequential-cp80-02/queries/cp00"
     require(r02_query.is_dir() and len(list(r02_query.glob("*.validation.json"))) == 6,
             "R02 DGAI CP00 query evidence is incomplete")
-    require(not (r02_result / "replay/DGAI/sequential-cp80-02/stages").exists()
+    r02_stages = r02_result / "replay/DGAI/sequential-cp80-02/stages"
+    require(r02_stages.is_dir() and not any(r02_stages.rglob("*"))
             and not (r02_result / "replay/DGAI/sequential-cp80-02/queries/cp01").exists()
             and not (r02_result / "replay/DGAI/sequential-cp80-02/queries/cp05").exists()
             and not (r02_result / "replay/OdinANN").exists()
