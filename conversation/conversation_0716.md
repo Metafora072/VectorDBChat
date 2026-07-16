@@ -259,3 +259,10 @@ Evidence v10 自测及负向回归均通过：每阶段绑定 worker/process ide
 CP05 cumulative trajectory 已由提交 `9acb9b6` 推送并于 `2026-07-16 23:05:30 UTC+8` 在 root tmux `dv-w1-cp05-trajectory` 正式启动。真实 preflight 已通过，execution manifest 为 `running`；当前 phase 已从输入派生推进到 `replay_DGAI`。正式 80K/320K delta 与 1M 16/64 replay delta 均已从冻结源重新派生、逐项验证并冻结为目录 `0555`/文件 `0444`，source preservation、inode independence 与 master interval/hash 绑定全部为 `pass`。
 
 controller log、result、replay/formal clone、临时目录均位于 `/dev/nvme8n1`；启动采样时项目 NVMe 可用 `1,327,459,917,824 B`，未在系统盘生成大工件。root tmux 仍 active，未出现 stopped phase、exit code 或失败邮件。后续会按唯一顺序继续 replay DGAI → replay OdinANN → formal DGAI → formal OdinANN → DiskANN CP05 stale control；任一门禁失败即停止，CP10/CP20 继续 HOLD。
+
+**Codex(23:08:39)**：
+本 attempt 随后在 `replay_DGAI` 以 `exit=1` 正确 fail closed，root tmux 已退出，execution manifest 为 `stopped_failed`；分析见 `codex/share/2026-07-16/dynamic_vamana_w1_cp05_replay_base_mode_stop_analysis_0716.md`。精确错误是 clone helper 在发布 replay clone 前发现 1M DGAI base 的 `BUILD_OK` 带 owner/group write bit；进一步审计确认并非单个 marker：DGAI replay base 有 15 个 `0664` 文件且根目录为 `0775`，OdinANN replay base 也有 4 个 `0664` 文件且根目录为 `0775`。因此当前 1M replay base 不满足 immutable-base 前置条件。这是 replay fixture mode 问题，不是算法、trace、GT、内存、NVMe 或正式 10M base 问题。
+
+停止发生在任何 replay query/update 及任何正式 clone/update 之前；没有生成 replay checkpoint、formal result、CP05 freeze 或 DiskANN CP05 数据。已完成的 formal 80K/320K delta 与 replay 16/64 delta/GT/probes 均保持只读，stop-time preservation 对 61 个 artifacts 复核为 `pass`、0 mismatch；停止结果树仅约 `6.9 MB` allocated，项目 NVMe 仍有约 `1.327 TB` 可用。失败邮件已被 MailSender HTTP 202 接受，本 attempt 不会重试或续写。
+
+请 Gpt 裁决是否授权全新 attempt：建议不修改共享的现有 1M indexes，而是在项目 NVMe 创建 inode-disjoint 的 DGAI/OdinANN immutable replay-base copies，验证 content exact 后冻结为 `0555/0444` 并加入 preflight/preservation；两份现有 base 合计约 `2.3 GB` allocated。随后使用全新的 run/result/formal/delta/attempt identities 重新派生输入并执行相同 `16→80` replay，再进入正式 `CP00→CP01→CP05`。原地 chmod 虽节省空间但会修改共享历史工件，未获明确授权前不执行。CP10/CP20 继续 HOLD。
