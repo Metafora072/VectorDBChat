@@ -6,8 +6,8 @@ The runner creates this exact layout beneath ``--smoke-root``::
   DGAI/
     base_content_before.tsv  base_mode_before.tsv
     base_content_after.tsv   base_mode_after.tsv
-    L64.{metrics.json,validation.json,resources.json,log,result_ids.bin}
-    L128.{metrics.json,validation.json,resources.json,log,result_ids.bin}
+    L64.{cache_evict.json,metrics.json,validation.json,resources.json,log,result_ids.bin}
+    L128.{cache_evict.json,metrics.json,validation.json,resources.json,log,result_ids.bin}
   OdinANN/
     ... same manifests ...
     L29.*  L46.*
@@ -76,6 +76,53 @@ def write_new(path: Path, value: dict[str, Any]) -> None:
         json.dump(value, stream, indent=2)
         stream.write("\n")
         stream.flush(); os.fsync(stream.fileno())
+
+
+def evict_cache(args: argparse.Namespace) -> None:
+    """Evict only this immutable tree; device I/O later proves effectiveness."""
+    require(os.geteuid() == 0, "cache eviction requires root")
+    root = args.index_root.resolve(strict=True)
+    root_info = root.lstat()
+    require(stat.S_ISDIR(root_info.st_mode) and stat.S_IMODE(root_info.st_mode) == 0o555,
+            "cache eviction root is not an immutable 0555 directory")
+    actual_device = f"{os.major(root_info.st_dev)}:{os.minor(root_info.st_dev)}"
+    require(actual_device == args.device, f"cache eviction device mismatch: {actual_device}")
+    files: list[Path] = []
+    for directory, dirnames, filenames in os.walk(root, followlinks=False):
+        base = Path(directory)
+        for name in sorted(dirnames):
+            item = base / name; info = item.lstat()
+            require(stat.S_ISDIR(info.st_mode) and stat.S_IMODE(info.st_mode) == 0o555,
+                    f"non-immutable directory in cache eviction tree: {item}")
+        for name in sorted(filenames):
+            item = base / name; info = item.lstat()
+            require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1
+                    and stat.S_IMODE(info.st_mode) == 0o444,
+                    f"unsafe file in cache eviction tree: {item}")
+            files.append(item)
+    def snapshot(path: Path) -> tuple[int, ...]:
+        info = path.lstat()
+        return (info.st_dev, info.st_ino, info.st_size, info.st_uid, info.st_gid,
+                stat.S_IMODE(info.st_mode), info.st_nlink, info.st_mtime_ns)
+    before = {path: snapshot(path) for path in files}; total = 0
+    for path in files:
+        fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW)
+        try:
+            info = os.fstat(fd)
+            require((info.st_dev, info.st_ino) == before[path][:2],
+                    f"cache eviction file identity raced: {path}")
+            os.posix_fadvise(fd, 0, 0, os.POSIX_FADV_DONTNEED)
+            total += info.st_size
+        finally:
+            os.close(fd)
+    require(all(snapshot(path) == expected for path, expected in before.items()),
+            "immutable tree metadata changed during cache eviction")
+    write_new(args.output, {
+        "schema": "dynamic-vamana-w1-per-file-cache-eviction-v1", "status": "pass",
+        "root_realpath": str(root), "device": actual_device,
+        "advice": "POSIX_FADV_DONTNEED", "regular_file_count": len(files),
+        "total_file_bytes": total, "content_or_mode_modified": False,
+        "proof_boundary": "subsequent cgroup device-read delta"})
 
 
 def all_finite(value: Any, label: str = "metrics") -> None:
@@ -197,10 +244,18 @@ def validate(args: argparse.Namespace) -> dict[str, Any]:
             stem = long_stem if Path(f"{long_stem}.metrics.json").is_file() else short_stem
             paths = {name: Path(f"{stem}.{suffix}") for name, suffix in {
                 "metrics": "metrics.json", "validation": "validation.json", "resources": "resources.json",
-                "log": "log", "result_ids": "result_ids.bin"}.items()}
+                "log": "log", "result_ids": "result_ids.bin", "cache_eviction": "cache_evict.json"}.items()}
             for name, path in paths.items():
                 require(path.is_file() and path.stat().st_size > 0, f"{system} L{l_value} {name} missing")
             metrics, validation, resource = load(paths["metrics"]), load(paths["validation"]), load(paths["resources"])
+            cache_eviction = load(paths["cache_eviction"])
+            require(cache_eviction.get("schema") == "dynamic-vamana-w1-per-file-cache-eviction-v1"
+                    and cache_eviction.get("status") == "pass"
+                    and Path(cache_eviction.get("root_realpath", "")).resolve(strict=True) == immutable
+                    and cache_eviction.get("device") == args.device
+                    and cache_eviction.get("advice") == "POSIX_FADV_DONTNEED"
+                    and cache_eviction.get("content_or_mode_modified") is False,
+                    f"{system} L{l_value} cache-eviction evidence invalid")
             all_finite(metrics)
             require(all(field in metrics and math.isfinite(float(metrics[field])) for field in METRIC_FIELDS),
                     f"{system} L{l_value} metric missing/non-finite")
@@ -290,13 +345,19 @@ def parser() -> argparse.ArgumentParser:
     test = sub.add_parser("self-test")
     test.add_argument("--scratch", type=Path, required=True)
     test.add_argument("--output", type=Path, required=True)
+    evict = sub.add_parser("evict-cache")
+    evict.add_argument("--index-root", type=Path, required=True)
+    evict.add_argument("--device", default="259:10")
+    evict.add_argument("--output", type=Path, required=True)
     return top
 
 
 def main() -> None:
     args = parser().parse_args()
     try:
-        self_test(args) if args.command == "self-test" else validate(args)
+        if args.command == "self-test": self_test(args)
+        elif args.command == "evict-cache": evict_cache(args)
+        else: validate(args)
     except (KeyError, OSError, ValueError, json.JSONDecodeError) as exc:
         raise SystemExit(str(exc)) from exc
 

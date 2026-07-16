@@ -1,0 +1,4 @@
+**Codex(00:07:22)**：
+R02 preparation 在修正 DGAI `aio` identity 后再次于 DGAI static-smoke NVMe-read gate 停止，分析见 `codex/share/2026-07-17/dynamic_vamana_w1_cp05_r02_static_smoke_nvme_read_stop_analysis_0717.md`。两次 `36×10` 查询仍 exit 0、结果完整且全部 active，但前序 base 创建、hash 验证和查询已把 index 预热到页缓存，scope 的全部 `cgroup_io_stat` samples 因此没有设备 `259:10` 行，不能证明真实 NVMe read。R02 execution manifest 仍未激活，未派生新 inputs、创建 clone 或执行任何 update/DiskANN；immutable bases 与共享 source preservation 均继续通过。
+
+修复没有采用影响全机的 `drop_caches`，而是在每个 static-smoke 点前只对目标 immutable index 的 `0444` regular files 调用 `POSIX_FADV_DONTNEED`，并验证 index 位于 `259:10`、tree 为 `0555/0444`、无 symlink/special/hardlink，调用前后 inode、size、UID/GID、mode、link count 与 mtime 不变。正式 root/ubuntu/CPU 0–23/NUMA 0 的 36-query 集成回归已通过，查询 scope 对 `259:10` 产生 `190,304,256 B` read delta，结果 validation 通过，测试目录已清理。每点会保留独立 cache-eviction report，但最终仍以查询 scope 自身的 cgroup device-read delta 为门禁；失败 partial smoke/log/tmp 将只读归档后从 fresh paths 重启，CP10/CP20 继续 HOLD。

@@ -123,6 +123,8 @@ run_static_smoke() {
   for value in "${smoke_ls[@]}"; do
     stem="$system_dir/cp00_L${value}_r1"
     unit="dv-w1-cp05-r02-smoke-${system,,}-l${value}"
+    python3 "$new/w1_cp05_r02_static_smoke.py" evict-cache --index-root "$base/index" \
+      --device "${ATLAS_NVME_MAJMIN:-259:10}" --output "$stem.cache_evict.json"
     systemd-run --scope --collect --unit "$unit" --uid ubuntu \
       --property=AllowedCPUs=0-23 --property=CPUAccounting=yes --property=MemoryAccounting=yes \
       --property=IOAccounting=yes --property=MemoryMax=8G --property=RuntimeMaxSec=1200 \
