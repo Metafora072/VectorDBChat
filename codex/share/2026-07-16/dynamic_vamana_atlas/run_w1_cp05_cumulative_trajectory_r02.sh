@@ -133,6 +133,8 @@ run_static_smoke() {
         OPENBLAS_NUM_THREADS=8 OMP_NUM_THREADS=8 ATLAS_ROOT="$root" \
         ATLAS_NVME_MAJMIN="${ATLAS_NVME_MAJMIN:-259:10}" \
       prlimit --core=0:0 -- numactl --physcpubind=0-23 --membind=0 \
+        python3 "$new/w1_cp05_r02_static_smoke.py" prime-scope \
+          --prime-file "$base/index/index_disk.index" --device "${ATLAS_NVME_MAJMIN:-259:10}" -- \
         python3 "$old/resource_probe.py" --output "$stem.resources.json" --interval-ms 25 \
           --space-root "$base/index" -- \
         "$old/w1_query_worker.sh" "$system" "$binary" "$base/index/index" \

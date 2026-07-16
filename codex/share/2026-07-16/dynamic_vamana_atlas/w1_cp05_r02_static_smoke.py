@@ -27,6 +27,7 @@ import os
 import re
 import stat
 import struct
+import subprocess
 import tempfile
 from pathlib import Path
 from typing import Any
@@ -123,6 +124,21 @@ def evict_cache(args: argparse.Namespace) -> None:
         "advice": "POSIX_FADV_DONTNEED", "regular_file_count": len(files),
         "total_file_bytes": total, "content_or_mode_modified": False,
         "proof_boundary": "subsequent cgroup device-read delta"})
+
+
+def prime_scope(args: argparse.Namespace) -> None:
+    """Create the device io.stat row before the resource-probe baseline."""
+    prime = args.prime_file.resolve(strict=True); info = prime.lstat()
+    require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1
+            and stat.S_IMODE(info.st_mode) == 0o444, "scope-primer file is not immutable")
+    actual_device = f"{os.major(info.st_dev)}:{os.minor(info.st_dev)}"
+    require(actual_device == args.device, f"scope-primer device mismatch: {actual_device}")
+    command = list(args.child_command)
+    if command and command[0] == "--": command.pop(0)
+    require(bool(command), "scope-primer child command absent")
+    subprocess.run(["dd", f"if={prime}", "of=/dev/null", "iflag=direct", "bs=4096",
+                    "count=1", "status=none"], check=True)
+    os.execvp(command[0], command)
 
 
 def all_finite(value: Any, label: str = "metrics") -> None:
@@ -349,6 +365,10 @@ def parser() -> argparse.ArgumentParser:
     evict.add_argument("--index-root", type=Path, required=True)
     evict.add_argument("--device", default="259:10")
     evict.add_argument("--output", type=Path, required=True)
+    prime = sub.add_parser("prime-scope")
+    prime.add_argument("--prime-file", type=Path, required=True)
+    prime.add_argument("--device", default="259:10")
+    prime.add_argument("child_command", nargs=argparse.REMAINDER)
     return top
 
 
@@ -357,8 +377,9 @@ def main() -> None:
     try:
         if args.command == "self-test": self_test(args)
         elif args.command == "evict-cache": evict_cache(args)
+        elif args.command == "prime-scope": prime_scope(args)
         else: validate(args)
-    except (KeyError, OSError, ValueError, json.JSONDecodeError) as exc:
+    except (KeyError, OSError, ValueError, json.JSONDecodeError, subprocess.CalledProcessError) as exc:
         raise SystemExit(str(exc)) from exc
 
 
