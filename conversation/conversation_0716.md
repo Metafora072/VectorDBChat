@@ -68,19 +68,26 @@ R04 continuation 门禁见 `gpt/share/2026-07-16/dynamic_vamana_w1_r04_continuat
 
 R04 只读复用 R02 GT `4703d2...2c28` 和现有 CP01，从 DGAI 系统阶段开始，随后串行执行 OdinANN 与 DiskANN stale control。参数与全部 Recall、active-set、visibility、I/O、OOM、base-integrity 门禁保持不变。任一失败立即停止；完成后提交 `codex/share/2026-07-16/dynamic_vamana_w1_one_percent_canary_r04_results_0716.md`，不进入更高 churn。
 
-**Codex(04:28:14)**：
+**Codex(12:28:14)**：
 R04 observer-safe continuation 已按门禁实现并完成提交前验证。新的 `w1_process_identity.py` 不再扫描整行命令文本，而是先拒绝所有 active `dv-w1-*.scope`，再依据 `/proc/<pid>/exe`、目标进程 `/proc/<pid>/cwd` 与 interpreter 实际 script argument 解析 canonical worker 身份；`bash -c`、`zsh -lc`、`python -c`、正则、JSON、普通参数和 Codex sandbox 命令行均不会参与身份推断。回归覆盖 16 个固定 fixture、受控 `dv-w1-stale-fixture.scope` 的检测与显式停止、停止后的完整 scan、ancestor 排除，以及 6 个冻结二进制 SHA256，全部通过。
 
 Clone helper 已改为由 `W1_ALLOWED_CLONE_TARGET/SYSTEM/RUN/ATTEMPT` 四元 capability 推导唯一 target，不增加 `pilot3_sift10m_w1_r*` 通配规则，也不再静态绑定 R04 路径。Preflight-only 矩阵包含 2 个正向和 16 个负向用例，覆盖其他 run、其他 attempt、cross-system、缺失 capability、symlink escape、已存在 target 与错误设备；所有用例均在 clone 和目录创建前得到预期结果，测试结束后 R04 result/formal 仍不存在。独立只读代码审计指出的相对脚本路径、scope 状态覆盖、完整二次 scan、capability 泛化和 controller PPID chain 问题均已修正。
 
 正式执行将使用全新 `pilot3_sift10m_w1_r04`、`cp01-04` 与 `stale-cp00-04`，在同一个 global flock 内依次执行身份回归、continuation preflight、clone capability 测试、DGAI 80K、OdinANN 80K、DiskANN stale-static control 和最终 preservation audit。实验根位于项目 NVMe `/dev/nvme8n1`，当前可用空间约 1.3 TiB；预计新增持久化空间约 25–50 GiB，保守 wall time 为 1–4 小时。每个系统现有门禁会继续记录实际 wall time、峰值内存、NVMe I/O 与 allocated space。代码提交并推送后将从独立 tmux 启动，任一阶段失败立即停止且不自动重试。
 
-**Codex(04:31:56)**：
+**Codex(12:31:56)**：
 R04 已由提交 `066500b` 在 root tmux `dynamic-vamana-w1-r04` 中正式启动。正式 `process_identity_tests.json`、continuation preflight 和 clone capability tests 均为 `pass`：R03 controller log SHA256、R02 GT SHA256、CP01 固定 1,025 row、canonical binaries、OdinANN `io_uring`、三套 immutable base、项目 NVMe `259:10`、global-lock inode、controller PPID chain 与 observer-safe identity scan 全部重新核验通过；clone tests 为 2 个正向和 16 个负向，测试后 formal target 仍为空。
 
 当前已进入 DGAI `cp01-04`，active scope 为 `dv-w1-r04-dgai-cp0104.scope`，正在完成 immutable base clone。该 clone 的逻辑目录大小约 14.13 GB，但启动时 NVMe free-space 仅减少约 32 KB，符合 reflink 共享数据块的预期；scope 当前 `MemoryCurrent` 约 14.57 GB、`MemoryPeak` 约 14.57 GB。Execution manifest 状态为 `running`，启动时间为 `2026-07-16T04:31:08.184560+00:00`，初始可用空间为 1,393,824,280,576 B。后续仍严格串行执行 DGAI、OdinANN 与 DiskANN stale control，不启动更高 churn。
 
-**Codex(04:33:47)**：
+**Codex(12:33:47)**：
 更正上一条 clone 空间判断：上一条采样发生在 copy 尚未完成时，不能据当时约 32 KB 的 free-space 变化推断 reflink 成功。DGAI `clone_manifest.json` 最终记录的模式为 `copy_or_filesystem_reflink_auto`，clone 完成后的 NVMe 可用空间为 1,379,690,196,992 B，相对 execution manifest 初始值实际减少约 14.13 GB；该用量仍在本轮 25–50 GiB 总预算内。
 
 DGAI 已越过 clone 并完成首组三次 pre-update query 校验，Recall@10 分别为 `0.9514`、`0.9507` 和 `0.9513`，三次结果均满足 `all_result_ids_active=true`。当前 scope 保持 `active/running`，`MemoryCurrent` 约 17.06 GB、`MemoryPeak` 约 17.10 GB，execution manifest 仍为 `running`，没有 `stopped_phase` 或 `exit_code`。
+
+**Codex(13:37:18)**：
+R04 已于 `2026-07-16 12:34:24 UTC+8` 在 `DGAI_canary` 阶段以退出码 `255` fail closed，停止报告为 `codex/share/2026-07-16/dynamic_vamana_w1_one_percent_canary_r04_results_0716.md`。正式 process-identity regressions、continuation preflight、clone capability tests 和 DGAI pre-update gate 均已通过。DGAI 完成了 `L=64/128` 各 3 次 pre-update query，median Recall@10 分别为 `0.9513` 和 `0.9800`，所有返回 ID 均属于 checkpoint-0 active set。OdinANN 与 DiskANN 未启动，R04 停止后的 R02 GT/CP01 preservation audit 为 `pass`。
+
+失败位置已经由只读证据确定。R04 private clone 中的 `index/index_disk.index` 文件存在、大小为 `5,461,340,160 B`、属主为 `ubuntu:ubuntu`，但模式为 `0444`；其父 `index/` 目录模式为 `0555`。Base 中对应文件同样为 `0444`，而 `w1_clone_base.sh` 使用 `cp -a` 保留了 immutable base 的权限。DGAI update driver 已写入 `clone_ready` 与 `index_loaded` marker，随后关闭只读 reader，并在 canonical v6 `w1_canary.cpp` 中调用 `reader->open(prefix + "_disk.index", true, false)`；`LinuxAlignedFileReader::open()` 因 `enable_writes=true` 使用 `O_RDWR`，因此以 `ubuntu` 身份重开 `0444` 文件时打印 `open file failed`。日志中不存在 `ingest_begin` marker，故 80,000 insert/delete 尚未开始；DGAI update resource probe 仅运行 `1.903 s`，cgroup 的 `oom` 与 `oom_kill` 均为 `0`。这支持基础设施权限传播失败，不支持 DGAI 算法或内存容量失败。
+
+请 Gpt 审议是否授权新的 R05 continuation，而不是修改或复用 R04。建议最小门禁是在 private clone 完成内容 identity 校验后、进入任何 query/update 前，仅对 capability 指定的新 clone 执行可审计的 writable-permission normalization，并记录修改前后 mode manifest；immutable base 的内容与 mode 必须保持不变。回归应证明 private clone 的 update-required 文件可由运行用户以 `O_RDWR` 打开、base 对应文件仍拒绝写入、错误 target 与 symlink escape 仍在权限变更前失败。若授权，R05 应使用全新 run/attempt 命名，只读复用 R02 GT 与 CP01，重新执行 pre-update gate 后再进入 DGAI 80K；任一失败继续立即停止，不自动启动 OdinANN 或 DiskANN。
