@@ -38,3 +38,6 @@ R01/R02 继续 terminal；R03 只读重验两套 immutable bases 和 frozen stat
 
 **Codex(01:24:06)**：
 第二次预启动已完成真实 shared-launcher integration gate：DGAI L64 baseline/final 为 `4,096→29,835,264 B`、query delta `29,831,168 B/7,283 I/O`，OdinANN L29 为 `4,096→6,746,112 B`、delta `6,742,016 B/1,646 I/O`，两者 `36×10` 全 active、无 OOM、primer 不计入 delta；无-primer fixture 首样本没有 `259:10` 行，严格 parser按预期拒绝。随后 preflight 因把 R02 的空 `stages/` 预建父目录误判成 update evidence 而停止；R02 实际仍无 `STAGE_WORKER_OK`、stage evidence、CP01/CP05、OdinANN/formal/DiskANN。门禁现修正为允许空父目录、拒绝其中任何对象；execution manifest仍未激活，未创建 clone或调用 update API，第二次预启动 evidence 将只读归档后再从 fresh R03 paths 启动。
+
+**Codex(01:27:09)**：
+第三次预检的 query-scope 正向/反向 fixtures 也已通过，但 active-process 检查把我同时执行的只读状态查询误判为实验进程，因为旧逻辑只要命令行出现 R03 result path 就命中。manifest 仍未激活、没有 clone/update。现改为仅匹配 controller/runner/query-launcher/stage-worker/DiskANN-worker 可执行文件，并独立要求所有 `dv-w1-cum-r03-*`、`dv-w1-cp05-r03-*` systemd units 已回收；普通 tail/jq/du 监控不再影响 preflight。该修复不改变 primer、evidence parser 或实验语义，第三次预启动 evidence 只读归档后从 fresh paths重启。

@@ -192,13 +192,30 @@ def active_w1_processes() -> list[dict[str, Any]]:
         except (OSError, ValueError, IndexError):
             break
     rows = []
+    executable_tokens = (
+        "run_w1_cp05_cumulative_trajectory_r03.sh",
+        "start_w1_cp05_cumulative_r03_tmux.sh",
+        "w1_run_cumulative_trajectory_r03.sh",
+        "w1_cumulative_stage_worker.sh",
+        "w1_run_query_scope.sh",
+        "w1_run_diskann_cp05_stale_r03.sh",
+    )
     for item in Path("/proc").iterdir():
         if not item.name.isdigit() or int(item.name) in own: continue
         try: command = (item / "cmdline").read_bytes().replace(b"\0", b" ").decode(errors="replace")
         except OSError: continue
-        if any(token in command for token in (R03_RUN, R03_REPLAY_RUN, "w1_run_cumulative_trajectory.sh")):
+        if any(token in command for token in executable_tokens):
             rows.append({"pid": int(item.name), "command": command[:4096]})
     return rows
+
+
+def active_w1_units() -> list[str]:
+    completed = subprocess.run(
+        ["systemctl", "list-units", "--all", "--plain", "--no-legend",
+         "dv-w1-cum-r03-*", "dv-w1-cp05-r03-*"],
+        check=True, text=True, capture_output=True,
+    )
+    return [line.split()[0] for line in completed.stdout.splitlines() if line.split()]
 
 
 def validate(args: argparse.Namespace) -> dict[str, Any]:
@@ -346,7 +363,8 @@ def validate(args: argparse.Namespace) -> dict[str, Any]:
                 and not any(result.glob("DiskANN/**")), "R03 result attempt not fresh")
     require(not formal.exists() and not replay_formal.exists(), "R03 formal/replay clone target not fresh")
     require(not args.report.exists(), "R03 final report target is not fresh")
-    active = active_w1_processes(); require(not active, "active W1 process exists")
+    active = active_w1_processes(); units = active_w1_units()
+    require(not active and not units, "active W1 process/scope exists")
     for path in (root, formal.parent, replay_formal.parent, delta.parent):
         require(mount_device(path) == expected_device, f"large artifact path not on NVMe: {path}")
     free, memory = shutil.disk_usage(root).free, available_memory()
@@ -377,7 +395,8 @@ def validate(args: argparse.Namespace) -> dict[str, Any]:
             "replay_formal_root": str(replay_formal), "delta_root": str(delta),
             "replay_input_root": str(replay_inputs), "report": str(args.report.resolve(strict=False))},
         "experiment_device": expected_device, "free_bytes": free, "memory_available_bytes": memory,
-        "active_w1_processes": active, "held_checkpoints": ["CP10", "CP20"]}
+        "active_w1_processes": active, "active_w1_units": units,
+        "held_checkpoints": ["CP10", "CP20"]}
     write_new(output, report); return report
 
 
