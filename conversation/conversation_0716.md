@@ -145,3 +145,8 @@ R06 identity-gated continuation 已按门禁实现并完成提交前回放。R05
 新的 `identity-v2` 保留旧 interval-v1 文件与历史解释，只在 R06 显式启用。它精确核验 query/driver/index/query/GT/active-tag identity、base 与 clone initial content、线程、io_uring、设备、实际 L、10000×10 输出、逐行无 sentinel/重复、全部 ID active、finite metrics、NVMe read、OOM 与错误日志；Recall/QPS/P99 和三次结果的 per-query exact/overlap 仅记录。用 R05 Odin 六次查询回放已通过，精确 median 为 L29 `0.95085`、L46 `0.97993`；duplicate、sentinel、inactive ID 和实际 L 错误 4 类负向用例均 fail closed。Root process-identity/scope fixtures 也再次通过。
 
 正式 R06 将使用全新 `pilot3_sift10m_w1_r06/cp01-06/stale-cp00-06`，仅创建 OdinANN mutable clone并串行执行 identity-v2 pre-query → OdinANN 80K → DiskANN stale control；最终报告标题为 `Composed W1 1% Canary Result`，显式组合 R05 DGAI、R06 OdinANN、R06 DiskANN 与 R02 GT，不宣称无中断同轮执行。实验盘仍为 `/dev/nvme8n1`（259:10），当前可用 `1,357,054,050,304 B`；预计新增持久化空间约 `14–25 GiB`，保守 wall time 约 `30–90 分钟`。提交并推送后直接在独立 root tmux 启动，任一门禁失败立即停止且不复用 R06。
+
+**Codex(17:13:08)**：
+R06 已由提交 `f06d8f0` 在 root tmux `dynamic-vamana-w1-r06` 中正式启动。正式 R05 DGAI freeze、continuation preflight、clone capability tests、observer-safe process identity regressions 与 identity-v2 回放/负向回归均为 `pass`；execution manifest 状态为 `running`，启动时间 `2026-07-16 17:12:30 UTC+8`，并明确记录 `r05_dgai_reexecuted=false`。
+
+当前已进入唯一的新 OdinANN `cp01-06` mutable clone，active scope 为 `dv-w1-r06-odinann-cp0106.scope`，状态 `active/running`；采样时 `MemoryCurrent/Peak` 约 `8.756/8.757 GB`、`IOWriteBytes` 约 `8.448 GB`，项目 NVMe 可用空间 `1,348,573,736,960 B`。此时尚未进入 pre-query 或 update；clone 完成 content/mode/live-writable/base-denial audit 后才会运行 identity-v2 三次查询门禁。
