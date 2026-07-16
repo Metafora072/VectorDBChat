@@ -249,6 +249,8 @@ def validate(args: argparse.Namespace) -> dict[str, Any]:
         require(current == expected, f"protected trajectory/GT/base/binary artifact changed: {name}")
         protected[name] = current
     artifact = load(args.artifact_manifest)
+    require(artifact.get("systems", {}).get("DGAI", {}).get("io_engine") == "aio",
+            "DGAI canonical aio identity absent")
     require(artifact.get("systems", {}).get("OdinANN", {}).get("io_engine") == "uring",
             "OdinANN canonical io_uring identity absent")
     artifact_anchor = prior.get("artifact_manifest")

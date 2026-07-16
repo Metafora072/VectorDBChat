@@ -112,7 +112,7 @@ run_static_smoke() {
   local system=$1 ls io base driver binary system_dir value stem unit active_n
   base="$replay_base_root/$system/cp00"
   driver="$canonical/$system/w1_canary"; binary="$canonical/$system/search_disk_index"
-  if [[ $system == DGAI ]]; then ls=64,128; io=pread; else ls=29,46; io=uring; fi
+  if [[ $system == DGAI ]]; then ls=64,128; io=aio; else ls=29,46; io=uring; fi
   system_dir="$smoke_root/$system"
   active_n=$(python3 -c 'import struct,sys; print(struct.unpack("<I",open(sys.argv[1],"rb").read(4))[0])' \
     "$root/datasets/sift1m/active_cp00.tags.bin")
@@ -222,7 +222,7 @@ run_replay_system() {
   local system=$1 base driver query_binary ls io
   if [[ $system == DGAI ]]; then
     base="$replay_base_root/DGAI/cp00/index"; driver="$canonical/DGAI/w1_canary"
-    query_binary="$canonical/DGAI/search_disk_index"; ls=64,128; io=pread
+    query_binary="$canonical/DGAI/search_disk_index"; ls=64,128; io=aio
   else
     base="$replay_base_root/OdinANN/cp00/index"; driver="$canonical/OdinANN/w1_canary"
     query_binary="$canonical/OdinANN/search_disk_index"; ls=29,46; io=uring
@@ -255,7 +255,7 @@ run_formal_system() {
   local system=$1 base driver query_binary ls io
   if [[ $system == DGAI ]]; then
     base="$root/formal/pilot3_sift10m_p1r08/f0/DGAI/p1r08-dgai-01/index"
-    driver="$canonical/DGAI/w1_canary"; query_binary="$canonical/DGAI/search_disk_index"; ls=64,128; io=pread
+    driver="$canonical/DGAI/w1_canary"; query_binary="$canonical/DGAI/search_disk_index"; ls=64,128; io=aio
   else
     base="$root/formal/pilot3_sift10m_p1r08/f0/OdinANN/p1r08-odin-01/index"
     driver="$canonical/OdinANN/w1_canary"; query_binary="$canonical/OdinANN/search_disk_index"; ls=29,46; io=uring
