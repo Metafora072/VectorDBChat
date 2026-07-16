@@ -118,3 +118,12 @@ R05 clone manifest v3 与最终报告会把 clone/normalization 作为 preparati
 R05 已由提交 `11d99c9` 在 root tmux `dynamic-vamana-w1-r05` 中正式启动。正式 process-identity regressions、continuation preflight、`20/20` mutable-clone regressions 与 `18/18` exact clone-capability tests 均为 `pass`；execution manifest 状态为 `running`，启动时间为 `2026-07-16 14:39:29 UTC+8`，设备为项目 NVMe `259:10`，初始可用空间 `1,379,686,342,656 B`。
 
 当前已进入 DGAI `cp01-05` 的 capability-bound private clone，active scope 为 `dv-w1-r05-dgai-cp0105.scope`。实体复制已消耗约 `14,130,757,632 B`，与 R04 观测的 DGAI base 逻辑大小一致且仍在总空间预算内；scope 当前 `MemoryCurrent` 约 `14.57 GB`、`MemoryPeak` 约 `14.58 GB`，`IOWriteBytes` 约 `7.09 GB`，状态为 `active/running`。此时 target 仍是未发布的 `.partial.$PID`，权限 normalization、live writable/base-denial audit 和 atomic publish 尚在随后门禁中；只有全部通过后才会进入 DGAI pre-update query 与 80K update。
+
+**Codex(16:42:09)**：
+R05 已于 `2026-07-16 14:49:45 UTC+8` 在 `OdinANN_canary` 阶段以退出码 `1` fail closed，详细分析见 `codex/share/2026-07-16/dynamic_vamana_w1_r05_odin_preupdate_stop_analysis_0716.md`。DGAI 已完整通过 mutable clone、pre-update gate、80K update、fresh visibility、post-query 与 immutable-base audit；OdinANN 已通过 mutable clone，但在任何 marker/update API 之前被 pre-update Recall gate 拒绝，DiskANN 未启动，停止后的 CP01/R02 GT preservation 为 `pass`。
+
+直接触发条件是 OdinANN `L=46` 三次 Recall@10 为 `0.9798/0.9799/0.9799`，median `0.9799`，比冻结区间 `[0.9800,0.9850]` 的下界低 `0.0001`；未舍入 driver metrics 为 `97.983%/97.993%/97.994%`，median `0.97993`，仍低 `0.00007`。`L=29` 的 `0.9510/0.9508/0.9496` median `0.9508` 已通过。六次 query 均 exit 0、真实读取 NVMe、无 OOM/fatal/I/O error，全部返回 ID active。Odin clone/base content exact，权限与 live writable/base-denial audit 通过；停止后 base content/mode 也与 preflight 冻结版本逐字节一致。
+
+历史 P2B 的 Odin `L=46` 为 `0.9803/0.9805/0.9806`，但 archived query binary SHA256 为 `6472b8ce...defd14`，R05 canonical v6 query binary 为 `dc9c3af0...d3d77a`。W1 patches 按设计不改 traversal，但两个 binary 并非 byte-identical；同时 R05 三次 top-10 结果存在小幅 run-to-run 差异。因此这是 canonical-binary interval provenance/tolerance 的裁决问题，不是可由 Codex 修复的执行 bug。擅自降低门限、增加正式重复、改指标、改变 L 或续写 R05 都会改变审议规则。
+
+请 Gpt 裁决是否授权全新 R06：先以 canonical v6 对 immutable base 做只读重复 calibration 并冻结 interval，再用新 `pilot3_sift10m_w1_r06/cp01-06/stale-cp00-06` continuation；同时请明确是否只从 OdinANN 开始并引用已完成的 R05 DGAI 证据，或要求 DGAI 重跑，以及 calibration 次数、精确指标和 tolerance 规则。在新 gate 发布前我不会修改 `w1_preupdate_gate.py`、重跑/续写 R05 或启动 R06。
