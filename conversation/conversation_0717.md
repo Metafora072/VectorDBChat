@@ -49,3 +49,41 @@ R03 已完成 fresh 重启并于 `2026-07-17 01:29 UTC+8` 正式激活，preflig
 R03 已于 `01:30:10 UTC+8` 在 `replay_DGAI` 正式 fail closed，分析见 `codex/share/2026-07-17/dynamic_vamana_w1_cp05_r03_replay_canary_permission_stop_analysis_0717.md`。DGAI CP00 `L64/L128×3` query gate 全部 PASS：每点 baseline `4,096 B/1 I/O`，query净读取 `29.2–39.3 MB`、`7,126–9,593 I/O`，六次 `36×10` 全 active、无 OOM，证明 shared primer 修复已闭合。停止发生在任何 16-record update 前：CP01 inaccessible-input canary 以 ubuntu 运行，却被要求在 controller-owned 0755 attempt 根目录创建 JSON，因 EACCES 未落盘；没有 `STAGE_WORKER_OK`、stage/checkpoint evidence 或 completion marker，OdinANN/formal/DiskANN 均未启动。
 
 Stop-time preservation 为 PASS、85 项、0 mismatch；R03 result/replay clone/delta allocated约 `7.46 MB / 1.415 GB / 15.63 MB`，NVMe仍空闲 `1.322 TB`。R03 identity 已 terminal，Codex不会续写或重试。建议新 recovery identity 将 canary evidence 固定到已授权的 `stages/<checkpoint>/`，并先做真实 uid=ubuntu 的 allowed-read/denied-read/evidence-write 正向 fixture；请 Gpt 裁决 R03 clone/inputs 的复用边界与下一版 identity，CP10/CP20 继续 HOLD。
+
+**Gpt(01:45:22)**：
+R03 的停止有效。Shared query-scope primer 已经闭合：DGAI replay CP00 的 L64/L128×3 全部通过严格 I/O baseline、结果与 active-set 门禁。停止发生在任何 16-record update 之前，原因只是 input-capability canary 以 ubuntu 运行，却被要求在 controller-owned 0755 attempt root中创建 JSON，因 EACCES 无法落盘。
+
+R04 门禁见 `gpt/share/2026-07-17/dynamic_vamana_w1_cp05_r04_input_canary_gate_0717.md`。
+
+不要修改 attempt root ownership，也不要放宽 denied-input 检查。请把 canary evidence固定到：
+
+`stages/<checkpoint>/input_canary/`
+
+该目录由 controller 在 service 启动前创建为 `ubuntu:ubuntu/0700`。Canary 以 ubuntu 在目录内使用 temporary file、fsync 和 atomic rename发布 `canary.json`；成功后文件冻结为 0444、目录冻结为 0555。
+
+Canary仍必须证明当前唯一 delta 可读，而 master trace、完整 CP05 prefix、历史 CP01 trace和另一阶段 delta均返回 EACCES/EPERM。不能将路径不存在、JSON 写入失败或 scope异常退出解释为 denied-input PASS。Canary完成、scope退出、证据验证且确认没有 update marker后，才允许启动 update worker。
+
+启动前增加真实 uid=ubuntu 的正向 fixture，以及不可写 evidence dir、allowed trace被阻断、denied path意外可读和 output escape四类负向 fixture。
+
+Immutable replay bases与 frozen static smoke可以只读复用；R03 clone不得复用。R04 使用全新 `pilot3_sift10m_w1_cp05_trajectory_r04`、`pilot3_w1_cp05_trajectory_replay_r04`、`sequential-cp80-04`、`trajectory-cp05-04` 和 `stale-cp05-04`，并重新派生与 R03 byte-identical、inode-disjoint的 inputs。
+
+16→80 replay全部通过后，可自动执行正式 CP00→CP01→CP05 和 DiskANN CP05 stale control。任一失败立即停止；CP10/CP20 继续 HOLD。
+
+**PZ(01:51:18)**:
+这个是不是写入权限的问题？后续注意，我们总体要注重效率，过于细节的东西就不要死磕绝对安全了，本来我们也不是企业级系统，只要测出来的指标正确，不破坏服务器其它文件数据就可以了
+
+**Gpt(01:52:24)**：
+R03 停止只是 canary JSON 输出目录没有写权限。Query-I/O primer 和 DGAI CP00 六次查询均已通过，且尚未调用任何 update API。
+
+简化门禁见：
+`gpt/share/2026-07-17/dynamic_vamana_w1_cp05_r04_minimal_recovery_gate_0717.md`
+本轮只做最小修复：由 root controller 创建 `stages/<checkpoint>/input_canary/`，设置为 `ubuntu:ubuntu/0700`；canary 仍以 ubuntu 运行，并把 JSON/log 写到该目录。Attempt root 不需要修改权限。
+
+启动前只做一个正向 canary 测试和一个 denied-input 意外可读的负向测试。Immutable replay bases、static smoke和现有只读 inputs在重新校验 hash 后直接复用；只创建新的 R04 result tree和 private clone。
+
+随后按原顺序执行 DGAI/OdinANN 16→80 replay、正式 CP00→CP01→CP05 和 DiskANN CP05 stale control。后续优先保证指标正确、不修改 immutable base、不影响服务器其他文件数据，不再为非关键的绝对安全细节反复阻塞实验。CP10/CP20 继续 HOLD。
+
+**Codex(02:13:01)**：
+已按 PZ 的效率要求采用 Gpt 的 R04 最小恢复门，不执行 01:45 版本的四类扩展负向测试。R04 代码位于 `codex/share/2026-07-17/dynamic_vamana_atlas/`：root controller 仅为每个 stage 新建 `stages/<checkpoint>/input_canary/` 并设为 `ubuntu:ubuntu/0700`，canary 仍以 ubuntu 运行；JSON/log 成功落盘、当前 delta 可读、非本阶段输入返回 EACCES/EPERM、且 update marker 不存在后，才启动新的 update worker。真实 systemd/ubuntu 正向测试和“denied input 意外可读”负向测试均已 PASS。
+
+R04 直接只读复用并重新核验 R03 formal delta、replay inputs、immutable replay bases、frozen static-smoke 和 shared query launcher；不复用 R03 clone、result 或 attempt。R04 使用全新 `pilot3_sift10m_w1_cp05_trajectory_r04`、`pilot3_w1_cp05_trajectory_replay_r04`、`sequential-cp80-04`、`trajectory-cp05-04`、`stale-cp05-04`，顺序仍为 DGAI/OdinANN 16→80 replay、两系统正式 CP00→CP01→CP05、DiskANN CP05 stale。静态 shell/Python 检查、preflight self-test 与 canary 正负回归均通过；提交推送后从项目 NVMe `259:10` 的 fresh paths 启动，controller 硬超时 3 小时、最低空闲空间 128 GiB、最低 MemAvailable 64 GiB，当前约有 1.2 TiB/240 GiB，系统盘不承载大工件。任一失败立即停止，CP10/CP20 继续 HOLD。
