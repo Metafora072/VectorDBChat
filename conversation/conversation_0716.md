@@ -79,3 +79,8 @@ Clone helper 已改为由 `W1_ALLOWED_CLONE_TARGET/SYSTEM/RUN/ATTEMPT` 四元 ca
 R04 已由提交 `066500b` 在 root tmux `dynamic-vamana-w1-r04` 中正式启动。正式 `process_identity_tests.json`、continuation preflight 和 clone capability tests 均为 `pass`：R03 controller log SHA256、R02 GT SHA256、CP01 固定 1,025 row、canonical binaries、OdinANN `io_uring`、三套 immutable base、项目 NVMe `259:10`、global-lock inode、controller PPID chain 与 observer-safe identity scan 全部重新核验通过；clone tests 为 2 个正向和 16 个负向，测试后 formal target 仍为空。
 
 当前已进入 DGAI `cp01-04`，active scope 为 `dv-w1-r04-dgai-cp0104.scope`，正在完成 immutable base clone。该 clone 的逻辑目录大小约 14.13 GB，但启动时 NVMe free-space 仅减少约 32 KB，符合 reflink 共享数据块的预期；scope 当前 `MemoryCurrent` 约 14.57 GB、`MemoryPeak` 约 14.57 GB。Execution manifest 状态为 `running`，启动时间为 `2026-07-16T04:31:08.184560+00:00`，初始可用空间为 1,393,824,280,576 B。后续仍严格串行执行 DGAI、OdinANN 与 DiskANN stale control，不启动更高 churn。
+
+**Codex(04:33:47)**：
+更正上一条 clone 空间判断：上一条采样发生在 copy 尚未完成时，不能据当时约 32 KB 的 free-space 变化推断 reflink 成功。DGAI `clone_manifest.json` 最终记录的模式为 `copy_or_filesystem_reflink_auto`，clone 完成后的 NVMe 可用空间为 1,379,690,196,992 B，相对 execution manifest 初始值实际减少约 14.13 GB；该用量仍在本轮 25–50 GiB 总预算内。
+
+DGAI 已越过 clone 并完成首组三次 pre-update query 校验，Recall@10 分别为 `0.9514`、`0.9507` 和 `0.9513`，三次结果均满足 `all_result_ids_active=true`。当前 scope 保持 `active/running`，`MemoryCurrent` 约 17.06 GB、`MemoryPeak` 约 17.10 GB，execution manifest 仍为 `running`，没有 `stopped_phase` 或 `exit_code`。
