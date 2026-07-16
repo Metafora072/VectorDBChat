@@ -135,6 +135,20 @@ def main() -> None:
     lines += ["", "每个点均包含 3 次 raw value；完整逐次数据位于 `summary.tsv`，pre-update gate 的 identity、合法区间与逐次 NVMe 读取证据位于各系统的 `preupdate_gate.json`。", "", "## DiskANN stale-static negative control", "", "| L | Repeat | Recall@10 | NVMe read(B) |", "|---:|---:|---:|---:|"]
     for row in stale["points"]:
         lines.append(f"| {row['L']} | {row['repetition']} | {row['recall_at_10']:.4f} | {row['nvme_read_bytes']} |")
+    clone_rows = []
+    for system in ("DGAI", "OdinANN"):
+        path = a.root / "formal" / a.run_name / system / a.attempt / "clone_manifest.json"
+        if path.is_file():
+            clone = load(path)
+            if clone.get("schema") == "dynamic-vamana-w1-clone-v3": clone_rows.append((system, clone))
+    if clone_rows:
+        lines += ["", "## Mutable clone preparation accounting", "",
+                  "Clone 与 permission normalization 属于 preparation，不计入 ingestion、visibility 或 update write amplification。", "",
+                  "| 系统 | Clone wall(s) | Apparent(B) | Allocated(B) | Clone device R/W(B) | Normalization wall(s) | Metadata ops | Normalization proc read/write(B) |",
+                  "|---|---:|---:|---:|---|---:|---:|---|"]
+        for system, clone in clone_rows:
+            device = clone.get("clone_device_delta", {}); proc = clone.get("normalization_proc_io_delta", {})
+            lines.append(f"| {system} | {fmt(clone.get('clone_wall_seconds'))} | {clone.get('clone_space', {}).get('apparent_bytes', 0)} | {clone.get('clone_space', {}).get('allocated_bytes', 0)} | {device.get('rbytes', 0)}/{device.get('wbytes', 0)} | {fmt(clone.get('normalization_elapsed_seconds'))} | {clone.get('normalization_metadata_operations', 0)} | {proc.get('read_bytes', 0)}/{proc.get('write_bytes', 0)} |")
     preflight_kind = "continuation preflight" if a.continuation else ("recovery preflight" if a.recovery else "fresh execution preflight")
     recovery_evidence = (f"Clone capability tests 位于 `{result_root / 'preflight/clone_target_tests.json'}`，最终 reuse preservation audit 位于 `{result_root / 'preflight/preservation_final.json'}`；R02 source resource evidence 位于 `{cp01_resource}` 与 `{gt_resource}`。" if a.continuation else (f"CP01 reuse 位于 `{result_root / 'preflight/cp01_reuse_validation.json'}`，最终 preservation audit 位于 `{result_root / 'preflight/preservation_final.json'}`，GT recovery evidence 位于 `{result_root / 'preparation/gt_recovery_resources.json'}`。" if a.recovery else ""))
     lines += ["", "DiskANN 使用 immutable checkpoint-0 index 对 checkpoint-1 GT 查询，允许返回 checkpoint-1 已删除 tag。该数据仅用于展示 stale static baseline 的退化，不与 DGAI 或 OdinANN 的更新吞吐进行排名。", "", "## 有效性边界", "", "本次实验固定使用 DGAI `L=64/128`、OdinANN `L=29/46` 与 DiskANN `L=29/53`，query thread 数均为 1。结果未执行 checkpoint-1 Recall refinement，也未覆盖 5% 以上 replacement、mixed query/update workload、DEEP、GIST 或 W2。因此，后续实验必须由本轮 1% canary 的独立审议决定，不得由本脚本自动推进。", "", "## 证据索引", "", f"执行证据根目录为 `{result_root}`。机器汇总位于 `{result_root / 'summary.tsv'}`，原始产物索引位于 `{raw / 'artifact_index.json'}`，{preflight_kind} 位于 `{result_root / 'preflight/execution_preflight.json'}`。{recovery_evidence}", ""]

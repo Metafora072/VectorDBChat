@@ -18,13 +18,16 @@ def main() -> None:
     parser.add_argument("--odin-base", type=Path, required=True)
     parser.add_argument("--scratch", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--run", default="pilot3_sift10m_w1_r04")
+    parser.add_argument("--attempt", default="cp01-04")
     args = parser.parse_args()
     root = args.root.resolve()
-    formal = root / "formal/pilot3_sift10m_w1_r04"
+    label = args.run.rsplit("_", 1)[-1]
+    formal = root / "formal" / args.run
     if args.output.exists() or formal.exists() or args.scratch.exists():
         raise SystemExit("R04 clone test freshness guard failed")
-    dgai = formal / "DGAI/cp01-04"
-    odin = formal / "OdinANN/cp01-04"
+    dgai = formal / "DGAI" / args.attempt
+    odin = formal / "OdinANN" / args.attempt
     args.scratch.mkdir(parents=True)
     common = os.environ.copy()
     common.update({"W1_FORMAL_PATH_AUTHORIZED": "1", "W1_CLONE_PREFLIGHT_ONLY": "1",
@@ -34,14 +37,16 @@ def main() -> None:
 
     def run(name: str, system: str, base: Path, target: Path, expected: int,
             capability_target: Path | None | object = default, capability_system: str | None | object = default,
-            capability_run: str | None = "pilot3_sift10m_w1_r04",
-            capability_attempt: str | None = "cp01-04", device: str | None = None) -> None:
+            capability_run: str | None | object = default,
+            capability_attempt: str | None | object = default, device: str | None = None) -> None:
         env = common.copy()
         actual_target = target if capability_target is default else capability_target
         actual_system = system if capability_system is default else capability_system
+        actual_run = args.run if capability_run is default else capability_run
+        actual_attempt = args.attempt if capability_attempt is default else capability_attempt
         values = {"W1_ALLOWED_CLONE_TARGET": str(actual_target) if actual_target is not None else None,
                   "W1_ALLOWED_CLONE_SYSTEM": actual_system,
-                  "W1_ALLOWED_CLONE_RUN": capability_run, "W1_ALLOWED_CLONE_ATTEMPT": capability_attempt}
+                  "W1_ALLOWED_CLONE_RUN": actual_run, "W1_ALLOWED_CLONE_ATTEMPT": actual_attempt}
         for key, value in values.items():
             if value is None:
                 env.pop(key, None)
@@ -69,10 +74,10 @@ def main() -> None:
         capability_target=dgai, capability_system="DGAI")
     run("wrong_system_metadata", "DGAI", args.dgai_base, dgai, 2, capability_system="OdinANN")
     run("wrong_target_metadata", "DGAI", args.dgai_base, dgai, 2, capability_target=odin)
-    run("other_run_target", "DGAI", args.dgai_base, root / "formal/pilot3_sift10m_w1_r05/DGAI/cp01-04", 2)
-    run("other_attempt_target", "DGAI", args.dgai_base, root / "formal/pilot3_sift10m_w1_r04/DGAI/cp01-05", 2)
-    run("wrong_run_metadata", "DGAI", args.dgai_base, dgai, 2, capability_run="pilot3_sift10m_w1_r05")
-    run("wrong_attempt_metadata", "DGAI", args.dgai_base, dgai, 2, capability_attempt="cp01-05")
+    run("other_run_target", "DGAI", args.dgai_base, root / "formal/pilot3_sift10m_w1_r99/DGAI" / args.attempt, 2)
+    run("other_attempt_target", "DGAI", args.dgai_base, formal / "DGAI/cp01-99", 2)
+    run("wrong_run_metadata", "DGAI", args.dgai_base, dgai, 2, capability_run="pilot3_sift10m_w1_r99")
+    run("wrong_attempt_metadata", "DGAI", args.dgai_base, dgai, 2, capability_attempt="cp01-99")
     run("forbidden_cp01_02", "DGAI", args.dgai_base, formal / "DGAI/cp01-02", 2)
     run("forbidden_cp01_03", "DGAI", args.dgai_base, formal / "DGAI/cp01-03", 2)
     run("missing_target", "DGAI", args.dgai_base, dgai, 2, capability_target=None)
@@ -91,14 +96,14 @@ def main() -> None:
     (escape / "DGAI").mkdir(parents=True)
     formal.symlink_to(escape, target_is_directory=True)
     try:
-        run("symlink_escape", "DGAI", args.dgai_base, formal / "DGAI/cp01-04", 2)
+        run("symlink_escape", "DGAI", args.dgai_base, formal / "DGAI" / args.attempt, 2)
     finally:
         formal.unlink(missing_ok=True)
 
     if formal.exists() or dgai.exists() or odin.exists():
         raise SystemExit("clone tests left an R04 formal target")
     passed = all(row["passed"] for row in rows)
-    report = {"schema": "dynamic-vamana-w1-r04-clone-capability-tests-v1",
+    report = {"schema": f"dynamic-vamana-w1-{label}-clone-capability-tests-v1",
               "status": "pass" if passed else "fail", "preflight_only": True,
               "tests": rows, "positive_tests": 2, "negative_tests": len(rows) - 2,
               "all_targets_unchanged": all(row["target_unchanged"] for row in rows),

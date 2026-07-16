@@ -72,7 +72,12 @@ PY
 if [[ ${v[system]} == OdinANN ]]; then "$chat/w1_visibility_probe.py" --probes "${v[probe-spec]}" --result-tags "$result/online.bin" --active-tags "${v[expected-active-tags]}" --output "$result/online_probe.json"; fi
 for l in "${post_ls[@]}"; do for ((r=1;r<=repeats;r++)); do query_point post_cp01 "${v[cp1-query]}" "${v[cp1-gt]}" "${v[expected-active-tags]}" "$l" "$r"; done; done
 python3 "$chat/w1_file_manifest.py" --root "$base" --output "$result/base_after_attempt.tsv"
-cmp -s "$work/base_before.tsv" "$result/base_after_attempt.tsv" || { echo 'immutable base changed during attempt' >&2; exit 1; }
+content_before="$work/base_content_before.tsv"; [[ -f $content_before ]] || content_before="$work/base_before.tsv"
+cmp -s "$content_before" "$result/base_after_attempt.tsv" || { echo 'immutable base content changed during attempt' >&2; exit 1; }
+if [[ -f $work/base_mode_before.tsv ]]; then
+  python3 "$chat/../../2026-07-16/dynamic_vamana_atlas/w1_mode_manifest.py" write --root "$base" --output "$result/base_mode_after_attempt.tsv"
+  cmp -s "$work/base_mode_before.tsv" "$result/base_mode_after_attempt.tsv" || { echo 'immutable base mode changed during attempt' >&2; exit 1; }
+fi
 before=$(du -sb "$base" | awk '{print $1}'); after=$(du -sb "$work/index" | awk '{print $1}')
 "$chat/w1_collect_canary.py" --system "${v[system]}" --markers "$markers" --resources "$result/resources.json" --active-audit "$result/active_audit.json" --probe "$result/fresh_probe.json" --logical-replacements "${v[replacements]}" --logical-payload-bytes "$(( ${v[replacements]} * 128 * 4 ))" --index-before-bytes "$before" --index-after-bytes "$after" --output "$result/canary.json"
 touch "$result/FORMAL_W1_CANARY_OK"
