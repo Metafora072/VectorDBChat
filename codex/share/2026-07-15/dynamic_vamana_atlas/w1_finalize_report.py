@@ -100,7 +100,8 @@ def main() -> None:
             for l in sorted({row["L"] for row in queries if row["system"] == system and row["phase"] == phase}):
                 subset = [row for row in queries if row["system"] == system and row["phase"] == phase and row["L"] == l]
                 aggregate.append({"system": system, "phase": phase, "L": l, "runs": subset})
-    title_suffix = "R03 Continuation " if a.continuation else ("R02 GT 恢复后" if a.recovery else "")
+    continuation_label = (a.run_name.rsplit("_", 1)[-1].upper() if a.continuation and "_r" in a.run_name else "Continuation")
+    title_suffix = f"{continuation_label} Continuation " if a.continuation else ("R02 GT 恢复后" if a.recovery else "")
     method = ("本次 continuation 重新核验并只读复用 R02 已恢复的 checkpoint-1 exact GT 与 CP01，从 DGAI 系统阶段开始。"
               if a.continuation else ("本次执行复用已通过只读语义审计的 CP01，并使用 location-ID GT 后置映射恢复 checkpoint-1 exact GT。"
               if a.recovery else "本次执行重新生成 CP01 与 checkpoint-1 exact GT。"))

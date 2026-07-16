@@ -13,18 +13,21 @@ def sha(path: Path) -> str:
 def main() -> None:
     p = argparse.ArgumentParser(); p.add_argument("--root", type=Path, required=True)
     p.add_argument("--preflight", type=Path, required=True); p.add_argument("--clone-tests", type=Path, required=True)
+    p.add_argument("--run", choices=("pilot3_sift10m_w1_r03", "pilot3_sift10m_w1_r04"), default="pilot3_sift10m_w1_r03")
     p.add_argument("--output", type=Path, required=True); a = p.parse_args()
-    if a.output.exists(): raise SystemExit("R03 execution manifest overwrite refused")
+    label = "r04" if a.run.endswith("_r04") else "r03"
+    if a.output.exists(): raise SystemExit(f"{label.upper()} execution manifest overwrite refused")
     preflight = json.loads(a.preflight.read_text()); tests = json.loads(a.clone_tests.read_text())
-    if preflight.get("status") != "pass" or tests.get("status") != "pass": raise SystemExit("R03 preflight/tests did not pass")
+    if preflight.get("status") != "pass" or tests.get("status") != "pass": raise SystemExit(f"{label.upper()} preflight/tests did not pass")
     device = subprocess.run(["findmnt", "-rn", "-T", str(a.root), "-o", "MAJ:MIN"], check=True, text=True, capture_output=True).stdout.splitlines()[0]
-    report = {"schema": "dynamic-vamana-w1-r03-continuation-execution-v1", "status": "running",
+    report = {"schema": f"dynamic-vamana-w1-{label}-continuation-execution-v1", "status": "running",
               "started_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(), "pid": os.getpid(),
               "experiment_root": str(a.root.resolve()), "experiment_device": device, "initial_free_bytes": shutil.disk_usage(a.root).free,
               "global_lock_held": os.environ.get("W1_GLOBAL_LOCK_HELD") == "1",
               "continuation_parent_r01": "pilot3_sift10m_w1", "continuation_parent_r02": "pilot3_sift10m_w1_r02",
+              "continuation_parent_r03": "pilot3_sift10m_w1_r03" if label == "r04" else None,
               "r02_gt_reused": True, "r02_gt_sha256": preflight["r02_gt_sha256"], "cp01_reused": True,
-              "clone_allowlist_mode": "exact_target_capability",
+              "clone_allowlist_mode": "full_exact_target_capability" if label == "r04" else "exact_target_capability",
               "execution_preflight": {"realpath": str(a.preflight.resolve()), "sha256": sha(a.preflight)},
               "clone_target_tests": {"realpath": str(a.clone_tests.resolve()), "sha256": sha(a.clone_tests)},
               "policy": {"delete_count": 80000, "insert_count": 80000, "final_active_cardinality": 8000000,

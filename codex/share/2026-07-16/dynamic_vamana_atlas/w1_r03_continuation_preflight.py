@@ -2,14 +2,16 @@
 """Fail-closed R03 continuation preflight; never recomputes CP01 or GT."""
 from __future__ import annotations
 
-import argparse, hashlib, json, os, re, shutil, struct, subprocess
+import argparse, hashlib, json, os, shutil, struct, subprocess
 from pathlib import Path
 import numpy as np
+from w1_process_identity import ancestor_chain, load_policy, scan
 
 EXPECTED_GT_SHA = "4703d2d8a12c1c045c60de56819ccb058e91bc28e0f1883d18573f9917b32c28"
 EXPECTED_VALIDATION_SHA = "b44b50e7950ff95a2b6c9a64070bf30dbf4d55faea01981d3d8a072e9495e49f"
 EXPECTED_REPORT_SHA = "2722fad04592fc8adf9c43407ef2098b8f4afe6886e77f681e36f331898fae38"
 EXPECTED_GT_MANIFEST_SHA = "d022051fbccb09b753f479f7444b381180dd3fc4957a250896572ba4923f357d"
+EXPECTED_R03_CONTROLLER_SHA = "e32beff751641dc83af4acefe2214186a4941eb57a46c1bb20eed4eabc91b944"
 
 def sha(path: Path) -> str:
     h = hashlib.sha256()
@@ -35,24 +37,29 @@ def header(path: Path) -> tuple[int, int]:
     if len(raw) != 8: raise SystemExit(f"short binary header: {path}")
     return struct.unpack("<II", raw)
 
-def ancestors() -> set[int]:
-    out: set[int] = set(); pid = os.getpid()
-    while pid > 1:
-        out.add(pid)
-        try: pid = int(Path(f"/proc/{pid}/stat").read_text().split()[3])
-        except (FileNotFoundError, ValueError, IndexError): break
-    return out
-
 def main() -> None:
     p = argparse.ArgumentParser(); p.add_argument("--root", type=Path, required=True)
     p.add_argument("--artifact-manifest", type=Path, required=True); p.add_argument("--gt-report", type=Path, required=True)
     p.add_argument("--output", type=Path); p.add_argument("--runtime-canary-passed", action="store_true")
+    p.add_argument("--run", choices=("pilot3_sift10m_w1_r03", "pilot3_sift10m_w1_r04"), default="pilot3_sift10m_w1_r03")
+    p.add_argument("--process-tests", type=Path)
     p.add_argument("--dry-run", action="store_true"); a = p.parse_args()
-    root = a.root.resolve(); run = "pilot3_sift10m_w1_r03"
+    root = a.root.resolve(); run = a.run; is_r04 = run.endswith("_r04")
     result = root / f"results/{run}"; formal = root / f"formal/{run}"
-    if result.exists() or formal.exists() or (a.output is not None and a.output.exists()): raise SystemExit("R03 target reuse refused")
+    if formal.exists() or (a.output is not None and a.output.exists()): raise SystemExit(f"{run} target reuse refused")
+    if is_r04:
+        if a.process_tests is None or not a.process_tests.is_file(): raise SystemExit("R04 process identity tests absent")
+        process_tests = json.loads(a.process_tests.read_text())
+        if process_tests.get("status") != "pass" or process_tests.get("result_root_absent_before_tests") is not True:
+            raise SystemExit("R04 process identity tests/freshness did not pass")
+        if result.exists():
+            actual = {path.relative_to(result).as_posix() for path in result.rglob("*") if path.is_file() or path.is_symlink()}
+            expected = {a.process_tests.resolve().relative_to(result.resolve()).as_posix()}
+            if actual != expected: raise SystemExit(f"R04 result freshness whitelist mismatch: {sorted(actual)}")
+    elif result.exists():
+        raise SystemExit("R03 target reuse refused")
     if not a.dry_run and (a.output is None or a.output.parent.parent.resolve() != result):
-        raise SystemExit("R03 preflight output must be under the fresh result root")
+        raise SystemExit(f"{run} preflight output must be under the fresh result root")
 
     r01_path = root / "results/pilot3_sift10m_w1/execution_manifest.json"
     r02_path = root / "results/pilot3_sift10m_w1_r02/execution_manifest.json"
@@ -61,6 +68,14 @@ def main() -> None:
         raise SystemExit("R01 is not the accepted GT-validation stop")
     if (r02.get("status"), r02.get("stopped_phase"), r02.get("exit_code")) != ("stopped_failed", "DGAI_canary", 2):
         raise SystemExit("R02 is not the accepted DGAI pre-clone stop")
+    r03_result = root / "results/pilot3_sift10m_w1_r03"; r03_formal = root / "formal/pilot3_sift10m_w1_r03"
+    r03_log = root / "tmp/pilot3_sift10m_w1_r03_controller.log"
+    if is_r04:
+        if r03_result.exists() or r03_formal.exists(): raise SystemExit("R03 result/formal tree unexpectedly exists")
+        if not r03_log.is_file() or sha(r03_log) != EXPECTED_R03_CONTROLLER_SHA: raise SystemExit("R03 controller log identity mismatch")
+        r03_birth_ns = int(subprocess.run(["stat", "-c", "%W", str(r03_log)], check=True,
+                                          text=True, capture_output=True).stdout.strip()) * 1_000_000_000
+        if r03_birth_ns <= 0: raise SystemExit("R03 controller birth time unavailable")
     r02_result = root / "results/pilot3_sift10m_w1_r02"; r02_formal = root / "formal/pilot3_sift10m_w1_r02"
     allowed_r02_result_top = {"DGAI", "GT_RECOVERY_OK", "execution_manifest.json", "formal_controller.log",
                               "preflight", "preparation", "regressions"}
@@ -80,6 +95,9 @@ def main() -> None:
     validation_path = gt_dir / "gt_cp01_validation.json"; gt_manifest_path = gt_dir / "gt_cp01_manifest.json"
     if sha(gt) != EXPECTED_GT_SHA or sha(validation_path) != EXPECTED_VALIDATION_SHA or sha(gt_manifest_path) != EXPECTED_GT_MANIFEST_SHA:
         raise SystemExit("R02 recovered GT/validation/manifest identity mismatch")
+    gt_stat = gt.stat()
+    if is_r04 and not (gt_stat.st_mtime_ns < r03_birth_ns):
+        raise SystemExit("R02 GT mtime does not predate R03 controller creation")
     if sha(a.gt_report) != EXPECTED_REPORT_SHA or EXPECTED_GT_SHA not in a.gt_report.read_text():
         raise SystemExit("R02 GT report identity/content mismatch")
     nq, k = header(gt)
@@ -130,7 +148,7 @@ def main() -> None:
     if not trace_valid: raise SystemExit("current CP01 trace validation failed")
     rng = np.random.default_rng(20260716)
     rows = np.unique(np.concatenate((np.asarray([0], dtype=np.int64), rng.choice(nt, size=1024, replace=False)))).astype(np.int64)
-    if rows.size != 1025: raise SystemExit("R03 fixed CP01 sample cardinality changed")
+    if rows.size != 1025: raise SystemExit("fixed CP01 sample cardinality changed")
     na, ad = header(cp01_dir / "active_cp01.bin"); nc, dim = header(root / "datasets/sift10m/full_10m.bin")
     active = np.memmap(cp01_dir / "active_cp01.bin", dtype="<f4", mode="r", offset=8, shape=(na, ad))
     corpus = np.memmap(root / "datasets/sift10m/full_10m.bin", dtype="<f4", mode="r", offset=8, shape=(nc, dim))
@@ -160,48 +178,84 @@ def main() -> None:
     verifier = a.artifact_manifest.parent / "w1_verify_artifacts.py"; artifact_verification = {}
     for system in ("DGAI", "OdinANN"):
         entry = artifact["systems"][system]["canonical_install"]
-        run = subprocess.run(["python3", str(verifier), "--manifest", str(a.artifact_manifest), "--system", system,
-                              "--driver", entry["w1_canary"], "--query-binary", entry["search_disk_index"]], check=True, text=True, capture_output=True)
-        artifact_verification[system] = json.loads(run.stdout)
+        verify_run = subprocess.run(["python3", str(verifier), "--manifest", str(a.artifact_manifest), "--system", system,
+                                     "--driver", entry["w1_canary"], "--query-binary", entry["search_disk_index"]], check=True, text=True, capture_output=True)
+        artifact_verification[system] = json.loads(verify_run.stdout)
+    if artifact["systems"]["OdinANN"].get("io_engine") != "uring": raise SystemExit("OdinANN io_uring identity absent")
 
     device = subprocess.run(["findmnt", "-rn", "-T", str(root), "-o", "MAJ:MIN"], check=True, text=True, capture_output=True).stdout.splitlines()[0]
     free = shutil.disk_usage(root).free
     if device != os.environ.get("ATLAS_NVME_MAJMIN", "259:10") or free < 150_000_000_000 or not a.runtime_canary_passed:
-        raise SystemExit("R03 device/capacity/runtime gate failed")
-    if os.environ.get("W1_GLOBAL_LOCK_HELD") != "1": raise SystemExit("R03 global lock marker absent")
+        raise SystemExit(f"{run} device/capacity/runtime gate failed")
+    if os.environ.get("W1_GLOBAL_LOCK_HELD") != "1": raise SystemExit(f"{run} global lock marker absent")
     allowed = os.environ.get("W1_ALLOWED_SESSION", "")
     sessions = subprocess.run(["tmux", "list-sessions", "-F", "#{session_name}"], text=True, capture_output=True).stdout.splitlines()
     stale_sessions = [name for name in sessions if "w1" in name.lower() and name != allowed]
-    scopes = subprocess.run(["systemctl", "list-units", "--type=scope", "--state=running", "--no-legend", "--plain"], text=True, capture_output=True).stdout.splitlines()
-    stale_scopes = [line.strip() for line in scopes if "dv-w1" in line.lower()]
-    lineage = ancestors(); pattern = re.compile(r"w1_canary|w1_run_system_canary|w1_diskann_stale_control|w1_gt_recovery_worker")
-    stale_processes = []
-    for row in subprocess.run(["ps", "-eo", "pid=,args="], check=True, text=True, capture_output=True).stdout.splitlines():
-        fields = row.strip().split(maxsplit=1)
-        if len(fields) == 2 and int(fields[0]) not in lineage and pattern.search(fields[1]): stale_processes.append(row.strip())
-    if stale_sessions or stale_scopes or stale_processes: raise SystemExit(f"legacy W1 state: {stale_sessions}, {stale_scopes}, {stale_processes}")
+    lineage = ancestor_chain()
+    identity_scan = scan(load_policy(root, a.artifact_manifest.resolve(), Path(__file__).resolve().parent), set(lineage))
+    if stale_sessions or identity_scan["status"] != "pass":
+        raise SystemExit(f"legacy W1 state: sessions={stale_sessions}, identity={identity_scan}")
 
-    report = {"schema": "dynamic-vamana-w1-r03-continuation-preflight-v1", "status": "pass", "read_only_inputs": True,
+    forbidden_attempts = []
+    for parent in (root / "results/pilot3_sift10m_w1", r02_result, r03_result,
+                   root / "formal/pilot3_sift10m_w1", r02_formal, r03_formal):
+        if parent.exists():
+            forbidden_attempts.extend(str(path) for path in parent.rglob("*")
+                                      if path.is_dir() and (path.name.startswith("cp01-") or path.name.startswith("stale-cp00-")))
+            forbidden_attempts.extend(str(path) for path in parent.rglob("*")
+                                      if path.is_file() and path.name in {"FORMAL_W1_CANARY_OK", "DISKANN_STALE_CONTROL_OK", "FORMAL_W1_COMPLETE"})
+    if forbidden_attempts: raise SystemExit(f"prior runs contain dynamic attempt/success evidence: {forbidden_attempts}")
+
+    controller_pid = int(os.environ.get("W1_CONTROLLER_PID", os.getppid()))
+    if controller_pid not in lineage: raise SystemExit("declared continuation controller is not in preflight ancestry")
+    controller_lineage = ancestor_chain(controller_pid)
+    controller_chain = []
+    for pid in controller_lineage:
+        try:
+            stat_fields = Path(f"/proc/{pid}/stat").read_text().split()
+            controller_chain.append({"pid": pid, "ppid": int(stat_fields[3]),
+                                     "exe": str(Path(f"/proc/{pid}/exe").resolve()),
+                                     "cmdline": [part.decode(errors="replace") for part in Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0") if part]})
+        except (FileNotFoundError, PermissionError, ValueError, IndexError):
+            controller_chain.append({"pid": pid, "unavailable": True})
+    lock_fd = int(os.environ.get("W1_GLOBAL_LOCK_FD", "9"))
+    try: lock_inode = os.stat(f"/proc/{controller_pid}/fd/{lock_fd}").st_ino
+    except (FileNotFoundError, PermissionError): raise SystemExit("global-lock fd/inode unavailable")
+    tmux_session = allowed
+    if is_r04 and not tmux_session: raise SystemExit("R04 tmux session identity absent")
+
+    report = {"schema": f"dynamic-vamana-w1-{'r04' if is_r04 else 'r03'}-continuation-preflight-v1", "status": "pass", "read_only_inputs": True,
               "continuation_parent_r01": "pilot3_sift10m_w1", "continuation_parent_r02": "pilot3_sift10m_w1_r02",
               "r01": {"manifest_sha256": sha(r01_path), "actual_stopped_phase": r01["stopped_phase"]},
               "r02": {"manifest_sha256": sha(r02_path), "stopped_phase": r02["stopped_phase"], "exit_code": 2,
                        "no_system_attempts": True},
+              "r03": {"result_absent": not r03_result.exists(), "formal_absent": not r03_formal.exists(),
+                       "controller_log_sha256": sha(r03_log) if r03_log.is_file() else None,
+                       "accepted_stop": is_r04},
               "r02_gt_reused": True, "r02_gt_sha256": EXPECTED_GT_SHA, "gt_shape": [nq, k], "gt_finite": True,
               "gt_monotonic": True, "gt_ids_active": True, "query7150_has_tag_zero": True,
               "gt_validation_sha256": EXPECTED_VALIDATION_SHA, "gt_report_sha256": EXPECTED_REPORT_SHA,
+              "r02_gt_mtime_ns": gt_stat.st_mtime_ns,
+              "r02_gt_predates_r03_controller": (gt_stat.st_mtime_ns < r03_birth_ns) if is_r04 else None,
               "cp01_reused": True, "cp01_artifacts": current_artifacts, "cp01_trace_revalidated": True,
               "cp01_sample_seed": 20260716, "cp01_sample_rows": 1025, "cp01_sample_exact": True,
-              "clone_allowlist_mode": "exact_target_capability", "formal_bases": base_checks, "formal_inputs": input_checks,
+              "clone_allowlist_mode": "full_exact_target_capability", "formal_bases": base_checks, "formal_inputs": input_checks,
               "artifact_manifest_sha256": artifact_sha, "artifact_verification": artifact_verification,
               "experiment_device": device, "free_bytes": free, "global_lock_held": True,
-              "new_targets_absent_before_preflight": {"result": str(result), "formal": str(formal)},
+              "controller_identity": {"pid": controller_pid, "ppid_chain": controller_chain,
+                  "tmux_session": tmux_session, "global_lock_fd": lock_fd, "global_lock_inode": lock_inode},
+              "process_identity_tests": {"realpath": str(a.process_tests.resolve()), "sha256": sha(a.process_tests)} if is_r04 else None,
+              "new_targets_before_preflight": {"result_absent_before_process_tests": process_tests.get("result_root_absent_before_tests") if is_r04 else True,
+                                               "result_current_exact_allowlist": ["preflight/process_identity_tests.json"] if is_r04 else [],
+                                               "formal_absent": not formal.exists(), "result": str(result), "formal": str(formal)},
+              "prior_dynamic_attempts_or_success_markers": forbidden_attempts,
               "stale_execution_checks": {"allowed_session": allowed, "other_w1_sessions": stale_sessions,
-                                           "running_w1_scopes": stale_scopes, "running_w1_workers": stale_processes}}
+                                           "process_identity_scan": identity_scan}}
     if a.dry_run:
         print(json.dumps({"status": report["status"], "dry_run": True, "r02_gt_sha256": report["r02_gt_sha256"],
                           "cp01_sample_rows": report["cp01_sample_rows"], "free_bytes": report["free_bytes"]}))
     else:
         assert a.output is not None
-        a.output.parent.mkdir(parents=True, exist_ok=False); a.output.write_text(json.dumps(report, indent=2) + "\n")
+        a.output.parent.mkdir(parents=True, exist_ok=True); a.output.write_text(json.dumps(report, indent=2) + "\n")
 
 if __name__ == "__main__": main()
