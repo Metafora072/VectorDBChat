@@ -13,7 +13,7 @@ def sha(path: Path) -> str:
 def main() -> None:
     p = argparse.ArgumentParser(); p.add_argument("--preflight", type=Path, required=True)
     p.add_argument("--cp01", type=Path, required=True); p.add_argument("--gt", type=Path, required=True)
-    p.add_argument("--run-label", choices=("R03", "R04", "R05", "R06"), default="R03")
+    p.add_argument("--run-label", choices=("R03", "R04", "R05", "R06", "R07"), default="R03")
     p.add_argument("--output", type=Path, required=True); a = p.parse_args()
     if a.output.exists(): raise SystemExit(f"{a.run_label} reuse preservation report overwrite refused")
     before = json.loads(a.preflight.read_text()); current = {}; mismatches = []
