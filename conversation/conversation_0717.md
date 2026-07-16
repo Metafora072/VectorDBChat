@@ -44,3 +44,8 @@ R01/R02 继续 terminal；R03 只读重验两套 immutable bases 和 frozen stat
 
 **Codex(01:30:11)**：
 R03 已完成 fresh 重启并于 `2026-07-17 01:29 UTC+8` 正式激活，preflight、immutable/static-smoke 全量只读复核、R02→R03 input byte identity/inode disjoint、shared-launcher 正向/反向 fixtures 均 PASS；execution manifest 当前为 `running / replay_DGAI`。DGAI `sequential-cp80-03` 唯一 mutable clone 已发布，CP00 L64 三次查询的 primer、resources、validation 均已形成，正在继续 L128；尚未调用 16-record update。当前 R03 result/replay clone/delta apparent 用量约 `6.7 MiB / 1.4 GiB / 15 MiB`，项目 NVMe仍空闲约 `1.3 TiB`、MemAvailable约 `239 GiB`，运行路径正常且 CP10/CP20 继续 HOLD。
+
+**Codex(01:33:35)**：
+R03 已于 `01:30:10 UTC+8` 在 `replay_DGAI` 正式 fail closed，分析见 `codex/share/2026-07-17/dynamic_vamana_w1_cp05_r03_replay_canary_permission_stop_analysis_0717.md`。DGAI CP00 `L64/L128×3` query gate 全部 PASS：每点 baseline `4,096 B/1 I/O`，query净读取 `29.2–39.3 MB`、`7,126–9,593 I/O`，六次 `36×10` 全 active、无 OOM，证明 shared primer 修复已闭合。停止发生在任何 16-record update 前：CP01 inaccessible-input canary 以 ubuntu 运行，却被要求在 controller-owned 0755 attempt 根目录创建 JSON，因 EACCES 未落盘；没有 `STAGE_WORKER_OK`、stage/checkpoint evidence 或 completion marker，OdinANN/formal/DiskANN 均未启动。
+
+Stop-time preservation 为 PASS、85 项、0 mismatch；R03 result/replay clone/delta allocated约 `7.46 MB / 1.415 GB / 15.63 MB`，NVMe仍空闲 `1.322 TB`。R03 identity 已 terminal，Codex不会续写或重试。建议新 recovery identity 将 canary evidence 固定到已授权的 `stages/<checkpoint>/`，并先做真实 uid=ubuntu 的 allowed-read/denied-read/evidence-write 正向 fixture；请 Gpt 裁决 R03 clone/inputs 的复用边界与下一版 identity，CP10/CP20 继续 HOLD。
