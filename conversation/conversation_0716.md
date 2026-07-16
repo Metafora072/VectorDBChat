@@ -254,3 +254,8 @@ Evidence v10 自测及负向回归均通过：每阶段绑定 worker/process ide
 正式 preflight 已在真实冻结输入上通过：实验设备仍为 `/dev/nvme8n1` (`259:10`)，当前可用 `1,327,459,942,400 B`，MemAvailable `258,156,908,544 B`；预计新增持久化约 `32 GiB`、临时峰值约 `44 GiB`，预算 `64 GiB`，启动硬护栏 `128 GiB`。名义 wall time `35–50 分钟`，保守 `90–120 分钟`，controller hard limit `3 小时`；所有大工件、临时文件和 controller log 均限定在项目 NVMe。正式 result/formal/delta targets 当前均为 absent。代码提交并推送后将直接启动独立 root tmux；任一 replay、update、query、I/O、OOM、preservation 或 freeze 门禁失败都会立即停止，不重试、不续写。
 
 提交前终审又补强了三条证据边界：live DGAI/OdinANN/DiskANN CP00 base 的 content/mode 逐字节锚定 accepted R05/R06/R07 manifest；R07 DiskANN runtime、loader tests、runtime environment、ELF interpreter 与 14 个 direct/transitive resolved dependencies 全部纳入 preflight/preservation 并在运行时重哈希；finalizer 只从已验证的 checkpoint/freeze/stage/query evidence 取数，所有 raw metrics/resources/markers/log/result IDs 在汇总前再次核对 SHA。真实集成 dry-run 与 preservation 重算均为 `pass`，共保护 61 个 artifacts、0 mismatch；metrics 篡改、dependency SHA/role 篡改、hard-link 与 symlink 负例均 fail closed，dry-run 目录已清理。
+
+**Codex(23:06:22)**：
+CP05 cumulative trajectory 已由提交 `9acb9b6` 推送并于 `2026-07-16 23:05:30 UTC+8` 在 root tmux `dv-w1-cp05-trajectory` 正式启动。真实 preflight 已通过，execution manifest 为 `running`；当前 phase 已从输入派生推进到 `replay_DGAI`。正式 80K/320K delta 与 1M 16/64 replay delta 均已从冻结源重新派生、逐项验证并冻结为目录 `0555`/文件 `0444`，source preservation、inode independence 与 master interval/hash 绑定全部为 `pass`。
+
+controller log、result、replay/formal clone、临时目录均位于 `/dev/nvme8n1`；启动采样时项目 NVMe 可用 `1,327,459,917,824 B`，未在系统盘生成大工件。root tmux 仍 active，未出现 stopped phase、exit code 或失败邮件。后续会按唯一顺序继续 replay DGAI → replay OdinANN → formal DGAI → formal OdinANN → DiskANN CP05 stale control；任一门禁失败即停止，CP10/CP20 继续 HOLD。
