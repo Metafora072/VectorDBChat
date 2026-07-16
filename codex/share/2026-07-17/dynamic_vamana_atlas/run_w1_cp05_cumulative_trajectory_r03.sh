@@ -18,6 +18,7 @@ dataset="$root/datasets/sift10m"; trajectory="$dataset/w1_trajectory"; cp01="$da
 delta="$trajectory/execution_deltas_r03"; replay_inputs="$result/replay/inputs"
 r01_run=pilot3_sift10m_w1_cp05_trajectory
 r01_result="$root/results/$r01_run"; r01_formal="$root/formal/$r01_run"
+r01_replay_inputs="$r01_result/replay/inputs"
 r02_run=pilot3_sift10m_w1_cp05_trajectory_r02
 r02_result="$root/results/$r02_run"; r02_formal="$root/formal/$r02_run"
 r02_replay_formal="$root/formal/pilot3_w1_cp05_trajectory_replay_r02"
@@ -110,7 +111,7 @@ done
   echo 'frozen static-smoke identity changed' >&2; exit 1;
 }
 python3 "$r02/w1_cp05_r02_static_smoke.py" validate --root "$root" --artifact-manifest "$artifact" \
-  --immutable-base-root "$replay_base_root" --replay-input-root "$r02_replay_inputs" \
+  --immutable-base-root "$replay_base_root" --replay-input-root "$r01_replay_inputs" \
   --smoke-root "$smoke_root" --cp00-active "$root/datasets/sift1m/active_cp00.tags.bin" \
   --evidence-tool "$r02/w1_cumulative_evidence.py" --device "${ATLAS_NVME_MAJMIN:-259:10}" \
   --output "$tmp/static_smoke_readonly_verify.json"
