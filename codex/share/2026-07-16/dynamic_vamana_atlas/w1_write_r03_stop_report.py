@@ -7,7 +7,7 @@ from pathlib import Path
 def main() -> None:
     p = argparse.ArgumentParser(); p.add_argument("--result", type=Path, required=True)
     p.add_argument("--phase", required=True); p.add_argument("--exit-code", type=int, required=True)
-    p.add_argument("--run-label", choices=("R03", "R04", "R05"), default="R03")
+    p.add_argument("--run-label", choices=("R03", "R04", "R05", "R06"), default="R03")
     p.add_argument("--output", type=Path, required=True); a = p.parse_args()
     if a.output.exists(): raise SystemExit(f"{a.run_label} stop report overwrite refused")
     evidence = [str(path.resolve()) for path in sorted(a.result.rglob("*")) if path.is_file()]

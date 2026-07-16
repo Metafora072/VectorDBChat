@@ -72,7 +72,7 @@ def load_policy(root: Path, artifact_manifest: Path, script_root: Path) -> dict[
     shell_names = {
         "w1_run_system_canary.sh", "w1_system_worker.sh", "w1_diskann_stale_control.sh",
         "w1_query_worker.sh", "w1_diskann_query_worker.sh", "run_w1_cp01_formal.sh",
-        "run_w1_gt_recovery_r02.sh", "run_w1_r03_continuation.sh", "run_w1_r04_continuation.sh", "run_w1_r05_continuation.sh",
+        "run_w1_gt_recovery_r02.sh", "run_w1_r03_continuation.sh", "run_w1_r04_continuation.sh", "run_w1_r05_continuation.sh", "run_w1_r06_continuation.sh",
         "w1_gt_recovery_worker.sh", "w1_compute_cp01_gt.sh",
     }
     shell_scripts: dict[str, str] = {}
@@ -90,7 +90,8 @@ def load_policy(root: Path, artifact_manifest: Path, script_root: Path) -> dict[
         "w1_r04_clone_target_tests.py", "w1_r04_execution_manifest.py",
         "w1_r04_assert_reused_inputs.py", "w1_write_r04_stop_report.py",
         "w1_mode_manifest.py", "w1_prepare_mutable_clone.py", "w1_writable_clone_audit.py",
-        "w1_r05_mutable_clone_tests.py", "w1_r05_assert_base_immutable.py",
+        "w1_r05_mutable_clone_tests.py", "w1_r05_assert_base_immutable.py", "w1_preupdate_identity_gate.py",
+        "w1_r06_freeze_r05_dgai.py", "w1_r06_continuation_preflight.py", "w1_r06_execution_manifest.py", "w1_r06_finalize_composed.py",
     }
     python_scripts: dict[str, str] = {}
     for directory in (old, script_root):

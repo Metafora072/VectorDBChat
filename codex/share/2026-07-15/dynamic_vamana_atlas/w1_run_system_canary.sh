@@ -47,10 +47,20 @@ query_point() {
 repeats=3
 IFS=, read -r -a pre_ls <<<"${v[pre-ls]}"; IFS=, read -r -a post_ls <<<"${v[post-ls]}"
 for l in "${pre_ls[@]}"; do for ((r=1;r<=repeats;r++)); do query_point pre_cp00 "${v[cp0-query]}" "${v[cp0-gt]}" "$work/index/index_disk.index.tags" "$l" "$r"; done; done
-python3 "$chat/w1_preupdate_gate.py" --system "${v[system]}" --mode "${v[mode]}" --result-dir "$result" \
-  --binary "${v[query-binary]}" --index-manifest "$work/base_before.tsv" --query "${v[cp0-query]}" \
-  --gt "${v[cp0-gt]}" --active-tags "$work/index/index_disk.index.tags" --ls "${v[pre-ls]}" \
-  --device "$nvme" --output "$result/preupdate_gate.json"
+if [[ ${W1_PREUPDATE_GATE_POLICY:-interval-v1} == identity-v2 ]]; then
+  gate=${W1_IDENTITY_GATE_TOOL:?identity-v2 gate tool absent}
+  python3 "$gate" --system "${v[system]}" --mode "${v[mode]}" --result-dir "$result" \
+    --binary "${v[query-binary]}" --driver "${v[driver]}" --artifact-manifest "${v[artifact-manifest]}" \
+    --base-manifest "$work/base_content_before.tsv" --clone-manifest "$work/clone_content_before.tsv" \
+    --query "${v[cp0-query]}" --gt "${v[cp0-gt]}" --active-tags "$work/index/index_disk.index.tags" \
+    --ls "${v[pre-ls]}" --threads 1 --io-engine "${W1_IO_ENGINE:?identity-v2 io-engine absent}" \
+    --device "$nvme" --output "$result/preupdate_gate.json"
+else
+  python3 "$chat/w1_preupdate_gate.py" --system "${v[system]}" --mode "${v[mode]}" --result-dir "$result" \
+    --binary "${v[query-binary]}" --index-manifest "$work/base_before.tsv" --query "${v[cp0-query]}" \
+    --gt "${v[cp0-gt]}" --active-tags "$work/index/index_disk.index.tags" --ls "${v[pre-ls]}" \
+    --device "$nvme" --output "$result/preupdate_gate.json"
+fi
 
 data_file=$(realpath "${v[full-corpus]}")
 python3 - "$work/attempt_artifacts.json" "$data_file" "${v[trace]}" "${v[expected-active-tags]}" "${v[probe-queries]}" "${v[probe-spec]}" <<'PY'
