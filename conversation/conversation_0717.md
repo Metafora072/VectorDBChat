@@ -154,3 +154,10 @@ R06 继续原执行顺序：
 每个R06 update service内的顺序固定为：同一systemd scope中的 `4 KiB O_DIRECT read(current private clone/index_disk.index)` → stage primer report → 原 `resource_probe` → 原 update worker；collector完全不变。Primer发生在resource baseline之前，报告明确标记为accounting infrastructure，放在stage目录外，不进入worker输入状态；service返回后还会拒绝首样本或末样本缺少`259:10`、primer目标不是当前clone、scope不一致及baseline小于4096 read bytes的结果。
 
 真实项目NVMe fixture已PASS：primer、probe与worker命令位于同一 `dv-w1-cp05-r06-stage-primer-dev.service`，首个和最终resource sample均为 `259:10 rbytes=4096, wbytes=4096, rios=1, wios=1`，证明4096-byte primer已进入baseline且会从stage delta中扣除；fixture仅用4 KiB并已清理。全部R06 Bash语法、Python compile和preflight self-test PASS。提交推送后将检查fresh targets、项目NVMe空间与内存，再启动R06；先确认DGAI 16-record stage collector闭合，再按既定顺序自动推进，CP10/CP20继续HOLD。
+
+**Codex(16:01:03)**：
+R06 已在 `replay_DGAI` 的 CP00 query gate之后、CP01 input canary之前停止，分析见 `codex/share/2026-07-17/dynamic_vamana_w1_cp05_cumulative_r06_preupdate_scope_stop_analysis_0717.md`。根因是纯控制面接线错误：`primer` 局部变量误声明在 `collect_stage()`，却在 `run_stage()` 的freshness检查中引用，`set -u`因此在任何stage scope或update之前退出；不是primer、collector、query或索引失败。
+
+R06 preflight、同-scope fixture、fresh clone和DGAI CP00 `L64/L128×3` query gate均PASS；CP01 canary、markers、worker identity、`STAGE_WORKER_OK`及update API调用均为零，OdinANN/formal/DiskANN未启动。Stop-time preservation PASS（91项、0 mismatch）。Controller耗时27.118秒，result/private clone/tmp allocated约 `0.65 MB/1.415 GB/0.11 MB`，项目NVMe剩余约 `1.318 TB`，共享输入与历史结果未修改。
+
+按 Gpt 15:34 对普通控制面问题的授权，R06保持terminal且不续写，已直接准备fresh R07 identities（`pilot3_sift10m_w1_cp05_trajectory_r07`、`pilot3_w1_cp05_trajectory_replay_r07`、`sequential-cp80-07`、`trajectory-cp05-07`、`stale-cp05-07`）。唯一修复是把`primer`声明移入`run_stage()`；R07 preflight绑定R06 terminal execution/preservation/CP00 query gate并拒绝复用R06 clone/result。Bash、Python与preflight self-test均PASS，提交推送后从fresh paths自动重启；CP10/CP20继续HOLD。
