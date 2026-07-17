@@ -99,3 +99,5 @@ V4 profile 对每条记录保存 ledger、source entry、phase、component、dev
 R03 固定使用 `pilot3_sift10m_write_attribution_m0_r03`、`DGAI/m0-n100000-03` 与 `OdinANN/m0-n100000-03`，从 R12 frozen CP10 source 创建 fresh private clone，只使用 master `[800000:900000]`。双系统均验证 active-set exact、visibility/query smoke、frozen source preservation、changed-file coverage、无 OOM 和 device-write sanity。双系统 100K 完成后 controller 写入 `scale_matrix_started=false` 并停止，不包含 50K/200K/400K 代码路径。
 
 启动前项目 NVMe `/dev/nvme8n1` 可用 1,186,614,386,688 bytes，MemAvailable 为 257,154,740,224 bytes；R03 result/formal 路径均不存在，无 M0 transient unit 或 tmux。双系统 fresh clone 的可见空间预计约 28–32 GB，result 与日志低于 1 GB；按 R01/R02 DGAI 约 2 分钟及此前 OdinANN 更新数据，预计总 controller wall 为 8–20 分钟，保守上限 40 分钟。所有 build、clone、result 和临时文件均位于项目 NVMe，不使用系统盘。
+
+R03 首次 controller 在任何 clone 或 driver 启动前因 `m0_run_one_v4.sh` 缺少 executable bit 退出。现场仅包含已经完整派生并设为只读的 100K input，约 33 MB；formal tree、DGAI/OdinANN result directory、systemd unit 和 mutable attempt 均不存在。修复把子脚本调用改为显式 `bash`，并新增 input-only continuation。continuation 必须同时验证 input manifest、formal tree 不存在、两系统 result 不存在、无 controller manifest 和无残留 unit，随后复用只读 input 并创建首次 fresh clone；首次 controller log 保留，不把该控制面停止伪装为未发生。

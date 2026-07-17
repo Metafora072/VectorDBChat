@@ -6,8 +6,8 @@ root=${ATLAS_ROOT:-/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas};
 available=$(df -PB1 "$root"|awk 'NR==2{print $4}');((available>=100000000000))||{ echo 'requires 100GB NVMe headroom' >&2;exit 1;};if systemctl list-units --all --no-legend 'dv-m0-*'|rg -q .;then echo 'stale M0 unit' >&2;exit 1;fi
 mkdir -p "$result_root";exec 9>"$root/.write_attribution_m0.lock";flock -n 9||exit 1;export M0_GLOBAL_LOCK_HELD=1 ATLAS_ROOT="$root" ATLAS_NVME_MAJMIN="$device"
 python3 "$chat/m0_prepare.py" --size 100000 --source-trace "$source_trace" --before-active "$before_active" --full-corpus "$full" --output-dir "$input_root/n100000"
-"$chat/m0_run_one_v4.sh" DGAI
-"$chat/m0_run_one_v4.sh" OdinANN
+bash "$chat/m0_run_one_v4.sh" DGAI
+bash "$chat/m0_run_one_v4.sh" OdinANN
 python3 - "$result_root" "$formal_root" "$available" <<'PY'
 import hashlib,json,shutil,sys,time
 from pathlib import Path
