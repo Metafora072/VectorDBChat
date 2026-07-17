@@ -6,7 +6,7 @@ set -euo pipefail
 root=${ATLAS_ROOT:-/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas}
 device=${ATLAS_NVME_MAJMIN:-259:10}
 chat=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-run=pilot3_sift10m_write_attribution_m0
+run=pilot3_sift10m_write_attribution_m0_r02
 result_root="$root/results/$run"
 formal_root="$root/formal/$run"
 input_root="$result_root/inputs"
@@ -44,7 +44,7 @@ import json,sys
 from pathlib import Path
 root=Path(sys.argv[1])
 for system in ('DGAI','OdinANN'):
- p=root/system/'m0-n100000-01/summary.json'; d=json.load(open(p))
+ p=root/system/'m0-n100000-02/summary.json'; d=json.load(open(p))
  if d.get('status')!='pass' or d.get('application_writes',{}).get('coverage',0)<0.90:
   raise SystemExit(f'100K pilot gate failed: {system}')
 PY
@@ -60,7 +60,7 @@ from pathlib import Path
 result,formal,free_before=Path(sys.argv[1]),Path(sys.argv[2]),int(sys.argv[3])
 runs=[]
 for system,size in [('DGAI',100000),('OdinANN',50000),('OdinANN',100000),('OdinANN',200000),('OdinANN',400000)]:
- p=result/system/f'm0-n{size}-01/summary.json'; d=json.load(open(p))
+ p=result/system/f'm0-n{size}-02/summary.json'; d=json.load(open(p))
  if d.get('status')!='pass': raise SystemExit(f'non-pass summary: {p}')
  runs.append({'system':system,'size':size,'summary':str(p),'summary_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
               'coverage':d['application_writes']['coverage'],'device_wbytes':d['device_delta'].get('wbytes',0)})

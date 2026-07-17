@@ -15,8 +15,8 @@ device=${ATLAS_NVME_MAJMIN:-259:10}
 chat=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 old=/home/ubuntu/pz/VectorDB/chat/codex/share/2026-07-15/dynamic_vamana_atlas
 r02=/home/ubuntu/pz/VectorDB/chat/codex/share/2026-07-16/dynamic_vamana_atlas
-run=pilot3_sift10m_write_attribution_m0
-attempt="m0-n${size}-01"
+run=pilot3_sift10m_write_attribution_m0_r02
+attempt="m0-n${size}-02"
 work="$root/formal/$run/$system/$attempt"
 result="$root/results/$run/$system/$attempt"
 input="$root/results/$run/inputs/n${size}"
@@ -62,15 +62,16 @@ resources="$result/resources.json"
 primer="$result/io_primer.json"
 online="$result/online.bin"
 libs="$build/lib:$root/build/gperftools-install/lib:$root/build/openblas-install/lib:$root/build/jemalloc-install/lib"
-driver_args=("$driver" run "$full" "$prefix" "$trace")
+driver_args=(env LD_PRELOAD="$build/lib/libm0write.so" ATLAS_W1_MARKERS="$markers" \
+  ATLAS_M0_INDEX_ROOT="$work/index" ATLAS_M0_PROFILE_OUTPUT="$profile" \
+  "$driver" run "$full" "$prefix" "$trace")
 [[ $system == OdinANN ]] && driver_args+=("$probes" "$online")
-unit="dv-m0-${system_lower}-n${size}-01"
+unit="dv-m0-r02-${system_lower}-n${size}-02"
 systemd-run --wait --collect --pipe --unit "$unit" --uid ubuntu --property=Type=exec \
   --property=AllowedCPUs=0-23 --property=CPUAccounting=yes --property=MemoryAccounting=yes \
   --property=IOAccounting=yes --property=MemoryMax=40G --property=LimitCORE=0 --property=RuntimeMaxSec=3600 \
   env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C HOME=/home/ubuntu OPENBLAS_NUM_THREADS=8 OMP_NUM_THREADS=8 \
-    LD_LIBRARY_PATH="$libs" LD_PRELOAD="$build/lib/libm0write.so" ATLAS_W1_MARKERS="$markers" \
-    ATLAS_M0_INDEX_ROOT="$work/index" ATLAS_M0_PROFILE_OUTPUT="$profile" \
+    LD_LIBRARY_PATH="$libs" \
   numactl --physcpubind=0-23 --membind=0 \
   python3 "$chat/w1_stage_io_primer.py" --index-root "$work/index" --device "$device" \
     --primer-report "$primer" --resources "$resources" --resource-probe "$old/resource_probe.py" \
