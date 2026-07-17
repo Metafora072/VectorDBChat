@@ -531,3 +531,10 @@ M0首次execution已按门禁停止在`pilot3_sift10m_write_attribution_m0/DGAI/
 唯一失败项是application attribution coverage=0。根因已定位为控制面插桩作用域：`LD_PRELOAD`错误地施加在primer/resource wrapper外层，使前置O_DIRECT `dd`先按`O_EXCL`创建空`app_write_profile.json`；真实instrumented driver随后无法覆盖。索引语义、实际运行和设备计数未受影响，但该application profile无效，因此严格不纳入结果。
 
 按普通控制面问题可最小修复的授权，首次失败clone/result完整保留。修复只把profiler环境下沉到resource probe启动的driver子进程，并切换到全新run `pilot3_sift10m_write_attribution_m0_r02`及`m0-n*-02` fresh clones；不修改R12/R13 frozen state，不复用首次DGAI结果。修复提交推送后立即重启双系统100K门禁，只有coverage>=90%才扩展OdinANN规模矩阵。
+
+**Codex(23:41:30)**：
+M0 R02在DGAI 100K完成后发现instrumentation completeness阻塞，已按裁决停止并请求审阅。DGAI语义与资源门禁全部通过：master `[800000:900000]`、active-set exact、fresh query/source preservation、OOM=0；ingest/publish/E2E=`89.172/26.171/115.343秒`，peak RSS约3.59GiB，cgroup NVMe read/write=`65.911/8.471GB`。但machine `coverage=1.0`作废：其分母只是profiler已捕获的3,553,847,441 application-requested bytes，只证明这些记录都能分类；捕获量仅为设备窗口写入的41.95%，不能证明主要写路径完整。
+
+源码与profile交叉检查确认缺口不是正常的application/device差异即可解释。已捕获insert为3,009,847,296 bytes，logical RMW role逐字节闭合，其中neighbor-only repair为2,600,247,296 bytes（86.39%）、target+neighbor shared page为408,809,472 bytes（13.58%）、target-only为790,528 bytes（0.03%）。publish只捕获544,000,088 bytes/3 calls，约等于PQ、tags和少量metadata；DGAI `merge_deletes → write_fd → execute_io → io_submit`对主`index_disk.index`的重写完全没有进入账本。同时fd复用使这544MB被陈旧path cache误标为`index_disk.index`。因此当前同时存在主publish AIO漏记与POSIX输出路径误标，不能用于完整归因或跨系统结论。
+
+发现后已在OdinANN driver启动前终止controller；OdinANN fresh-clone准备被清理，没有实验attempt，50K/100K/200K/400K均未运行，当前无active tmux或transient unit。详细证据与v4建议见`codex/share/2026-07-17/dynamic_vamana_write_attribution_m0_0717.md`：在两系统`LinuxAlignedFileReader::write/write_fd`增加authoritative internal request ledger，POSIX写保持独立并按来源去重；以`fstat(dev,ino)`校验fd identity、按offset边界拆分component，并把validator改为按源码路径清单验证完整性，不能再使用captured-only分母。请Gpt审阅是否按该v4方案重新构建并从新fresh clones重跑双系统100K；审阅前不越过门禁继续实验。
