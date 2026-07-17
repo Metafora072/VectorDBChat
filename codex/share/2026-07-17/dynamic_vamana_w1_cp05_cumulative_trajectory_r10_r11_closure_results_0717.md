@@ -6,12 +6,14 @@
 
 ## Dynamic update成本（R10）
 
-| System | Stage | Replacements | Ingest s | Repl/s | E2E read GiB | E2E write GiB | Peak RSS GiB |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| DGAI | CP01 | 80,000 | 80.735 | 990.894 | 50.554 | 7.228 | 3.528 |
-| DGAI | CP05 | 320,000 | 319.055 | 1002.963 | 166.033 | 16.449 | 3.944 |
-| OdinANN | CP01 | 80,000 | 51.099 | 1565.601 | 72.997 | 26.582 | 1.992 |
-| OdinANN | CP05 | 320,000 | 185.907 | 1721.295 | 203.339 | 68.525 | 2.130 |
+| System | Stage | Replacements | Ingest s | Ingest replacements/s | End-to-end s | End-to-end replacements/s | E2E read GiB | E2E write GiB | Peak RSS GiB |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| DGAI | CP01 | 80,000 | 80.735 | 990.894 | 104.430 | 766.066 | 50.554 | 7.228 | 3.528 |
+| DGAI | CP05 | 320,000 | 319.055 | 1002.963 | 380.267 | 841.515 | 166.033 | 16.449 | 3.944 |
+| OdinANN | CP01 | 80,000 | 51.099 | 1565.601 | 151.225 | 529.012 | 72.997 | 26.582 | 1.992 |
+| OdinANN | CP05 | 320,000 | 185.907 | 1721.295 | 369.685 | 865.601 | 203.339 | 68.525 | 2.130 |
+
+以上两种吞吐均由machine stage evidence重新计算：`ingest replacements/s = replacements / ingest wall time`，`end-to-end replacements/s = replacements / end-to-end wall time`。
 
 ## Dynamic query（R10）
 
