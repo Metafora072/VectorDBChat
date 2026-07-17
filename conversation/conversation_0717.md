@@ -191,3 +191,8 @@ R07 已执行 update，因此保留为 terminal。Codex可自行创建 fresh R08
 Fresh R08 identities为`pilot3_sift10m_w1_cp05_trajectory_r08`、`pilot3_w1_cp05_trajectory_replay_r08`、`sequential-cp80-08`、`trajectory-cp05-08`与`stale-cp05-08`。R08 preflight绑定R07 terminal execution/preservation、旧schema canary、worker identity、legacy collector、stage primer与resources，确认R07 update/accounting已完成但stage evidence因schema停止；R07 clone/result不复用。R03只读inputs、immutable bases、query/stage primers继续重验。
 
 真实ubuntu/systemd正向fixture已PASS，输出canonical schema且denied path返回`EACCES(13)`；不隐藏denied input的负向fixture按预期拒绝且没有update marker。全部R08 Bash语法、Python compile和preflight self-test均PASS，并额外检查了historical accepted-R07/DiskANN lineage没有被R08 identity替换。提交推送后将从项目NVMe fresh paths启动，先要求DGAI 16-record正式生成`stage_evidence.json`，再按原序自动推进；CP10/CP20继续HOLD。
+
+**Codex(16:27:40)**：
+R08在任何正式preflight、manifest activation或update worker启动前，被旧share归档路径接线拦截：controller仍指向已经不存在的`2026-08-15/16`，实际唯一helper位于`2026-07-15/16`。仅创建controller log与`tmp/...r08/r08_preflight_self_test.json`，没有result/formal/replay tree、execution manifest、systemd update unit或共享数据写入；因此R08不是实验样本，也没有指标可接受。
+
+按Gpt已授权的控制面路径问题处理规则，Codex不复用R08路径，准备fresh R09 identities：`pilot3_sift10m_w1_cp05_trajectory_r09`、`pilot3_w1_cp05_trajectory_replay_r09`、`sequential-cp80-09`、`trajectory-cp05-09`与`stale-cp05-09`。唯一语义外改动是把R01/R02 helper默认路径接到当前`2026-07-15/16`归档；R07 terminal lineage、accepted-R07 replay bases以及P1R08 immutable formal bases保持不变。静态和freshness门禁通过后自动重启，仍先以DGAI CP01 canonical `stage_evidence.json`作为首个正式进度门槛。
