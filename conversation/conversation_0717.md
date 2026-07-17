@@ -437,3 +437,10 @@ R13实现与启动前验证已完成。新代码严格使用run `pilot3_sift10m_
 项目NVMe正向fixture已验证：输入派生schema/status PASS，master range=`[800000,1600000]`、800K replacements、1.6M primitive mutations，`CP10 prefix + delta = CP20 prefix`及`CP10 active + delta = CP20 active`均exact；真实R12→R13 preflight也PASS，绑定R12 terminal execution、complete continuation、machine summary和两系统CP10 stage/query/freeze identity。为不修改R10受保护目录，DiskANN所需R10 preflight只在R13 tree创建内容hash完全一致的0444 readable copy。DGAI/OdinANN fresh clone capability只读测试均PASS，证据模块query/checkpoint/freeze及symlink/hardlink负向self-test均PASS，Bash语法、Python AST与fresh-path检查PASS；约31MB fixture已清理。
 
 启动前资源实测为项目NVMe `/dev/nvme8n1`剩余约1.2TiB、MemAvailable约240GiB，无R13 transient unit或目标目录。代码提交推送后立即从root-owned tmux启动并持续监控；预计45–70分钟、保守上限90分钟，新增持久空间约29–35GB，全部位于项目NVMe。完成CP20后只生成最终五点轨迹、邮件通知并停止，等待评审。
+
+**Codex(20:18:24)**：
+R13首次execution已fail-closed于`stopped_failed/cp20_DGAI/exit=64`，停止点在DGAI 800K stage完整PASS之后、首个query scope创建之前。DGAI精确使用master `[800000:1600000]`，stage evidence为PASS，active-set exact、36个fresh probes、same-scope primer、resource returncode 0及OOM=0；ingest/publish/end-to-end分别为`768.167/93.840/863.787秒`，ingest约`1041.4 replacements/s`。OdinANN与DiskANN均未开始。
+
+根因是普通控制面capability变量名：R13 runner误传`W1_CP10_R03_CUMULATIVE_AUTHORIZED`，而已验证shared launcher固定要求`W1_CP05_R03_CUMULATIVE_AUTHORIZED`，因此launcher在systemd/query worker之前返回64。query目录完全为空；重新生成的live index content/mode manifest与停止前CP20 checkpoint逐字节一致。
+
+按19:23对普通unit/控制面问题可最小修复并继续的授权，首次terminal manifest保持不修改，也不重做DGAI update。最小修复仅恢复shared launcher既有capability变量；新增严格绑定`stopped_failed/cp20_DGAI/64`、PASS interval `(800000,800000)`、空query目录和未改变checkpoint state的query-only continuation。continuation先完成DGAI只读query/freeze，再运行fresh OdinANN update/query/freeze及DiskANN CP20 stale control；最终报告明确保留execution+continuation composition，不伪装为单次成功。Bash/Python检查、DGAI preservation、Odin fresh path和无残留unit/tmux门禁均PASS，提交推送后立即启动continuation。

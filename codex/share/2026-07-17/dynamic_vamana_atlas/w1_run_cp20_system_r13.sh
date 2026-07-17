@@ -128,7 +128,7 @@ IFS=, read -r -a l_values <<<"$ls_csv"
 for l in "${l_values[@]}"; do
   for rep in 1 2 3; do
     stem="$qdir/cp20_L${l}_r${rep}"; qunit="dv-w1-cum-r03-r13-${system_lower}-l${l}-r${rep}"
-    W1_CP10_R03_CUMULATIVE_AUTHORIZED=1 "$new/w1_run_query_scope.sh" --unit "$qunit" --system "$system" \
+    W1_CP05_R03_CUMULATIVE_AUTHORIZED=1 "$new/w1_run_query_scope.sh" --unit "$qunit" --system "$system" \
       --index-root "$work/index" --query-binary "$query_binary" --query "$query" --gt "$gt" \
       --active-tags "$after_active" --stem "$stem" --l-value "$l" --memory-max 24G \
       --resource-probe "$old/resource_probe.py" --query-worker "$old/w1_query_worker.sh" --device "$device"

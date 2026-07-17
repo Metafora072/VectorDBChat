@@ -76,8 +76,16 @@ r12 = root / "results/pilot3_sift10m_w1_cp10_trajectory_r12"
 run = root / "results/pilot3_sift10m_w1_cp20_trajectory_r13"
 preflight = load(run / "preflight/execution_preflight.json")
 r12_summary = load(r12 / "summary.json")
+execution_path = run / "execution_manifest.json"
+continuation_path = run / "continuation_manifest.json"
+execution = load(execution_path)
+continuation = load(continuation_path)
 if preflight.get("status") != "pass" or r12_summary.get("status") != "pass":
     raise SystemExit("R13 preflight/R12 summary not PASS")
+if (execution.get("status"), execution.get("phase"), execution.get("exit_code")) != ("stopped_failed", "cp20_DGAI", 64):
+    raise SystemExit("R13 terminal execution identity mismatch")
+if continuation.get("status") != "running" or continuation.get("phase") != "finalize":
+    raise SystemExit("R13 continuation is not at the finalize boundary")
 
 systems = {}
 dynamic_trajectory = {}
@@ -134,6 +142,8 @@ summary = {
     "run": "pilot3_sift10m_w1_cp20_trajectory_r13", "generated_unix_ns": time.time_ns(),
     "post_cp20_action": "STOP_AND_AWAIT_REVIEW",
     "preflight_sha256": sha(run / "preflight/execution_preflight.json"),
+    "execution_manifest_sha256": sha(execution_path),
+    "continuation_manifest_before_completion_sha256": sha(continuation_path),
     "r12_summary_sha256": sha(r12 / "summary.json"),
     "r11_closure_sha256": sha(r11 / "closure_manifest.json"),
     "systems": systems, "dynamic_query_trajectory": dynamic_trajectory,
@@ -147,6 +157,7 @@ summary = {
 lines = [
     "# Dynamic Vamana W1 CP20 trajectory R13 results", "",
     "R12 composed closure已绑定；R13只从两个R12冻结CP10 clone创建fresh private clone，并仅应用master `[800000:1600000]` 的800K replacements。CP00、CP01、CP05、CP10及1M replay均未重跑。两个CP20 clone与DiskANN CP20 stale-static control全部PASS；完成后停止并等待最终轨迹评审。", "",
+    "执行边界保持可审计：首次`execution_manifest.json`在DGAI stage完整PASS后、首个query scope创建前因shared launcher capability变量名不匹配而保留为`stopped_failed/cp20_DGAI/exit=64`；`continuation_manifest.json`绑定该terminal identity，仅对DGAI执行query/freeze，再运行fresh OdinANN与DiskANN。两份manifest组成R13 closure，没有重做DGAI 800K update，也没有将首次execution伪装为单次成功。", "",
     "## CP10→CP20增量", "",
     "| 系统 | replacements | ingest s | ingest replacements/s | publish s | end-to-end s | end-to-end replacements/s | peak RSS GiB | apparent growth GiB | allocated growth GiB |",
     "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
