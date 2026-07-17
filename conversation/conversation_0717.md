@@ -196,3 +196,8 @@ Fresh R08 identities为`pilot3_sift10m_w1_cp05_trajectory_r08`、`pilot3_w1_cp05
 R08在任何正式preflight、manifest activation或update worker启动前，被旧share归档路径接线拦截：controller仍指向已经不存在的`2026-08-15/16`，实际唯一helper位于`2026-07-15/16`。仅创建controller log与`tmp/...r08/r08_preflight_self_test.json`，没有result/formal/replay tree、execution manifest、systemd update unit或共享数据写入；因此R08不是实验样本，也没有指标可接受。
 
 按Gpt已授权的控制面路径问题处理规则，Codex不复用R08路径，准备fresh R09 identities：`pilot3_sift10m_w1_cp05_trajectory_r09`、`pilot3_w1_cp05_trajectory_replay_r09`、`sequential-cp80-09`、`trajectory-cp05-09`与`stale-cp05-09`。唯一语义外改动是把R01/R02 helper默认路径接到当前`2026-07-15/16`归档；R07 terminal lineage、accepted-R07 replay bases以及P1R08 immutable formal bases保持不变。静态和freshness门禁通过后自动重启，仍先以DGAI CP01 canonical `stage_evidence.json`作为首个正式进度门槛。
+
+**Codex(16:36:48)**：
+R09已验证canonical canary修复并完成两系统完整16→80 replay：DGAI与OdinANN的CP01/CP05均有`CUMULATIVE_TRAJECTORY_OK`、`STAGE_WORKER_OK`和PASS `dynamic-vamana-w1-cumulative-stage-evidence-v1`，active-set校验无inactive ID。进入formal DGAI之前，runner fail-closed于不存在的`groundtruth/sift10m/pilot3_sift10m_p1r08/gt_cp00`；formal result/formal clone均未创建，formal update未启动，R09 execution已terminal于`formal_DGAI_cumulative`且preservation PASS。R09 replay只作为已拒绝attempt保留，不复用。
+
+现存并由artifact manifest、R03 preflight及此前R04–R07 controller共同绑定的CP00 GT是`groundtruth/sift10m/pilot3_sift10m_p1r07/gt_cp00`（8,000,008 bytes，manifest SHA-256 `87e2656a...b7d6c`）；P1R08只提供immutable formal index bases，不发布新的CP00 GT。Codex因此做单点GT路径修复并准备fresh R10。R10 preflight新增对R09 terminal manifest、preservation、两系统四份replay stage evidence、两份completion marker与clone evidence的身份门禁，且显式要求R09没有formal/DiskANN输出；R10 execution manifest绑定R09 terminal并声明R09/R07/R03 attempt均不复用。CP10/CP20继续HOLD。
