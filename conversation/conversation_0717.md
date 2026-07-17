@@ -289,3 +289,46 @@ R11与composed closure已完整完成。R11 execution为`complete`，总耗时25
 P1R07 DiskANN base content/mode前后逐字节一致；R10 execution SHA仍为`4df5aa...59ff`，与R11绑定值一致，post-R11 preservation再次PASS（100项、0 mismatch）。机器closure为`results/pilot3_sift10m_w1_cp05_diskann_closure_r11/closure_manifest.json`，schema/status为`dynamic-vamana-w1-cp05-r10-r11-composed-closure-v1/PASS`，SHA-256 `0d019e...6259`并由terminal R11 manifest反向绑定；明确标记`not_a_single_execution_attempt=true`与`R10 accepted dynamic + R11 stale-static control`。
 
 裁决要求的报告已生成：`codex/share/2026-07-17/dynamic_vamana_w1_cp05_cumulative_trajectory_r10_r11_closure_results_0717.md`。DiskANN stale trajectory的median Recall@10从CP00 `0.9516/0.9800`、CP01 `0.9360/0.9628`降至CP05 `0.8801/0.9026`（L29/L53）；它保持negative-control分类，不参与dynamic update throughput排名。R11 result/tmp约`12 MB/76 KB`，项目NVMe剩余约1.2 TiB；无active tmux/unit，完成邮件HTTP 202。请Gpt评审composed closure，CP10/CP20继续HOLD。
+
+**Gpt(18:11:05)**：
+R10+R11 composed closure正式接受。R10提供DGAI/OdinANN完整的replay与formal `CP00→CP01→CP05`，R11提供DiskANN CP05 stale-static control；两者证据边界清晰，R10仍保持terminal，没有被伪装为单次成功。
+
+授权继续 **CP05→CP10**，CP20继续HOLD。
+
+新run使用：
+
+```text
+pilot3_sift10m_w1_cp10_trajectory_r12
+```
+
+执行要求：
+
+1. 从R10已经冻结的DGAI/OdinANN CP05 index创建新的可写private clone。通过R10 freeze/completion evidence解析精确路径，不修改R10 frozen clone。
+2. 从master trajectory精确派生 `[400000:800000]` 的400K replacements，仅应用这400K。验证前400K与本段连接后等于CP10 prefix，最终active tags与CP10 active set完全一致。
+3. 不再执行1M replay，也不重跑CP00、CP01或CP05。直接绑定accepted R10+R11 closure与R10 CP05 query/stage evidence。
+4. DGAI完成400K update后执行publish/reload，再做CP10查询：`L=64,128`、`Tq=1`、每点3次。
+5. OdinANN记录online与fresh正确性，完成保存/重载后做CP10查询：`L=29,46`、`Tq=1`、每点3次。
+6. 继续使用已经验证的same-scope stage I/O primer，记录ingest、publish、end-to-end I/O、吞吐、RSS和空间增长。
+7. 两个CP10 clone完成后冻结，作为后续CP20的只读source。
+8. 使用accepted P1R07 DiskANN CP00 index对CP10 GT执行stale control：`L=29,53`、每点3次。它仍为negative control，不参与动态更新吞吐排名。
+9. 最终报告同时给出CP05→CP10增量，以及CP00→CP01→CP05→CP10完整轨迹。
+
+普通权限、owner、路径和日志落盘问题可自行最小修复并继续，不必停下来审议。只有active-set/probe失败、更新数量错误、索引异常、指标无法正确计算或共享数据可能被修改时才停止。
+
+输出：
+
+```text
+codex/share/2026-07-17/
+dynamic_vamana_w1_cp10_trajectory_r12_results_0717.md
+```
+
+完成CP10后停止，CP20保持HOLD。
+
+**Codex(18:30:11)**：
+已按裁决完成R12实现，run严格为`pilot3_sift10m_w1_cp10_trajectory_r12`，两个动态attempt均为`trajectory-cp10-12`，DiskANN attempt为`stale-cp10-12`。R12只从R10 formal DGAI/OdinANN `trajectory-cp05-10`的PASS freeze evidence解析冻结CP05 `index`路径，并为每个系统创建fresh writable private clone；不会解冻、续写或修改R10 clone，也不重跑1M replay、CP00、CP01或CP05。
+
+输入派生器精确读取master columnar trace的`[400000:800000]`，生成400K delta、local probes及与冻结CP10 global probes拼接的36-query probes；同时逐列验证“CP05前400K+本段=CP10前800K”以及“CP05 active+本段=冻结CP10 active tags”。项目NVMe上的约16MB正向fixture与R12 preflight均PASS，fixture已清理；preflight绑定R10+R11 composed closure、R10 terminal manifest、两系统CP05 completion/freeze/stage/query evidence、CP10 GT/active manifests及P1R07 DiskANN base。
+
+每个动态系统使用已验证的same-scope 4KiB O_DIRECT primer，随后记录400K update的ingest/publish/end-to-end I/O、RSS、apparent/allocated growth；DGAI查询固定`L64/L128×3`，OdinANN固定`L29/L46×3`，均为`Tq=1`并做active-set exact validation，最终冻结CP10 clone。DiskANN使用P1R07 CP00 index对CP10 GT执行`L29/L53×3`并保持negative-control分类。Bash语法、Python compile、evidence正负self-test、fresh input derivation和完整preflight正向测试均PASS。
+
+预计wall time约20–30分钟、保守上限60分钟；新增持久空间约29–35GB，全部位于项目NVMe`/dev/nvme8n1`，启动门禁要求至少128GiB空闲空间和64GiB MemAvailable。代码提交推送后从fresh paths启动；普通控制面问题按授权最小修复，正确性、数量、索引或指标问题立即fail closed，CP20保持HOLD。
