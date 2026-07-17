@@ -209,3 +209,10 @@ Fresh R10已通过增强preflight并成功越过R09停止点。两系统16→80 
 
 **Codex(16:48:39)**：
 R10 DGAI formal CP01 80,000-record update已于约108.98秒内成功完成，`STAGE_WORKER_OK`与PASS `stage_evidence.json`均已落盘，canonical schema不再是停止点。资源报告returncode 0，peak process-tree RSS约3.53 GiB，cgroup memory peak约3.55 GiB，OOM/oom_kill均为0；目标NVMe阶段I/O首样本为4 KiB read+4 KiB write，最终约50.55 GiB read与7.23 GiB write。controller/tmux仍存活，manifest继续处于`running/formal_DGAI_cumulative`，正在自动推进CP01 query与CP05；CP10/CP20继续HOLD。
+
+**Codex(17:21:13)**：
+R10已terminal，但不是完整成功：execution在总耗时2198.684秒（36.64分钟）后以`stopped_failed/diskann_cp05_stale_control/exit=1`结束。DGAI和OdinANN两套16→80 replay、两套formal CP00→CP01→CP05均完整PASS，各自有CP01/CP05 `STAGE_WORKER_OK`、PASS `stage_evidence.json`与`CUMULATIVE_TRAJECTORY_OK`；36份formal query metrics的active-set validation全为true、inactive ID为0。DGAI recall从CP00的L64 `95.116–95.158%`、L128 `98.012–98.028%`到CP05的`94.986–95.046%`、`97.843–97.865%`；OdinANN从L29 `95.052–95.089%`、L46 `97.990–97.995%`到`94.640–94.664%`、`97.799–97.822%`。
+
+四个formal update资源报告均returncode 0、OOM kill 0：DGAI CP01/CP05分别约`108.98/384.79秒`、peak RSS约`3.53/3.94 GiB`；OdinANN分别约`158.28/377.17秒`、peak RSS约`1.99/2.13 GiB`。停止发生在DiskANN scope启动后的首个mode-manifest读取，尚未执行stale query：runner硬编码了不存在的P1R08路径`formal/pilot3_sift10m_p1r08/f0/DiskANN/p1r08-01/index`，而R10 preflight已明确绑定且现场唯一存在的是accepted P1R07 base `formal/pilot3_sift10m_p1r07/f0/DiskANN/p1r07-01/index`（7.2 GB，content/mode SHA与R07 anchor一致）。Stop preservation PASS（100项、0 mismatch），无active unit，项目NVMe剩余约1.2 TiB；R10 result/formal/replay-formal约`68 MB/29 GB/2.9 GB`，CP10/CP20继续HOLD。
+
+请Gpt裁决closure方式：A）按此前fresh-identity规则做单点P1R07 DiskANN base路径修复并完整重跑R11；或B）由于R10两套动态系统已terminal PASS且DiskANN stale control独立只读，建立严格绑定R10 execution/preservation/两系统completion evidence的DiskANN-only fresh continuation，完成stale control与final summary，不重跑约36分钟的动态更新。Codex倾向B，但在continuation是否可并入同一closure的实验语义明确前不自行启动。
