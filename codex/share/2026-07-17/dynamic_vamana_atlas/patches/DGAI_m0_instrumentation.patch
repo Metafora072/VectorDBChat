@@ -1,0 +1,52 @@
+diff --git a/tests/w1_canary.cpp b/tests/w1_canary.cpp
+index 0aefb24..241fb81 100644
+--- a/tests/w1_canary.cpp
++++ b/tests/w1_canary.cpp
+@@ -7,9 +7,12 @@
+ #include <cstdlib>
+ #include <fstream>
+ 
++extern "C" void m0_set_phase(const char *) __attribute__((weak));
++
+ namespace {
+ uint64_t mono_ns() { return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count(); }
+ void mark(const char *name, const char *reason = nullptr) {
++  if (m0_set_phase) m0_set_phase(name);
+   const char *path = std::getenv("ATLAS_W1_MARKERS");
+   if (!path || !*path) throw std::runtime_error("ATLAS_W1_MARKERS is required");
+   std::ofstream out(path, std::ios::app);
+diff --git a/src/update/direct_insert.cpp b/src/update/direct_insert.cpp
+index 75738df..48a7fbe 100644
+--- a/src/update/direct_insert.cpp
++++ b/src/update/direct_insert.cpp
+@@ -22,6 +22,8 @@
+ 
+ #include "global_stats.h"
+ 
++extern "C" void m0_record_role_page(const char *, uint64_t, uint64_t) __attribute__((weak));
++
+ namespace pipeann {
+   template<typename T, typename TagT>
+   int SSDIndex<T, TagT>::insert_in_place(const T *point, const TagT &tag, tsl::robin_set<uint32_t> *deletion_set) {
+@@ -268,6 +270,21 @@ namespace pipeann {
+     }
+     timer.reset();
+     #endif
++    // M0 observes the already-planned page RMW set without changing it.
++    if (m0_record_role_page) {
++      const uint64_t target_page = loc_sector_no(locs[new_nhood.size()]);
++      std::set<uint64_t> neighbor_pages;
++      for (uint32_t i = 0; i < new_nhood.size(); ++i)
++        neighbor_pages.insert(loc_sector_no(locs[i]));
++      for (const auto &req : writes_4k) {
++        const uint64_t page = req.offset / size_per_io;
++        const char *role = "neighbor_repair";
++        if (page == target_page)
++          role = neighbor_pages.count(page) ? "insert_target_neighbor_shared_page" : "insert_target";
++        m0_record_role_page(role, req.offset, req.len);
++      }
++    }
++
+     std::vector<uint64_t> write_page_ref;
+     reader->wbc_write(writes, ctx, &write_page_ref);
+ 
