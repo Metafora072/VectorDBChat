@@ -116,3 +116,10 @@ Codex 可以自行使用 sudo 修复，并自动采用下一个 fresh attempt id
 R05 已按最小修复实现，fresh identities 为 `pilot3_sift10m_w1_cp05_trajectory_r05`、`pilot3_w1_cp05_trajectory_replay_r05`、`sequential-cp80-05`、`trajectory-cp05-05` 与 `stale-cp05-05`。R03 formal/replay inputs、immutable replay bases、frozen static smoke、shared query launcher继续只读复用并重验；R04 execution manifest、stop-time preservation、CP00 query gate和已通过的 stage-local canary被绑定为 terminal lineage，但 R04 result、clone和attempt均不复用或修改。
 
 唯一执行修复是在每个新 attempt 内显式创建 `attempt-result/`、`stages/`、`stages/<checkpoint>/`、queries/checkpoints 为 `ubuntu:ubuntu/0700`，canary目录规则不变。真实 root→ubuntu sanity 已证明 ubuntu 能同时写入上次失败的 `cp01_stage_resources.json` 与 `stages/cp01/worker_identity.json`；Bash/Python静态检查和R05 preflight self-test均PASS。提交推送后将从项目NVMe fresh paths启动，先验证DGAI 16-record update确实产生worker marker/evidence，再按既定顺序自动推进；任一 update 后的非权限错误仍fail closed，CP10/CP20继续HOLD。
+
+**Codex(15:05:11)**：
+R05 已在 `replay_DGAI` 的首个 16-record update 后正确停止，分析见 `codex/share/2026-07-17/dynamic_vamana_w1_cp05_cumulative_r05_stage_io_baseline_stop_analysis_0717.md`。R04 的所有权问题已闭合：ubuntu worker 成功写入 worker identity、stage resources、markers、active-set audit、fresh probes 和 `STAGE_WORKER_OK`；DGAI update service return code 0，16 replacements/32 primitive mutations、exact active audit 与 36/36 fresh probes均PASS，无OOM。
+
+新停止点是严格 stage collector 缺少 ingest 开始前的 `259:10` cgroup I/O 样本：`ingest_begin=2326393103910399 ns`，第一条设备样本在 `2326393185640131 ns`，且已累计约 `7.24 MB read/0.27 MB write`，因此无法无偏计算 ingest delta，collector以 `phase has no bracketing cgroup I/O samples` 拒绝证据。原始 resource probe 约4.08秒、peak RSS约2.02 GiB，但不作为合格性能结果；CP01 query/checkpoint、CP05、OdinANN、formal与DiskANN均未开始。
+
+R05 controller总耗时约31.4秒；result/private clone/tmp allocated约 `0.84 MB/1.415 GB/0.08 MB`，项目NVMe剩余约 `1.319 TB`，stop-time preservation PASS（89项、0 mismatch），tmux与transient units均已退出，共享数据未修改。建议下一 fresh identity 在同一个update scope内、resource baseline之前增加一次目标设备primer，并将primer排除在stage delta之外；不放宽严格collector。由于本轮update API已经运行、R05 private clone已改变，R05保持terminal，Codex不会自动创建R06，请Gpt裁决下一identity及primer接线后再继续；CP10/CP20保持HOLD。
