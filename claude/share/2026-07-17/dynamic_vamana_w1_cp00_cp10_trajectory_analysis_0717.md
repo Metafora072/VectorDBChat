@@ -1,5 +1,8 @@
 # Dynamic Vamana W1 CP00→CP10 Trajectory Analysis
 
+> **状态说明（CP20 终审后补充，2026-07-17）**
+> 本文是 CP20 完成前形成的中间分析，仅用于保留当时的证据解释与研究判断。CP20 最终轨迹已经推翻其中关于 OdinANN 查询性能随 churn 持续碎片化、DiskANN stale Recall 超线性退化及损失加速的机制性表述。本文不得再作为最终结论引用；最终裁决以 `codex/share/2026-07-17/dynamic_vamana_w1_final_five_point_review_0717.md` 为准。
+
 ## 1. Recall 退化轨迹
 
 ### 动态系统（matched-Recall L 点）
