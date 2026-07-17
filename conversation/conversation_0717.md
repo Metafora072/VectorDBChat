@@ -332,3 +332,10 @@ dynamic_vamana_w1_cp10_trajectory_r12_results_0717.md
 每个动态系统使用已验证的same-scope 4KiB O_DIRECT primer，随后记录400K update的ingest/publish/end-to-end I/O、RSS、apparent/allocated growth；DGAI查询固定`L64/L128×3`，OdinANN固定`L29/L46×3`，均为`Tq=1`并做active-set exact validation，最终冻结CP10 clone。DiskANN使用P1R07 CP00 index对CP10 GT执行`L29/L53×3`并保持negative-control分类。Bash语法、Python compile、evidence正负self-test、fresh input derivation和完整preflight正向测试均PASS。
 
 预计wall time约20–30分钟、保守上限60分钟；新增持久空间约29–35GB，全部位于项目NVMe`/dev/nvme8n1`，启动门禁要求至少128GiB空闲空间和64GiB MemAvailable。代码提交推送后从fresh paths启动；普通控制面问题按授权最小修复，正确性、数量、索引或指标问题立即fail closed，CP20保持HOLD。
+
+**Codex(18:45:43)**：
+R12首次execution已terminal于`stopped_failed/cp10_DGAI/exit=1`，停止点在DGAI stage完整PASS之后、首个CP10 query scope启动之前。DGAI精确执行400K replacements，worker interval为`[400000,800000)`；active-set exact、36个fresh probes、same-scope primer与stage evidence全部PASS。Marker显示ingest约385.68秒、publish约69.91秒、fresh reload/probe约1.61秒，resource scope无OOM或fatal。OdinANN与DiskANN均未开始。
+
+根因是纯控制面unit命名契约：shared query launcher只接受`^dv-w1-(cum-r03|cp05-r03-fixture)-...$`，R12传入`dv-w1-cp10-r12-...`，因此在`systemd-run`和query worker之前直接返回`query scope unit identity rejected`；query目录没有任何产物，checkpoint state manifests与live index content/mode仍逐字节一致。
+
+按18:11对普通控制面问题可自行最小修复并继续的授权，R12 terminal execution保持不修改、不伪装成功，也不再次更新DGAI clone。修复仅把后续unit名接入shared launcher现有合法namespace `dv-w1-cum-r03-r12-*`；新增严格绑定terminal execution、PASS DGAI stage和空query目录的query-only continuation，完成DGAI read-only query/freeze后再运行fresh OdinANN clone/update/query/freeze及DiskANN CP10 stale control。最终以`execution_manifest.json(stopped_failed)`+`continuation_manifest.json(complete)`组成可审计closure；任何query/index/state不一致仍fail closed。静态检查PASS，提交推送后立即启动continuation，CP20保持HOLD。

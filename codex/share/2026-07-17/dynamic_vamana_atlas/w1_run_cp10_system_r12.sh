@@ -127,7 +127,7 @@ python3 "$r02/w1_mode_manifest.py" write --root "$work/index" --output "$checkpo
 IFS=, read -r -a l_values <<<"$ls_csv"
 for l in "${l_values[@]}"; do
   for rep in 1 2 3; do
-    stem="$qdir/cp10_L${l}_r${rep}"; qunit="dv-w1-cp10-r12-${system_lower}-l${l}-r${rep}"
+    stem="$qdir/cp10_L${l}_r${rep}"; qunit="dv-w1-cum-r03-r12-${system_lower}-l${l}-r${rep}"
     W1_CP05_R03_CUMULATIVE_AUTHORIZED=1 "$new/w1_run_query_scope.sh" --unit "$qunit" --system "$system" \
       --index-root "$work/index" --query-binary "$query_binary" --query "$query" --gt "$gt" \
       --active-tags "$after_active" --stem "$stem" --l-value "$l" --memory-max 24G \
