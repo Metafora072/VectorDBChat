@@ -1,0 +1,71 @@
+diff --git a/tests/w1_canary.cpp b/tests/w1_canary.cpp
+--- a/tests/w1_canary.cpp
++++ b/tests/w1_canary.cpp
+@@ -6,9 +6,12 @@
+ #include <cstdlib>
+ #include <fstream>
+ 
++extern "C" void m0_set_phase(const char *) __attribute__((weak));
++
+ namespace {
+ uint64_t mono_ns() { return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count(); }
+ void mark(const char *name) {
++  if (m0_set_phase) m0_set_phase(name);
+   const char *path = std::getenv("ATLAS_W1_MARKERS"); if (!path || !*path) throw std::runtime_error("ATLAS_W1_MARKERS is required");
+   std::ofstream out(path, std::ios::app); if (!out) throw std::runtime_error("cannot open marker file"); out << "{\"marker\":\"" << name << "\",\"monotonic_ns\":" << mono_ns() << "}\n";
+   if (!out) throw std::runtime_error("cannot write marker");
+diff --git a/src/update/direct_insert.cpp b/src/update/direct_insert.cpp
+--- a/src/update/direct_insert.cpp
++++ b/src/update/direct_insert.cpp
+@@ -22,6 +22,8 @@
+ #include <sys/syscall.h>
+ #include "linux_aligned_file_reader.h"
+ 
++extern "C" void m0_record_role_page(const char *, uint64_t, uint64_t) __attribute__((weak));
++
+ namespace pipeann {
+   #define UPDATE_BUF_SIZE ((2 * MAX_N_EDGES + 1) * io_size)
+ 
+@@ -213,6 +215,19 @@
+       memcpy(w_nbr_node.nbrs, nhood.data(), w_nbr_node.nnbrs * sizeof(uint32_t));
+     }
+ 
++    if (m0_record_role_page) {
++      const uint64_t target_page = loc_sector_no(locs[new_nhood.size()]);
++      std::set<uint64_t> neighbor_pages;
++      for (uint32_t i = 0; i < new_nhood.size(); ++i) neighbor_pages.insert(loc_sector_no(locs[i]));
++      for (const auto &req : writes_4k) {
++        const uint64_t page = req.offset / io_size;
++        const char *role = "neighbor_repair";
++        if (page == target_page)
++          role = neighbor_pages.count(page) ? "insert_target_neighbor_shared_page" : "insert_target";
++        m0_record_role_page(role, req.offset, req.len);
++      }
++    }
++
+     std::vector<uint64_t> write_page_ref;
+     reader->wbc_write(writes, ctx, &write_page_ref);
+ 
+diff --git a/src/utils/linux_aligned_file_reader.cpp b/src/utils/linux_aligned_file_reader.cpp
+--- a/src/utils/linux_aligned_file_reader.cpp
++++ b/src/utils/linux_aligned_file_reader.cpp
+@@ -545,6 +545,8 @@
+ #include "aligned_file_reader.h"
+ #include "liburing.h"
+ 
++extern "C" void m0_record_async_request(const char *, int, uint64_t, uint64_t) __attribute__((weak));
++
+ #define MAX_EVENTS 256
+ 
+ namespace {
+@@ -565,5 +567,10 @@
+         LOG(FATAL) << "io_uring_submit failed: submitted=" << submitted << " expected=" << reqs.size()
+                    << " errno=" << errno << " (" << std::strerror(errno) << ")";
+       }
++      if (write && m0_record_async_request) {
++        for (const auto &req : reqs) {
++          m0_record_async_request("linux_aligned.execute_io.io_uring", fd, req.offset, req.len);
++        }
++      }
+ 
+       io_uring_cqe *cqe = nullptr;

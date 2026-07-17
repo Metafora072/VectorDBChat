@@ -83,3 +83,19 @@ publish 阶段仅捕获 544,000,088 bytes 和 3 次 write request。该字节数
 建议的 v4 最小修复是把 `LinuxAlignedFileReader::write()` 与 `write_fd()` 中已经形成的 `IORequest` 作为 AIO/io_uring 主路径的 authoritative internal ledger，同时把 POSIX 输出保留为独立 ledger；validator 按来源去重，不能再以“已捕获字节”为自己的完整性分母。profiler 每次记录通过 `fstat(dev, ino)` 校验 fd identity，避免 close interposition 未命中后 fd 复用导致路径陈旧；跨 4 KiB header/component 边界的请求按实际 offset 拆分。修复后必须重新构建独立 DGAI/OdinANN binary，重复 synthetic test，并从同一 CP10 base 创建新的 fresh clones；只有双系统 100K 的源码路径清单逐项覆盖且归因完整性门禁通过，才允许规模扩展。
 
 本轮按 Write Attribution M0 裁决中的“主要写路径无法覆盖则停止并报告”执行，现等待 Gpt 审阅该阻塞与 v4 方案，不自行越过门禁重跑。
+
+## V4 实现与 R03 启动门禁
+
+Gpt 已确认 R02 停止有效，并授权使用 fresh R03 只重跑 DGAI 与 OdinANN 的 100K 点。V4 将 physical async request、POSIX output 和 logical role 分为三个互不相加的账本。DGAI 当前 libaio 构建与 OdinANN 当前 io_uring 构建的 insert 后台刷写和 publish 主索引重写均汇入各自 active backend 的 `execute_io(..., write=true)`；插桩只在异步层确认完整提交后逐个记录 `IORequest`，不再拦截 `io_submit()` 或 `io_uring_submit()`，从结构上避免 wrapper 与 submit 双计数。同步 `write()`、`pwrite()`、`pwrite64()`、`writev()` 和 `pwritev()` 进入独立 POSIX 账本。每次物理记录均实时执行 `fstat()` 并重新解析当前 FD 路径，不保留跨调用 FD path cache。
+
+V4 profile 对每条记录保存 ledger、source entry、phase、component、device、inode、offset 派生页范围、bytes 和 request count。`index_disk.index` 的首个 4 KiB 根据格式记为 metadata，其余节点页根据本轮已审计的共置布局记为 `graph_vector_combined`；跨边界请求按实际字节区间拆分。logical role 仍只解释 insert RMW，不加入 physical application total。
+
+完整性门禁不再使用 captured-only 分母。validator 固定审计 async、五类 POSIX API、sync API 与 logical role 的唯一 ledger 归属，并逐项输出本工作负载是否触发；async source entry 与 logical role 必须触发。physical total 必须与 bucket total、entry total 精确一致，private clone 更新前后内容 manifest 中每个发生变化的索引文件都必须存在对应物理记录。账本内部明确 phase/component 的字节覆盖率必须不低于 90%。device bytes 只作为正向 sanity check，不进入 application coverage 分母。
+
+独立构建位于项目 NVMe 的 `build/write-attribution-m0-v4-r02`。首次 V4 build 在 synthetic harness 的 `-Werror=misleading-indentation` 处提前停止，仅产生约 100 KiB 半成品；修正后使用新目录构建，不复用失败现场。DGAI 与 OdinANN instrumented binary SHA-256 分别为 `d3b7fec8...420ac` 和 `3b6a6163...49c71`，均不同于 canonical binary；profiler SHA-256 为 `54544d74...8d74d`。
+
+正式运行前的 empty、POSIX、跨 component 边界、FD close/reuse、libaio 与 io_uring synthetic tests 全部通过。受限交互进程不能创建 io_uring，因此该项在与正式实验相同的 root-created、`--uid ubuntu` systemd unit 中执行，精确记录 4,096 bytes、1 request、1 unique page；没有用模拟结果替代。跨边界测试把单个 4,096-byte request 精确拆为 2,048-byte metadata 与 2,048-byte `graph_vector_combined`，physical request count 仍为 1；FD reuse 测试记录到两个不同 inode 和正确文件名；empty workload 的三个账本均为空。
+
+R03 固定使用 `pilot3_sift10m_write_attribution_m0_r03`、`DGAI/m0-n100000-03` 与 `OdinANN/m0-n100000-03`，从 R12 frozen CP10 source 创建 fresh private clone，只使用 master `[800000:900000]`。双系统均验证 active-set exact、visibility/query smoke、frozen source preservation、changed-file coverage、无 OOM 和 device-write sanity。双系统 100K 完成后 controller 写入 `scale_matrix_started=false` 并停止，不包含 50K/200K/400K 代码路径。
+
+启动前项目 NVMe `/dev/nvme8n1` 可用 1,186,614,386,688 bytes，MemAvailable 为 257,154,740,224 bytes；R03 result/formal 路径均不存在，无 M0 transient unit 或 tmux。双系统 fresh clone 的可见空间预计约 28–32 GB，result 与日志低于 1 GB；按 R01/R02 DGAI 约 2 分钟及此前 OdinANN 更新数据，预计总 controller wall 为 8–20 分钟，保守上限 40 分钟。所有 build、clone、result 和临时文件均位于项目 NVMe，不使用系统盘。
