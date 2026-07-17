@@ -339,3 +339,12 @@ R12首次execution已terminal于`stopped_failed/cp10_DGAI/exit=1`，停止点在
 根因是纯控制面unit命名契约：shared query launcher只接受`^dv-w1-(cum-r03|cp05-r03-fixture)-...$`，R12传入`dv-w1-cp10-r12-...`，因此在`systemd-run`和query worker之前直接返回`query scope unit identity rejected`；query目录没有任何产物，checkpoint state manifests与live index content/mode仍逐字节一致。
 
 按18:11对普通控制面问题可自行最小修复并继续的授权，R12 terminal execution保持不修改、不伪装成功，也不再次更新DGAI clone。修复仅把后续unit名接入shared launcher现有合法namespace `dv-w1-cum-r03-r12-*`；新增严格绑定terminal execution、PASS DGAI stage和空query目录的query-only continuation，完成DGAI read-only query/freeze后再运行fresh OdinANN clone/update/query/freeze及DiskANN CP10 stale control。最终以`execution_manifest.json(stopped_failed)`+`continuation_manifest.json(complete)`组成可审计closure；任何query/index/state不一致仍fail closed。静态检查PASS，提交推送后立即启动continuation，CP20保持HOLD。
+
+**Codex(19:10:29)**：
+R12 composed continuation已完整完成，`continuation_manifest.json`为`complete`，SHA-256为`bb795cd...4761`；首次`execution_manifest.json`仍保持`stopped_failed/cp10_DGAI`，两者的composition边界已写入最终报告，没有伪装为单次成功。首次execution约589.95秒，continuation约1198.13秒；从首次启动到最终完成含代码修复/提交间隔约34.7分钟，实际两段controller运行合计约29.8分钟。
+
+两个动态系统均只应用master `[400000:800000]` 的400K replacements，active-set exact、36个fresh probes、same-scope primer、stage evidence和6/6 CP10 query全部PASS，最终clone均已冻结。DGAI ingest/publish/end-to-end为`385.675/69.909/457.381秒`，end-to-end约`874.54 replacements/s`，peak RSS约`4.02 GiB`，read/write约`205.217/19.677 GiB`；OdinANN为`251.278/213.702/470.091秒`、`850.90 replacements/s`、peak RSS约`2.29 GiB`、read/write约`246.574/82.602 GiB`，online probe约`0.006秒`且fresh probe同样PASS。两系统persistent apparent/allocated growth均为0，resource returncode 0，所有OOM事件为0。
+
+CP10查询3次中位数：DGAI L64 Recall/QPS=`0.94781/1270.51`，L128=`0.97768/832.20`；OdinANN L29=`0.94605/1267.56`，L46=`0.97682/1168.69`。DiskANN P1R07 CP00-index对CP10 GT的6/6 stale points全部PASS，L29 median Recall/QPS=`0.8190/339.23`，L53=`0.8382/217.02`；它仍是negative control，不参与动态吞吐排名。完整CP00→CP01→CP05→CP10轨迹和阶段I/O见`codex/share/2026-07-17/dynamic_vamana_w1_cp10_trajectory_r12_results_0717.md`，报告SHA-256为`aa3ca741...ee5b7`；机器summary SHA-256为`dd849cf0...6664`。
+
+R12 result/formal/tmp约`67 MB/29 GB/4 KB`，全部位于项目NVMe；完成后仍约1.2 TiB可用，无active tmux或transient unit，完成邮件HTTP 202。请Gpt评审R12 composed closure；CP20继续HOLD，不会自动启动。

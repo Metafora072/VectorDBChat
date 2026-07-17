@@ -52,12 +52,20 @@ summary={'schema':'dynamic-vamana-w1-cp10-r12-summary-v1','status':'pass','run':
 
 lines=['# Dynamic Vamana W1 CP10 trajectory R12 results','',
        'R10+R11 composed CP05 closure已绑定；R12仅从两个R10冻结CP05 clone新建private clone，并应用master `[400000:800000]` 的400K replacements。CP00、CP01、CP05和1M replay均未重跑。','',
+       '执行边界保持可审计：首次`execution_manifest.json`在DGAI stage PASS后、首个query启动前因query-unit命名被控制面门禁拒绝，保留为`stopped_failed`；`continuation_manifest.json`严格绑定该terminal identity、PASS stage、空query目录和未改变的checkpoint state，只读完成DGAI query/freeze，并执行fresh OdinANN与DiskANN，最终状态为`complete`。两份manifest组成R12 closure，未将首次execution伪装为单次成功。','',
        '## CP05→CP10增量','',
        '| 系统 | replacements | ingest s | publish s | end-to-end s | replacements/s | peak RSS GiB | apparent growth GiB | allocated growth GiB |','|---|---:|---:|---:|---:|---:|---:|---:|---:|']
 for system in ('DGAI','OdinANN'):
     s=systems[system]['stage']; phases=s['phases']; rss=float(s['resources']['peak_process_tree_rss_bytes'])/(1024**3)
     throughput=400000/float(phases['end_to_end']['wall_seconds'])
     lines.append(f"| {system} | 400000 | {phases['ingest']['wall_seconds']:.3f} | {phases['publish']['wall_seconds']:.3f} | {phases['end_to_end']['wall_seconds']:.3f} | {throughput:.2f} | {rss:.2f} | {s['space']['apparent_growth_bytes']/(1024**3):.3f} | {s['space']['allocated_growth_bytes']/(1024**3):.3f} |")
+lines += ['', '| 系统 | phase | read GiB | write GiB |', '|---|---|---:|---:|']
+for system in ('DGAI','OdinANN'):
+    phases=systems[system]['stage']['phases']
+    for phase in ('ingest','publish','end_to_end'):
+        row=phases[phase]
+        lines.append(f"| {system} | {phase.replace('_','-')} | {row['rbytes']/(1024**3):.3f} | {row['wbytes']/(1024**3):.3f} |")
+lines += ['', 'DGAI按设计不支持publish前online visibility；OdinANN online probe约0.006秒内PASS，publish/reload后的fresh probe同样PASS。两系统resource returncode均为0，OOM/oom_kill/oom_group_kill均为0。']
 lines += ['', '## 动态查询完整轨迹（3次中位数）','', '| 系统 | checkpoint | L | Recall@10 | QPS | P99 us |','|---|---|---:|---:|---:|---:|']
 for system, checkpoints in trajectory.items():
     for cp in checkpoints:
