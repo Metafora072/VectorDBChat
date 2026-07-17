@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Minimal R04 allowed/denied input canary executed as ubuntu."""
+"""Canonical allowed/denied input canary executed as ubuntu."""
 from __future__ import annotations
 
 import argparse
@@ -47,11 +47,11 @@ def main() -> None:
         except OSError as exc:
             if exc.errno not in (errno.EACCES, errno.EPERM):
                 fail(f"denied path failed for the wrong reason: {path}: {exc.errno}")
-            rows.append({"realpath": str(path), "open_refused": True, "errno": exc.errno})
+            rows.append({"path": str(path), "open_refused": True, "errno": exc.errno})
         else:
             fail(f"denied input unexpectedly readable: {path}")
     payload = {
-        "schema": "dynamic-vamana-w1-r04-input-canary-v1", "status": "pass",
+        "schema": "dynamic-vamana-w1-inaccessible-input-canary-v1", "status": "pass",
         "uid": os.geteuid(), "gid": os.getegid(), "allowed_delta": str(allowed),
         "allowed_readable": True, "denied": rows, "update_worker_started": False,
     }

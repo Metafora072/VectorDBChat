@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the two minimal R04 input-canary regression outcomes."""
+"""Validate the two minimal canonical input-canary regression outcomes."""
 from __future__ import annotations
 
 import argparse
@@ -25,12 +25,14 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     positive = json.loads(args.positive.read_text())
-    if (positive.get("schema") != "dynamic-vamana-w1-r04-input-canary-v1"
+    if (positive.get("schema") != "dynamic-vamana-w1-inaccessible-input-canary-v1"
             or positive.get("status") != "pass" or positive.get("uid") != 1000
             or positive.get("gid") != 1000 or positive.get("allowed_readable") is not True
             or positive.get("update_worker_started") is not False
             or not positive.get("denied")
-            or not all(row.get("open_refused") is True for row in positive["denied"])):
+            or not all(isinstance(row.get("path"), str)
+                       and row.get("open_refused") is True
+                       and row.get("errno") in (1, 13) for row in positive["denied"])):
         raise SystemExit("positive input-canary regression is invalid")
     if args.negative_output.exists() or "denied input unexpectedly readable" not in args.negative_log.read_text():
         raise SystemExit("readable-denied negative regression did not fail closed")
@@ -40,7 +42,7 @@ def main() -> None:
     if forbidden:
         raise SystemExit("input-canary fixture started an update worker")
     report = {
-        "schema": "dynamic-vamana-w1-r04-minimal-input-canary-tests-v1", "status": "pass",
+        "schema": "dynamic-vamana-w1-canonical-input-canary-tests-v1", "status": "pass",
         "positive": identity(args.positive), "negative_log": identity(args.negative_log),
         "denied_readable_rejected": True, "update_worker_not_started": True,
         "helper": identity(args.helper),
