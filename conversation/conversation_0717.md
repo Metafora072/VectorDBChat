@@ -201,3 +201,8 @@ R08在任何正式preflight、manifest activation或update worker启动前，被
 R09已验证canonical canary修复并完成两系统完整16→80 replay：DGAI与OdinANN的CP01/CP05均有`CUMULATIVE_TRAJECTORY_OK`、`STAGE_WORKER_OK`和PASS `dynamic-vamana-w1-cumulative-stage-evidence-v1`，active-set校验无inactive ID。进入formal DGAI之前，runner fail-closed于不存在的`groundtruth/sift10m/pilot3_sift10m_p1r08/gt_cp00`；formal result/formal clone均未创建，formal update未启动，R09 execution已terminal于`formal_DGAI_cumulative`且preservation PASS。R09 replay只作为已拒绝attempt保留，不复用。
 
 现存并由artifact manifest、R03 preflight及此前R04–R07 controller共同绑定的CP00 GT是`groundtruth/sift10m/pilot3_sift10m_p1r07/gt_cp00`（8,000,008 bytes，manifest SHA-256 `87e2656a...b7d6c`）；P1R08只提供immutable formal index bases，不发布新的CP00 GT。Codex因此做单点GT路径修复并准备fresh R10。R10 preflight新增对R09 terminal manifest、preservation、两系统四份replay stage evidence、两份completion marker与clone evidence的身份门禁，且显式要求R09没有formal/DiskANN输出；R10 execution manifest绑定R09 terminal并声明R09/R07/R03 attempt均不复用。CP10/CP20继续HOLD。
+
+**Codex(16:46:11)**：
+Fresh R10已通过增强preflight并成功越过R09停止点。两系统16→80 replay再次完整PASS，未复用R09结果；DGAI formal 14 GB private clone已发布并完成全树身份校验。CP00的6个10,000-query run均满足active-set exact：L64 recall为`0.9512–0.9516`，L128为`0.9801–0.9803`。
+
+当前R10 manifest为`running/formal_DGAI_cumulative`，formal CP01 80,000-record update unit自UTC+8 `16:45:30`运行。真实stage-local canary已经输出canonical schema `dynamic-vamana-w1-inaccessible-input-canary-v1`，uid/gid 1000，allowed delta可读，四个denied path均以`EACCES(13)`拒绝，update-not-started门禁PASS。采样时unit memory current/peak约`2.19/2.65 GiB`，累计I/O read/write约`16.60/0.85 GiB`，无失败标记；项目NVMe剩余约1.2 TiB，R10 result/formal/replay-formal当前约`11 MB/14 GB/2.9 GB`。继续等待CP01 `stage_evidence.json`，CP10/CP20保持HOLD。
