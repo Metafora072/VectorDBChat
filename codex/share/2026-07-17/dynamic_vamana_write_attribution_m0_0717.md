@@ -101,3 +101,24 @@ R03 固定使用 `pilot3_sift10m_write_attribution_m0_r03`、`DGAI/m0-n100000-03
 启动前项目 NVMe `/dev/nvme8n1` 可用 1,186,614,386,688 bytes，MemAvailable 为 257,154,740,224 bytes；R03 result/formal 路径均不存在，无 M0 transient unit 或 tmux。双系统 fresh clone 的可见空间预计约 28–32 GB，result 与日志低于 1 GB；按 R01/R02 DGAI 约 2 分钟及此前 OdinANN 更新数据，预计总 controller wall 为 8–20 分钟，保守上限 40 分钟。所有 build、clone、result 和临时文件均位于项目 NVMe，不使用系统盘。
 
 R03 首次 controller 在任何 clone 或 driver 启动前因 `m0_run_one_v4.sh` 缺少 executable bit 退出。现场仅包含已经完整派生并设为只读的 100K input，约 33 MB；formal tree、DGAI/OdinANN result directory、systemd unit 和 mutable attempt 均不存在。修复把子脚本调用改为显式 `bash`，并新增 input-only continuation。continuation 必须同时验证 input manifest、formal tree 不存在、两系统 result 不存在、无 controller manifest 和无残留 unit，随后复用只读 input 并创建首次 fresh clone；首次 controller log 保留，不把该控制面停止伪装为未发生。
+
+## R03 双系统 100K 结果与停止原因
+
+R03 continuation 已执行完 DGAI 与 OdinANN 两个 100K stage，当前无活动 tmux、systemd unit 或实验进程。DGAI machine summary 为 PASS；OdinANN 的更新、online/fresh visibility、active-set、source preservation、资源采样和 profile 均完整执行，但 machine summary 因 `changed_files_covered=false` 为 FAIL。controller 因此没有生成 `M0_V4_COMPLETE` 或 complete manifest，50K/200K/400K 规模矩阵未启动。
+
+| system | formal status | ingest / publish / E2E | async bytes | POSIX bytes | application physical total | device write | classification coverage |
+|---|---|---:|---:|---:|---:|---:|---:|
+| DGAI | PASS | 103.860 / 26.405 / 130.264 s | 8,471,298,048 | 544,000,088 | 9,015,298,136 | 8,471,359,488 | 100% |
+| OdinANN | FAIL at changed-file coverage | 65.183 / 110.828 / 176.015 s | 23,647,793,152 | 8,736,272,912 | 32,384,066,064 | 31,839,883,264 | 100% |
+
+OdinANN 的 physical total 包含 load 阶段 8,448,136,412 bytes。其 update window 中 insert 与 publish 分别为 15,455,793,152 和 8,480,136,500 bytes，合计 23,935,929,652 bytes。该数值仍是 provisional evidence，因为完整性门禁未通过，不能用于正式跨系统归因结论。
+
+DGAI 更新前后发生变化的 `index_disk.index`、`index_disk.index.tags` 和 `index_pq_compressed.bin` 均有对应物理记录，全部 12 个门禁通过。insert logical role 共 3,009,961,984 bytes，其中 target only、target + neighbor shared page 和 neighbor repair only 分别占 0.03%、13.58% 和 86.39%。DGAI summary SHA-256 为 `70a58acb...9fe0c`，profile SHA-256 为 `6b6a1f41...487d`。
+
+OdinANN 更新前后发生变化的 6 个文件中，`index_disk.index`、`index_disk.index.tags`、`index_pq_compressed.bin`、`index_shadow_disk.index` 和 `index_shadow_pq_compressed.bin` 均有物理记录，唯独 `index_shadow_disk.index.tags` 没有。其余 11 个门禁全部通过，包括源码入口触发、physical ledger/bucket/entry 三方精确闭合、100% phase/component 分类、正确性、online/fresh visibility、frozen source preservation、live FD identity、正向 device write、无 OOM 和 logical role。OdinANN insert logical role 共 15,455,793,152 bytes，其中 target only、target + neighbor shared page 和 neighbor repair only 分别占 0.98%、1.67% 和 97.35%；这些比例同样只作为未完成完整性门禁前的局部证据。OdinANN summary SHA-256 为 `78a4d519...b94c0`，profile SHA-256 为 `3b7979e0...b4a7`。
+
+遗漏路径已定位到 `SSDIndex::copy_index()`。主 disk file 由项目自定义 direct-I/O `copy_file()` 复制并被 `pwrite()` ledger 捕获，tags file 则由 `std::filesystem::copy(..., overwrite_existing)` 更新。当前 binary 只显示对 libstdc++ filesystem copy 符号的动态依赖，本轮没有记录其内部实际采用的复制 syscall，因此不能在缺少证据时把该路径直接断言为 `copy_file_range()`、`sendfile()` 或其他具体入口。按照 V4 的写入口遗漏停止规则，OdinANN R03 FAIL 有效，不能通过放宽 changed-file validator 或事后补估 32,000,008 bytes 改判。
+
+建议下一步先用项目 NVMe 上的小文件 synthetic workload 复现同一 `std::filesystem::copy()`，确认实际成功返回的底层写入口；随后把该入口纳入 POSIX-output ledger，增加复制目标实时 device/inode、returned bytes、FD reuse、一次物理请求不重复计数和 changed-file coverage 自测。完成后应使用 fresh mutable clone 重跑，且继续禁止规模矩阵。是否保留已经完整 PASS 的 DGAI R03，只以新 identity 重跑 OdinANN，或因公共 profiler 变化而重跑双系统 100K，提交 Gpt 裁决。
+
+R03 result/formal 的 apparent size 分别约 46 MB 和 29 GB，全部位于项目 NVMe；停止后项目 NVMe 仍可用约 1.1 TB，未使用系统盘。
