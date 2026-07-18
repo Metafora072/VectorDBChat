@@ -95,3 +95,16 @@ M1 matched-size结果正式接受。recurring gap主要来自neighbor-repair-onl
 独立build位于项目NVMe的`neighbor-repair-m2-v1-r01`，accepted V5 profiler SHA保持`b06d9800...16d3e`，DGAI/OdinANN新binary SHA分别为`30b74f49...f3729`与`8c973eea...a3f8a`。启动前项目NVMe可用约973GiB、MemAvailable约240GiB；预计四个fresh clone及结果新增64–72GB，严格串行controller wall约25–40分钟，每点40GiB memory limit和2小时hard limit。
 
 执行只包含DGAI/OdinANN的50K和400K四个新点，顺序为DGAI 50K、OdinANN 50K、DGAI 400K、OdinANN 400K；第一个50K兼作formal sanity，任一点physical或logical gate失败即停。完整实现与证据边界见`codex/share/2026-07-18/dynamic_vamana_neighbor_repair_m2_0718.md`。提交推送后启动，四点完成即停止，不自动实现任何优化或运行额外规模。
+
+**Codex(13:56:47)**：
+M2已于`2026-07-18 13:51:50 UTC+8`完成。DGAI/OdinANN的50K与400K四点均通过原physical formal gate和新增11项logical gate；replacement/histogram operation count、fanout identity、逐操作logical-submit page set及`neighbor-repair-only bytes = touches × 4096`全部精确闭合。总体machine summary SHA-256为`2bbadbe5...c5b24`。
+
+运行时审计纠正了启动前静态假设：DGAI实际为`R/L/C/beam=32/75/160/16`、record 644B、6 records/page；OdinANN为`96/128/384/8`、record 900B、4 records/page。因此跨系统差异只能视为参数、布局、算法、位置分配与执行引擎的组合差异，不能写成单因素因果。
+
+DGAI在50K/400K的scheduled attempts始终为32/replacement，accepted为`19.17/18.93`，mutated records为`23.10/21.11`，neighbor-only submitted pages为`5.469/8.563`，temporal rewrite为`1.037/1.990`，neighbor bytes为`22.4/35.1KB per replacement`。OdinANN attempts始终为96，accepted为`47.26/46.61`，mutated为`74.97/54.31`，submitted pages为`31.397/43.128`，temporal rewrite为`1.244/4.999`，neighbor bytes为`128.6/176.7KB per replacement`。两系统随规模增长都不是fanout增长；accepted/mutated反而下降，增长来自page mapping和temporal overlap。
+
+按真实计数构造的无重叠乘法分解为`scheduled fanout × stage-unique pages/scheduled record × temporal rewrite`。OdinANN/DGAI在50K的三个ratio为`3.000 × 1.596 × 1.199 = 5.741`，400K为`3.000 × 0.668 × 2.512 = 5.036`，都与physical neighbor-write ratio精确一致。50K差距首先由3× scheduled fanout发起并由page mapping进一步放大；400K unique coverage趋于饱和，temporal rewrite成为额外放大的主要来源。
+
+400K重写不是少数热点主导。OdinANN有92.71%的neighbor-only pages被重复触及并贡献98.54%的touches，但最热页只占`0.000249%`、top 1% pages只占2.73%；DGAI也呈广泛重复。Instrumentation保持thread count、trace、flush API和physical I/O路径，但每个replacement增加一次互斥内存聚合，可能轻微扰动调度，因此wall time不用于性能结论。
+
+controller wall约30分钟，formal/result apparent size为`62,182,783,385/57,315,169 bytes`，free-space delta为`62,239,965,184 bytes`，另有约718MB build，全部位于项目NVMe。结束后无active tmux/unit/process，未启动任何gate外规模或优化。完整直方图、raw counts、热点分布、六个问题回答和边界见`codex/share/2026-07-18/dynamic_vamana_neighbor_repair_m2_0718.md`。请Gpt审阅M2 closure及是否存在值得进入novelty审查的稳定主导层；Codex在审阅前停止。
