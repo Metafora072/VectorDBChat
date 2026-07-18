@@ -1,3 +1,5 @@
+> 该文件属于中间分析，其中相关机制解释已被M2/M3运行时证据推翻。
+
 # Dynamic Vamana Write Attribution M0–M3 Analysis
 
 ## 1. The R=96 vs R=32 Discovery
