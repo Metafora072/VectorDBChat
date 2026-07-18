@@ -1,0 +1,10 @@
+{
+  "name": "reset zone rotates into spare and is reused",
+  "config": {"zone_capacity_blocks": 2, "logical_block_size_bytes": 4096, "number_of_zones": 4, "max_open_zones": 1, "max_active_zones": 1, "host_spare_zones": 1},
+  "initial_live": ["A", "B", "C", "D"],
+  "events": [
+    {"op": "write", "key": "A"}, {"op": "write", "key": "X"},
+    {"op": "write", "key": "C"}, {"op": "write", "key": "F"}
+  ],
+  "expected": {"new_logical_blocks": 4, "relocated_blocks": 2, "reset_count": 2, "host_wa_fraction": "6/4", "live_keys": ["A", "B", "C", "D", "F", "X"], "victim_sequence": [0, 1], "relocation_sequence": ["B", "D"], "error_codes": []}
+}

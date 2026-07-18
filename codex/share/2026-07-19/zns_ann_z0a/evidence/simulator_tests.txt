@@ -1,0 +1,11 @@
+PASS 01_all_new.json: new=4 reloc=0 resets=0 HostWA=4/4 errors=[]
+PASS 02_same_page_rewrite.json: new=5 reloc=0 resets=1 HostWA=5/5 errors=[]
+PASS 03_hot_concentrated.json: new=3 reloc=0 resets=1 HostWA=3/3 errors=[]
+PASS 04_hot_cold_mixed.json: new=3 reloc=1 resets=1 HostWA=4/3 errors=[]
+PASS 05_relocation_secondary_pressure.json: new=5 reloc=4 resets=2 HostWA=9/5 errors=[]
+PASS 06_multifile_same_offset.json: new=3 reloc=0 resets=0 HostWA=3/3 errors=[]
+PASS 07_cross_page_request.json: new=3 reloc=0 resets=0 HostWA=3/3 errors=[]
+PASS 08_open_active_limits.json: new=2 reloc=0 resets=0 HostWA=2/2 errors=['OPEN_LIMIT', 'ACTIVE_LIMIT']
+PASS 09_live_page_migration.json: new=3 reloc=1 resets=1 HostWA=4/3 errors=[]
+PASS 10_reset_reuse.json: new=4 reloc=2 resets=2 HostWA=6/4 errors=[]
+PASS all 10 hand cases; primary==reference; Greedy==one-step OracleMinCopy

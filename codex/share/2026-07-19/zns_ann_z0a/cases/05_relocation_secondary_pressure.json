@@ -1,0 +1,11 @@
+{
+  "name": "relocation causes immediate secondary pressure",
+  "config": {"zone_capacity_blocks": 3, "logical_block_size_bytes": 4096, "number_of_zones": 4, "max_open_zones": 1, "max_active_zones": 1, "host_spare_zones": 1},
+  "initial_live": ["A", "B", "C", "D", "E", "F"],
+  "events": [
+    {"op": "write", "key": "A"}, {"op": "write", "key": "X"},
+    {"op": "write", "key": "Y"}, {"op": "write", "key": "D"},
+    {"op": "write", "key": "W"}
+  ],
+  "expected": {"new_logical_blocks": 5, "relocated_blocks": 4, "reset_count": 2, "host_wa_fraction": "9/5", "live_keys": ["A", "B", "C", "D", "E", "F", "W", "X", "Y"], "victim_sequence": [0, 1], "relocation_sequence": ["B", "C", "E", "F"], "error_codes": []}
+}

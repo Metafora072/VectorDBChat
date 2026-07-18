@@ -1,0 +1,16 @@
+{
+  "name": "open and active resource limits",
+  "config": {"zone_capacity_blocks": 2, "logical_block_size_bytes": 4096, "number_of_zones": 4, "max_open_zones": 1, "max_active_zones": 2, "host_spare_zones": 1},
+  "initial_live": [],
+  "events": [
+    {"op": "write", "key": "A"},
+    {"op": "close_current"},
+    {"op": "open_zone", "zone_id": 1},
+    {"op": "write", "key": "B"},
+    {"op": "open_zone", "zone_id": 2, "expect_error": "OPEN_LIMIT"},
+    {"op": "close_current"},
+    {"op": "open_zone", "zone_id": 2, "expect_error": "ACTIVE_LIMIT"},
+    {"op": "open_zone", "zone_id": 0}
+  ],
+  "expected": {"new_logical_blocks": 2, "relocated_blocks": 0, "reset_count": 0, "host_wa_fraction": "2/2", "live_keys": ["A", "B"], "victim_sequence": [], "error_codes": ["OPEN_LIMIT", "ACTIVE_LIMIT"], "open_count": 1, "active_count": 2}
+}

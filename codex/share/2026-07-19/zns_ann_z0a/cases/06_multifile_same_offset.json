@@ -1,0 +1,10 @@
+{
+  "name": "same offset in two stable objects",
+  "config": {"zone_capacity_blocks": 2, "logical_block_size_bytes": 4096, "number_of_zones": 3, "max_open_zones": 1, "max_active_zones": 1, "host_spare_zones": 1},
+  "initial_live": [],
+  "events": [
+    {"op": "write", "key": "file1@0"}, {"op": "write", "key": "file2@0"},
+    {"op": "write", "key": "file1@0"}
+  ],
+  "expected": {"new_logical_blocks": 3, "relocated_blocks": 0, "reset_count": 0, "host_wa_fraction": "3/3", "live_keys": ["file1@0", "file2@0"], "victim_sequence": [], "error_codes": []}
+}

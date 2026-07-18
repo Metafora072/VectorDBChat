@@ -1,0 +1,10 @@
+{
+  "name": "hot and cold pages mixed across zones",
+  "config": {"zone_capacity_blocks": 2, "logical_block_size_bytes": 4096, "number_of_zones": 4, "max_open_zones": 1, "max_active_zones": 1, "host_spare_zones": 1},
+  "initial_live": ["H1", "C1", "H2", "C2"],
+  "events": [
+    {"op": "write", "key": "H1"}, {"op": "write", "key": "H2"},
+    {"op": "write", "key": "H1"}
+  ],
+  "expected": {"new_logical_blocks": 3, "relocated_blocks": 1, "reset_count": 1, "host_wa_fraction": "4/3", "live_keys": ["C1", "C2", "H1", "H2"], "victim_sequence": [0], "relocation_sequence": ["C1"], "error_codes": []}
+}

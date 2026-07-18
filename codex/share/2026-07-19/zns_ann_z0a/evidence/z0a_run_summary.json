@@ -1,0 +1,1388 @@
+{
+  "schema": "zns-ann-z0a-run-summary-v1",
+  "status": "fail",
+  "rows": [
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "DGAI",
+      "mode": "off",
+      "repeat": 1,
+      "start_ns": 1784407308684757712,
+      "end_ns": 1784407320152968935,
+      "wall_seconds": 11.468211223,
+      "active_status": "pass",
+      "accepted_application_bytes": 91127960,
+      "accepted_request_count": 19333,
+      "accepted_page_event_count": 22250,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19329,
+        "publish_save": 5
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19330,
+        "metadata": 3,
+        "vector": 1
+      },
+      "accepted_ledger_totals": {
+        "posix": {
+          "requested_bytes": 680088,
+          "request_count": 3
+        },
+        "async": {
+          "requested_bytes": 90447872,
+          "request_count": 19330
+        }
+      }
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "DGAI",
+      "mode": "off",
+      "repeat": 2,
+      "start_ns": 1784407330283442202,
+      "end_ns": 1784407341308153423,
+      "wall_seconds": 11.024711221,
+      "active_status": "pass",
+      "accepted_application_bytes": 91127960,
+      "accepted_request_count": 19333,
+      "accepted_page_event_count": 22250,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19329,
+        "publish_save": 5
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19330,
+        "metadata": 3,
+        "vector": 1
+      },
+      "accepted_ledger_totals": {
+        "posix": {
+          "requested_bytes": 680088,
+          "request_count": 3
+        },
+        "async": {
+          "requested_bytes": 90447872,
+          "request_count": 19330
+        }
+      }
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "DGAI",
+      "mode": "off",
+      "repeat": 3,
+      "start_ns": 1784407352656840984,
+      "end_ns": 1784407363443439379,
+      "wall_seconds": 10.786598395,
+      "active_status": "pass",
+      "accepted_application_bytes": 91127960,
+      "accepted_request_count": 19333,
+      "accepted_page_event_count": 22250,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19329,
+        "publish_save": 5
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19330,
+        "metadata": 3,
+        "vector": 1
+      },
+      "accepted_ledger_totals": {
+        "posix": {
+          "requested_bytes": 680088,
+          "request_count": 3
+        },
+        "async": {
+          "requested_bytes": 90447872,
+          "request_count": 19330
+        }
+      }
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "DGAI",
+      "mode": "off",
+      "repeat": 4,
+      "start_ns": 1784408063429247279,
+      "end_ns": 1784408073371337712,
+      "wall_seconds": 9.942090433,
+      "active_status": "pass",
+      "accepted_application_bytes": 91127960,
+      "accepted_request_count": 19333,
+      "accepted_page_event_count": 22250,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19329,
+        "publish_save": 5
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19330,
+        "metadata": 3,
+        "vector": 1
+      },
+      "accepted_ledger_totals": {
+        "posix": {
+          "requested_bytes": 680088,
+          "request_count": 3
+        },
+        "async": {
+          "requested_bytes": 90447872,
+          "request_count": 19330
+        }
+      }
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "DGAI",
+      "mode": "off",
+      "repeat": 5,
+      "start_ns": 1784408086576109266,
+      "end_ns": 1784408098836660405,
+      "wall_seconds": 12.260551139,
+      "active_status": "pass",
+      "accepted_application_bytes": 91127960,
+      "accepted_request_count": 19333,
+      "accepted_page_event_count": 22250,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19329,
+        "publish_save": 5
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19330,
+        "metadata": 3,
+        "vector": 1
+      },
+      "accepted_ledger_totals": {
+        "posix": {
+          "requested_bytes": 680088,
+          "request_count": 3
+        },
+        "async": {
+          "requested_bytes": 90447872,
+          "request_count": 19330
+        }
+      }
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "DGAI",
+      "mode": "off",
+      "repeat": 6,
+      "start_ns": 1784408176250377853,
+      "end_ns": 1784408185982693560,
+      "wall_seconds": 9.732315707,
+      "active_status": "pass",
+      "accepted_application_bytes": 91127960,
+      "accepted_request_count": 19333,
+      "accepted_page_event_count": 22250,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19329,
+        "publish_save": 5
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19330,
+        "metadata": 3,
+        "vector": 1
+      },
+      "accepted_ledger_totals": {
+        "posix": {
+          "requested_bytes": 680088,
+          "request_count": 3
+        },
+        "async": {
+          "requested_bytes": 90447872,
+          "request_count": 19330
+        }
+      }
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "DGAI",
+      "mode": "off",
+      "repeat": 7,
+      "start_ns": 1784408198687036840,
+      "end_ns": 1784408207064663578,
+      "wall_seconds": 8.377626738,
+      "active_status": "pass",
+      "accepted_application_bytes": 91127960,
+      "accepted_request_count": 19333,
+      "accepted_page_event_count": 22250,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19329,
+        "publish_save": 5
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19330,
+        "metadata": 3,
+        "vector": 1
+      },
+      "accepted_ledger_totals": {
+        "posix": {
+          "requested_bytes": 680088,
+          "request_count": 3
+        },
+        "async": {
+          "requested_bytes": 90447872,
+          "request_count": 19330
+        }
+      }
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "DGAI",
+      "mode": "off",
+      "repeat": 8,
+      "start_ns": 1784408229669640465,
+      "end_ns": 1784408239012488931,
+      "wall_seconds": 9.342848466,
+      "active_status": "pass",
+      "accepted_application_bytes": 91127960,
+      "accepted_request_count": 19333,
+      "accepted_page_event_count": 22250,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19329,
+        "publish_save": 5
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19330,
+        "metadata": 3,
+        "vector": 1
+      },
+      "accepted_ledger_totals": {
+        "posix": {
+          "requested_bytes": 680088,
+          "request_count": 3
+        },
+        "async": {
+          "requested_bytes": 90447872,
+          "request_count": 19330
+        }
+      }
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "DGAI",
+      "mode": "on",
+      "repeat": 1,
+      "start_ns": 1784407320656967607,
+      "end_ns": 1784407329607891200,
+      "wall_seconds": 8.950923593,
+      "active_status": "pass",
+      "accepted_application_bytes": 91127960,
+      "accepted_request_count": 19333,
+      "accepted_page_event_count": 22250,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19329,
+        "publish_save": 5
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19330,
+        "metadata": 3,
+        "vector": 1
+      },
+      "accepted_ledger_totals": {
+        "posix": {
+          "requested_bytes": 680088,
+          "request_count": 3
+        },
+        "async": {
+          "requested_bytes": 90447872,
+          "request_count": 19330
+        }
+      },
+      "trace_run_id": "890ae385-3edb-5627-a90e-25fc0e7ef6ca",
+      "trace_system": "DGAI",
+      "trace_record_count": 19333,
+      "trace_request_count": 19333,
+      "trace_page_event_count": 22250,
+      "trace_requested_bytes": 91127960,
+      "trace_successful_returned_bytes": 91127960,
+      "trace_normalized_page_bytes": 91127960,
+      "trace_unique_logical_pages": 3334,
+      "trace_unique_object_offset_pairs": 3099,
+      "trace_object_count": 3,
+      "trace_dropped_events": 0,
+      "trace_buffer_peak_bytes": 10223616,
+      "trace_submit_timestamp_sequence_inversions": 0,
+      "trace_completion_timestamp_sequence_inversions": 0,
+      "trace_phase_counts": {
+        "2": 19329,
+        "5": 4
+      },
+      "trace_role_counts": {
+        "1": 19331,
+        "5": 1,
+        "6": 1
+      },
+      "trace_source_counts": {
+        "1": 19330,
+        "3": 1,
+        "6": 2
+      },
+      "trace_failed_requests": 0,
+      "trace_request_to_page_byte_closure": true,
+      "trace_accepted_m0_profile_closure": null,
+      "trace_stable_page_key": "(run_hash,object_incarnation,aligned_page_offset)",
+      "closure_status": "pass"
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "DGAI",
+      "mode": "on",
+      "repeat": 2,
+      "start_ns": 1784407341766036361,
+      "end_ns": 1784407351986074581,
+      "wall_seconds": 10.22003822,
+      "active_status": "pass",
+      "accepted_application_bytes": 91127960,
+      "accepted_request_count": 19333,
+      "accepted_page_event_count": 22250,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19329,
+        "publish_save": 5
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19330,
+        "metadata": 3,
+        "vector": 1
+      },
+      "accepted_ledger_totals": {
+        "posix": {
+          "requested_bytes": 680088,
+          "request_count": 3
+        },
+        "async": {
+          "requested_bytes": 90447872,
+          "request_count": 19330
+        }
+      },
+      "trace_run_id": "9568b3e1-3aee-5756-b372-8accb3de17ae",
+      "trace_system": "DGAI",
+      "trace_record_count": 19333,
+      "trace_request_count": 19333,
+      "trace_page_event_count": 22250,
+      "trace_requested_bytes": 91127960,
+      "trace_successful_returned_bytes": 91127960,
+      "trace_normalized_page_bytes": 91127960,
+      "trace_unique_logical_pages": 3334,
+      "trace_unique_object_offset_pairs": 3099,
+      "trace_object_count": 3,
+      "trace_dropped_events": 0,
+      "trace_buffer_peak_bytes": 10223616,
+      "trace_submit_timestamp_sequence_inversions": 0,
+      "trace_completion_timestamp_sequence_inversions": 0,
+      "trace_phase_counts": {
+        "2": 19329,
+        "5": 4
+      },
+      "trace_role_counts": {
+        "1": 19331,
+        "5": 1,
+        "6": 1
+      },
+      "trace_source_counts": {
+        "1": 19330,
+        "3": 1,
+        "6": 2
+      },
+      "trace_failed_requests": 0,
+      "trace_request_to_page_byte_closure": true,
+      "trace_accepted_m0_profile_closure": null,
+      "trace_stable_page_key": "(run_hash,object_incarnation,aligned_page_offset)",
+      "closure_status": "pass"
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "DGAI",
+      "mode": "on",
+      "repeat": 3,
+      "start_ns": 1784407363915434640,
+      "end_ns": 1784407372255293432,
+      "wall_seconds": 8.339858792,
+      "active_status": "pass",
+      "accepted_application_bytes": 91127960,
+      "accepted_request_count": 19333,
+      "accepted_page_event_count": 22250,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19329,
+        "publish_save": 5
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19330,
+        "metadata": 3,
+        "vector": 1
+      },
+      "accepted_ledger_totals": {
+        "posix": {
+          "requested_bytes": 680088,
+          "request_count": 3
+        },
+        "async": {
+          "requested_bytes": 90447872,
+          "request_count": 19330
+        }
+      },
+      "trace_run_id": "76e60ed6-e0c2-5b30-8ff4-eb1e9a0c80ae",
+      "trace_system": "DGAI",
+      "trace_record_count": 19333,
+      "trace_request_count": 19333,
+      "trace_page_event_count": 22250,
+      "trace_requested_bytes": 91127960,
+      "trace_successful_returned_bytes": 91127960,
+      "trace_normalized_page_bytes": 91127960,
+      "trace_unique_logical_pages": 3334,
+      "trace_unique_object_offset_pairs": 3099,
+      "trace_object_count": 3,
+      "trace_dropped_events": 0,
+      "trace_buffer_peak_bytes": 10223616,
+      "trace_submit_timestamp_sequence_inversions": 0,
+      "trace_completion_timestamp_sequence_inversions": 0,
+      "trace_phase_counts": {
+        "2": 19329,
+        "5": 4
+      },
+      "trace_role_counts": {
+        "1": 19331,
+        "5": 1,
+        "6": 1
+      },
+      "trace_source_counts": {
+        "1": 19330,
+        "3": 1,
+        "6": 2
+      },
+      "trace_failed_requests": 0,
+      "trace_request_to_page_byte_closure": true,
+      "trace_accepted_m0_profile_closure": null,
+      "trace_stable_page_key": "(run_hash,object_incarnation,aligned_page_offset)",
+      "closure_status": "pass"
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "DGAI",
+      "mode": "on",
+      "repeat": 4,
+      "start_ns": 1784408052469932274,
+      "end_ns": 1784408062742734934,
+      "wall_seconds": 10.27280266,
+      "active_status": "pass",
+      "accepted_application_bytes": 91127960,
+      "accepted_request_count": 19333,
+      "accepted_page_event_count": 22250,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19329,
+        "publish_save": 5
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19330,
+        "metadata": 3,
+        "vector": 1
+      },
+      "accepted_ledger_totals": {
+        "posix": {
+          "requested_bytes": 680088,
+          "request_count": 3
+        },
+        "async": {
+          "requested_bytes": 90447872,
+          "request_count": 19330
+        }
+      },
+      "trace_run_id": "61f4de5b-6bd9-515c-918e-2e5246a2e1d9",
+      "trace_system": "DGAI",
+      "trace_record_count": 19333,
+      "trace_request_count": 19333,
+      "trace_page_event_count": 22250,
+      "trace_requested_bytes": 91127960,
+      "trace_successful_returned_bytes": 91127960,
+      "trace_normalized_page_bytes": 91127960,
+      "trace_unique_logical_pages": 3334,
+      "trace_unique_object_offset_pairs": 3099,
+      "trace_object_count": 3,
+      "trace_dropped_events": 0,
+      "trace_buffer_peak_bytes": 10223616,
+      "trace_submit_timestamp_sequence_inversions": 0,
+      "trace_completion_timestamp_sequence_inversions": 0,
+      "trace_phase_counts": {
+        "2": 19329,
+        "5": 4
+      },
+      "trace_role_counts": {
+        "1": 19331,
+        "5": 1,
+        "6": 1
+      },
+      "trace_source_counts": {
+        "1": 19330,
+        "3": 1,
+        "6": 2
+      },
+      "trace_failed_requests": 0,
+      "trace_request_to_page_byte_closure": true,
+      "trace_accepted_m0_profile_closure": null,
+      "trace_stable_page_key": "(run_hash,object_incarnation,aligned_page_offset)",
+      "closure_status": "pass"
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "DGAI",
+      "mode": "on",
+      "repeat": 5,
+      "start_ns": 1784408073835241278,
+      "end_ns": 1784408085875131558,
+      "wall_seconds": 12.03989028,
+      "active_status": "pass",
+      "accepted_application_bytes": 91127960,
+      "accepted_request_count": 19333,
+      "accepted_page_event_count": 22250,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19329,
+        "publish_save": 5
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19330,
+        "metadata": 3,
+        "vector": 1
+      },
+      "accepted_ledger_totals": {
+        "posix": {
+          "requested_bytes": 680088,
+          "request_count": 3
+        },
+        "async": {
+          "requested_bytes": 90447872,
+          "request_count": 19330
+        }
+      },
+      "trace_run_id": "945f4773-166d-570e-ade4-46303d4e62e0",
+      "trace_system": "DGAI",
+      "trace_record_count": 19333,
+      "trace_request_count": 19333,
+      "trace_page_event_count": 22250,
+      "trace_requested_bytes": 91127960,
+      "trace_successful_returned_bytes": 91127960,
+      "trace_normalized_page_bytes": 91127960,
+      "trace_unique_logical_pages": 3334,
+      "trace_unique_object_offset_pairs": 3099,
+      "trace_object_count": 3,
+      "trace_dropped_events": 0,
+      "trace_buffer_peak_bytes": 10223616,
+      "trace_submit_timestamp_sequence_inversions": 0,
+      "trace_completion_timestamp_sequence_inversions": 0,
+      "trace_phase_counts": {
+        "2": 19329,
+        "5": 4
+      },
+      "trace_role_counts": {
+        "1": 19331,
+        "5": 1,
+        "6": 1
+      },
+      "trace_source_counts": {
+        "1": 19330,
+        "3": 1,
+        "6": 2
+      },
+      "trace_failed_requests": 0,
+      "trace_request_to_page_byte_closure": true,
+      "trace_accepted_m0_profile_closure": null,
+      "trace_stable_page_key": "(run_hash,object_incarnation,aligned_page_offset)",
+      "closure_status": "pass"
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "DGAI",
+      "mode": "on",
+      "repeat": 6,
+      "start_ns": 1784408167186249307,
+      "end_ns": 1784408175578999751,
+      "wall_seconds": 8.392750444,
+      "active_status": "pass",
+      "accepted_application_bytes": 91127960,
+      "accepted_request_count": 19333,
+      "accepted_page_event_count": 22250,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19329,
+        "publish_save": 5
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19330,
+        "metadata": 3,
+        "vector": 1
+      },
+      "accepted_ledger_totals": {
+        "posix": {
+          "requested_bytes": 680088,
+          "request_count": 3
+        },
+        "async": {
+          "requested_bytes": 90447872,
+          "request_count": 19330
+        }
+      },
+      "trace_run_id": "b066f7d3-2ceb-5454-ae1a-4feec3510ce3",
+      "trace_system": "DGAI",
+      "trace_record_count": 19333,
+      "trace_request_count": 19333,
+      "trace_page_event_count": 22250,
+      "trace_requested_bytes": 91127960,
+      "trace_successful_returned_bytes": 91127960,
+      "trace_normalized_page_bytes": 91127960,
+      "trace_unique_logical_pages": 3334,
+      "trace_unique_object_offset_pairs": 3099,
+      "trace_object_count": 3,
+      "trace_dropped_events": 0,
+      "trace_buffer_peak_bytes": 10223616,
+      "trace_submit_timestamp_sequence_inversions": 0,
+      "trace_completion_timestamp_sequence_inversions": 0,
+      "trace_phase_counts": {
+        "2": 19329,
+        "5": 4
+      },
+      "trace_role_counts": {
+        "1": 19331,
+        "5": 1,
+        "6": 1
+      },
+      "trace_source_counts": {
+        "1": 19330,
+        "3": 1,
+        "6": 2
+      },
+      "trace_failed_requests": 0,
+      "trace_request_to_page_byte_closure": true,
+      "trace_accepted_m0_profile_closure": null,
+      "trace_stable_page_key": "(run_hash,object_incarnation,aligned_page_offset)",
+      "closure_status": "pass"
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "DGAI",
+      "mode": "on",
+      "repeat": 7,
+      "start_ns": 1784408186429171567,
+      "end_ns": 1784408197942136106,
+      "wall_seconds": 11.512964539,
+      "active_status": "pass",
+      "accepted_application_bytes": 91127960,
+      "accepted_request_count": 19333,
+      "accepted_page_event_count": 22250,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19329,
+        "publish_save": 5
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19330,
+        "metadata": 3,
+        "vector": 1
+      },
+      "accepted_ledger_totals": {
+        "posix": {
+          "requested_bytes": 680088,
+          "request_count": 3
+        },
+        "async": {
+          "requested_bytes": 90447872,
+          "request_count": 19330
+        }
+      },
+      "trace_run_id": "522006e0-9e62-57c2-8cd6-362bc0efa126",
+      "trace_system": "DGAI",
+      "trace_record_count": 19333,
+      "trace_request_count": 19333,
+      "trace_page_event_count": 22250,
+      "trace_requested_bytes": 91127960,
+      "trace_successful_returned_bytes": 91127960,
+      "trace_normalized_page_bytes": 91127960,
+      "trace_unique_logical_pages": 3334,
+      "trace_unique_object_offset_pairs": 3099,
+      "trace_object_count": 3,
+      "trace_dropped_events": 0,
+      "trace_buffer_peak_bytes": 10223616,
+      "trace_submit_timestamp_sequence_inversions": 0,
+      "trace_completion_timestamp_sequence_inversions": 0,
+      "trace_phase_counts": {
+        "2": 19329,
+        "5": 4
+      },
+      "trace_role_counts": {
+        "1": 19331,
+        "5": 1,
+        "6": 1
+      },
+      "trace_source_counts": {
+        "1": 19330,
+        "3": 1,
+        "6": 2
+      },
+      "trace_failed_requests": 0,
+      "trace_request_to_page_byte_closure": true,
+      "trace_accepted_m0_profile_closure": null,
+      "trace_stable_page_key": "(run_hash,object_incarnation,aligned_page_offset)",
+      "closure_status": "pass"
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "DGAI",
+      "mode": "on",
+      "repeat": 8,
+      "start_ns": 1784408239475180889,
+      "end_ns": 1784408247182121432,
+      "wall_seconds": 7.706940543,
+      "active_status": "pass",
+      "accepted_application_bytes": 91127960,
+      "accepted_request_count": 19333,
+      "accepted_page_event_count": 22250,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19329,
+        "publish_save": 5
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19330,
+        "metadata": 3,
+        "vector": 1
+      },
+      "accepted_ledger_totals": {
+        "posix": {
+          "requested_bytes": 680088,
+          "request_count": 3
+        },
+        "async": {
+          "requested_bytes": 90447872,
+          "request_count": 19330
+        }
+      },
+      "trace_run_id": "4344cc4f-d2bf-5db5-b629-9fa6fa491182",
+      "trace_system": "DGAI",
+      "trace_record_count": 19333,
+      "trace_request_count": 19333,
+      "trace_page_event_count": 22250,
+      "trace_requested_bytes": 91127960,
+      "trace_successful_returned_bytes": 91127960,
+      "trace_normalized_page_bytes": 91127960,
+      "trace_unique_logical_pages": 3334,
+      "trace_unique_object_offset_pairs": 3099,
+      "trace_object_count": 3,
+      "trace_dropped_events": 0,
+      "trace_buffer_peak_bytes": 10223616,
+      "trace_submit_timestamp_sequence_inversions": 0,
+      "trace_completion_timestamp_sequence_inversions": 0,
+      "trace_phase_counts": {
+        "2": 19329,
+        "5": 4
+      },
+      "trace_role_counts": {
+        "1": 19331,
+        "5": 1,
+        "6": 1
+      },
+      "trace_source_counts": {
+        "1": 19330,
+        "3": 1,
+        "6": 2
+      },
+      "trace_failed_requests": 0,
+      "trace_request_to_page_byte_closure": true,
+      "trace_accepted_m0_profile_closure": null,
+      "trace_stable_page_key": "(run_hash,object_incarnation,aligned_page_offset)",
+      "closure_status": "pass"
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "OdinANN",
+      "mode": "off",
+      "repeat": 1,
+      "start_ns": 1784407605034720352,
+      "end_ns": 1784407609067131027,
+      "wall_seconds": 4.032410675,
+      "active_status": "pass",
+      "accepted_application_bytes": 99161112,
+      "accepted_request_count": 19829,
+      "accepted_page_event_count": 24222,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19811,
+        "load": 10,
+        "publish_save": 11
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19813,
+        "metadata": 7,
+        "vector": 12
+      },
+      "accepted_ledger_totals": {
+        "async": {
+          "requested_bytes": 91660288,
+          "request_count": 19812
+        },
+        "posix": {
+          "requested_bytes": 7500824,
+          "request_count": 17
+        }
+      }
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "OdinANN",
+      "mode": "off",
+      "repeat": 2,
+      "start_ns": 1784407613405595101,
+      "end_ns": 1784407617250745546,
+      "wall_seconds": 3.845150445,
+      "active_status": "pass",
+      "accepted_application_bytes": 98939928,
+      "accepted_request_count": 19738,
+      "accepted_page_event_count": 24168,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19720,
+        "load": 10,
+        "publish_save": 11
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19722,
+        "metadata": 7,
+        "vector": 12
+      },
+      "accepted_ledger_totals": {
+        "async": {
+          "requested_bytes": 91439104,
+          "request_count": 19721
+        },
+        "posix": {
+          "requested_bytes": 7500824,
+          "request_count": 17
+        }
+      }
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "OdinANN",
+      "mode": "off",
+      "repeat": 3,
+      "start_ns": 1784407621870925218,
+      "end_ns": 1784407625916434305,
+      "wall_seconds": 4.045509087,
+      "active_status": "pass",
+      "accepted_application_bytes": 99128344,
+      "accepted_request_count": 19813,
+      "accepted_page_event_count": 24214,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19795,
+        "load": 10,
+        "publish_save": 11
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19797,
+        "metadata": 7,
+        "vector": 12
+      },
+      "accepted_ledger_totals": {
+        "async": {
+          "requested_bytes": 91627520,
+          "request_count": 19796
+        },
+        "posix": {
+          "requested_bytes": 7500824,
+          "request_count": 17
+        }
+      }
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "OdinANN",
+      "mode": "off",
+      "repeat": 4,
+      "start_ns": 1784408124310242686,
+      "end_ns": 1784408128105022530,
+      "wall_seconds": 3.794779844,
+      "active_status": "pass",
+      "accepted_application_bytes": 99140632,
+      "accepted_request_count": 19808,
+      "accepted_page_event_count": 24217,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19790,
+        "load": 10,
+        "publish_save": 11
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19792,
+        "metadata": 7,
+        "vector": 12
+      },
+      "accepted_ledger_totals": {
+        "async": {
+          "requested_bytes": 91639808,
+          "request_count": 19791
+        },
+        "posix": {
+          "requested_bytes": 7500824,
+          "request_count": 17
+        }
+      }
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "OdinANN",
+      "mode": "off",
+      "repeat": 5,
+      "start_ns": 1784408132989999338,
+      "end_ns": 1784408137156168101,
+      "wall_seconds": 4.166168763,
+      "active_status": "pass",
+      "accepted_application_bytes": 99103768,
+      "accepted_request_count": 19800,
+      "accepted_page_event_count": 24208,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19782,
+        "load": 10,
+        "publish_save": 11
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19784,
+        "metadata": 7,
+        "vector": 12
+      },
+      "accepted_ledger_totals": {
+        "async": {
+          "requested_bytes": 91602944,
+          "request_count": 19783
+        },
+        "posix": {
+          "requested_bytes": 7500824,
+          "request_count": 17
+        }
+      }
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "OdinANN",
+      "mode": "on",
+      "repeat": 1,
+      "start_ns": 1784407609443225701,
+      "end_ns": 1784407612804833275,
+      "wall_seconds": 3.361607574,
+      "active_status": "pass",
+      "accepted_application_bytes": 99197976,
+      "accepted_request_count": 19837,
+      "accepted_page_event_count": 24231,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19819,
+        "load": 10,
+        "publish_save": 11
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19821,
+        "metadata": 7,
+        "vector": 12
+      },
+      "accepted_ledger_totals": {
+        "async": {
+          "requested_bytes": 91697152,
+          "request_count": 19820
+        },
+        "posix": {
+          "requested_bytes": 7500824,
+          "request_count": 17
+        }
+      },
+      "trace_run_id": "27cab72b-d358-5a52-a403-7d9002d121b9",
+      "trace_system": "OdinANN",
+      "trace_record_count": 19837,
+      "trace_request_count": 19837,
+      "trace_page_event_count": 24231,
+      "trace_requested_bytes": 99197976,
+      "trace_successful_returned_bytes": 99197976,
+      "trace_normalized_page_bytes": 99197976,
+      "trace_unique_logical_pages": 4757,
+      "trace_unique_object_offset_pairs": 2902,
+      "trace_object_count": 8,
+      "trace_dropped_events": 0,
+      "trace_buffer_peak_bytes": 10223616,
+      "trace_submit_timestamp_sequence_inversions": 0,
+      "trace_completion_timestamp_sequence_inversions": 0,
+      "trace_phase_counts": {
+        "1": 8,
+        "2": 19819,
+        "5": 10
+      },
+      "trace_role_counts": {
+        "2": 19821,
+        "6": 12,
+        "1": 3,
+        "5": 1
+      },
+      "trace_source_counts": {
+        "4": 1,
+        "8": 1,
+        "6": 5,
+        "3": 10,
+        "2": 19820
+      },
+      "trace_failed_requests": 0,
+      "trace_request_to_page_byte_closure": true,
+      "trace_accepted_m0_profile_closure": null,
+      "trace_stable_page_key": "(run_hash,object_incarnation,aligned_page_offset)",
+      "closure_status": "pass"
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "OdinANN",
+      "mode": "on",
+      "repeat": 2,
+      "start_ns": 1784407617706545507,
+      "end_ns": 1784407621278418333,
+      "wall_seconds": 3.571872826,
+      "active_status": "pass",
+      "accepted_application_bytes": 99193880,
+      "accepted_request_count": 19824,
+      "accepted_page_event_count": 24230,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19806,
+        "load": 10,
+        "publish_save": 11
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19808,
+        "metadata": 7,
+        "vector": 12
+      },
+      "accepted_ledger_totals": {
+        "async": {
+          "requested_bytes": 91693056,
+          "request_count": 19807
+        },
+        "posix": {
+          "requested_bytes": 7500824,
+          "request_count": 17
+        }
+      },
+      "trace_run_id": "5ae352a7-9db8-5c76-83ba-f4f600a97a01",
+      "trace_system": "OdinANN",
+      "trace_record_count": 19824,
+      "trace_request_count": 19824,
+      "trace_page_event_count": 24230,
+      "trace_requested_bytes": 99193880,
+      "trace_successful_returned_bytes": 99193880,
+      "trace_normalized_page_bytes": 99193880,
+      "trace_unique_logical_pages": 4762,
+      "trace_unique_object_offset_pairs": 2907,
+      "trace_object_count": 8,
+      "trace_dropped_events": 0,
+      "trace_buffer_peak_bytes": 10223616,
+      "trace_submit_timestamp_sequence_inversions": 0,
+      "trace_completion_timestamp_sequence_inversions": 0,
+      "trace_phase_counts": {
+        "1": 8,
+        "2": 19806,
+        "5": 10
+      },
+      "trace_role_counts": {
+        "2": 19808,
+        "6": 12,
+        "1": 3,
+        "5": 1
+      },
+      "trace_source_counts": {
+        "4": 1,
+        "8": 1,
+        "6": 5,
+        "3": 10,
+        "2": 19807
+      },
+      "trace_failed_requests": 0,
+      "trace_request_to_page_byte_closure": true,
+      "trace_accepted_m0_profile_closure": null,
+      "trace_stable_page_key": "(run_hash,object_incarnation,aligned_page_offset)",
+      "closure_status": "pass"
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "OdinANN",
+      "mode": "on",
+      "repeat": 3,
+      "start_ns": 1784407626350108143,
+      "end_ns": 1784407630571146912,
+      "wall_seconds": 4.221038769,
+      "active_status": "pass",
+      "accepted_application_bytes": 99136536,
+      "accepted_request_count": 19810,
+      "accepted_page_event_count": 24216,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19792,
+        "load": 10,
+        "publish_save": 11
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19794,
+        "metadata": 7,
+        "vector": 12
+      },
+      "accepted_ledger_totals": {
+        "async": {
+          "requested_bytes": 91635712,
+          "request_count": 19793
+        },
+        "posix": {
+          "requested_bytes": 7500824,
+          "request_count": 17
+        }
+      },
+      "trace_run_id": "998131a7-b200-5d72-8106-568734b90aef",
+      "trace_system": "OdinANN",
+      "trace_record_count": 19810,
+      "trace_request_count": 19810,
+      "trace_page_event_count": 24216,
+      "trace_requested_bytes": 99136536,
+      "trace_successful_returned_bytes": 99136536,
+      "trace_normalized_page_bytes": 99136536,
+      "trace_unique_logical_pages": 4773,
+      "trace_unique_object_offset_pairs": 2917,
+      "trace_object_count": 8,
+      "trace_dropped_events": 0,
+      "trace_buffer_peak_bytes": 10223616,
+      "trace_submit_timestamp_sequence_inversions": 0,
+      "trace_completion_timestamp_sequence_inversions": 0,
+      "trace_phase_counts": {
+        "1": 8,
+        "2": 19792,
+        "5": 10
+      },
+      "trace_role_counts": {
+        "2": 19794,
+        "6": 12,
+        "1": 3,
+        "5": 1
+      },
+      "trace_source_counts": {
+        "4": 1,
+        "8": 1,
+        "6": 5,
+        "3": 10,
+        "2": 19793
+      },
+      "trace_failed_requests": 0,
+      "trace_request_to_page_byte_closure": true,
+      "trace_accepted_m0_profile_closure": null,
+      "trace_stable_page_key": "(run_hash,object_incarnation,aligned_page_offset)",
+      "closure_status": "pass"
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "OdinANN",
+      "mode": "on",
+      "repeat": 4,
+      "start_ns": 1784408119391742019,
+      "end_ns": 1784408123711987666,
+      "wall_seconds": 4.320245647,
+      "active_status": "pass",
+      "accepted_application_bytes": 98890776,
+      "accepted_request_count": 19732,
+      "accepted_page_event_count": 24156,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19714,
+        "load": 10,
+        "publish_save": 11
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19716,
+        "metadata": 7,
+        "vector": 12
+      },
+      "accepted_ledger_totals": {
+        "async": {
+          "requested_bytes": 91389952,
+          "request_count": 19715
+        },
+        "posix": {
+          "requested_bytes": 7500824,
+          "request_count": 17
+        }
+      },
+      "trace_run_id": "6c65467c-18e4-51f0-9cb1-2a679d51ef2b",
+      "trace_system": "OdinANN",
+      "trace_record_count": 19732,
+      "trace_request_count": 19732,
+      "trace_page_event_count": 24156,
+      "trace_requested_bytes": 98890776,
+      "trace_successful_returned_bytes": 98890776,
+      "trace_normalized_page_bytes": 98890776,
+      "trace_unique_logical_pages": 4788,
+      "trace_unique_object_offset_pairs": 2933,
+      "trace_object_count": 8,
+      "trace_dropped_events": 0,
+      "trace_buffer_peak_bytes": 10223616,
+      "trace_submit_timestamp_sequence_inversions": 0,
+      "trace_completion_timestamp_sequence_inversions": 0,
+      "trace_phase_counts": {
+        "1": 8,
+        "2": 19714,
+        "5": 10
+      },
+      "trace_role_counts": {
+        "2": 19716,
+        "6": 12,
+        "1": 3,
+        "5": 1
+      },
+      "trace_source_counts": {
+        "4": 1,
+        "8": 1,
+        "6": 5,
+        "3": 10,
+        "2": 19715
+      },
+      "trace_failed_requests": 0,
+      "trace_request_to_page_byte_closure": true,
+      "trace_accepted_m0_profile_closure": null,
+      "trace_stable_page_key": "(run_hash,object_incarnation,aligned_page_offset)",
+      "closure_status": "pass"
+    },
+    {
+      "schema": "zns-ann-z0a-run-status-v1",
+      "returncode": 0,
+      "system": "OdinANN",
+      "mode": "on",
+      "repeat": 5,
+      "start_ns": 1784408128444082293,
+      "end_ns": 1784408132393027873,
+      "wall_seconds": 3.94894558,
+      "active_status": "pass",
+      "accepted_application_bytes": 99148824,
+      "accepted_request_count": 19813,
+      "accepted_page_event_count": 24219,
+      "accepted_phase_counts": {
+        "insert_neighbor_repair": 19795,
+        "load": 10,
+        "publish_save": 11
+      },
+      "accepted_role_counts": {
+        "graph_vector_combined": 19797,
+        "metadata": 7,
+        "vector": 12
+      },
+      "accepted_ledger_totals": {
+        "async": {
+          "requested_bytes": 91648000,
+          "request_count": 19796
+        },
+        "posix": {
+          "requested_bytes": 7500824,
+          "request_count": 17
+        }
+      },
+      "trace_run_id": "afac9086-5a66-5ec1-8094-ca0474548a58",
+      "trace_system": "OdinANN",
+      "trace_record_count": 19813,
+      "trace_request_count": 19813,
+      "trace_page_event_count": 24219,
+      "trace_requested_bytes": 99148824,
+      "trace_successful_returned_bytes": 99148824,
+      "trace_normalized_page_bytes": 99148824,
+      "trace_unique_logical_pages": 4762,
+      "trace_unique_object_offset_pairs": 2911,
+      "trace_object_count": 8,
+      "trace_dropped_events": 0,
+      "trace_buffer_peak_bytes": 10223616,
+      "trace_submit_timestamp_sequence_inversions": 0,
+      "trace_completion_timestamp_sequence_inversions": 0,
+      "trace_phase_counts": {
+        "1": 8,
+        "2": 19795,
+        "5": 10
+      },
+      "trace_role_counts": {
+        "2": 19797,
+        "6": 12,
+        "1": 3,
+        "5": 1
+      },
+      "trace_source_counts": {
+        "4": 1,
+        "8": 1,
+        "6": 5,
+        "3": 10,
+        "2": 19796
+      },
+      "trace_failed_requests": 0,
+      "trace_request_to_page_byte_closure": true,
+      "trace_accepted_m0_profile_closure": null,
+      "trace_stable_page_key": "(run_hash,object_incarnation,aligned_page_offset)",
+      "closure_status": "pass"
+    }
+  ],
+  "instrumentation_gates": {
+    "DGAI": {
+      "off_wall_seconds": {
+        "min": 8.377626738,
+        "median": 10.364344414000001,
+        "max": 12.260551139
+      },
+      "on_wall_seconds": {
+        "min": 7.706940543,
+        "median": 9.585480906499999,
+        "max": 12.03989028
+      },
+      "overhead_percent": -7.514836215283671,
+      "zero_drop_and_closure": true,
+      "write_phase_structure_exactly_identical": true,
+      "intrinsic_trace_off_variation": false,
+      "phase_names_identical": true,
+      "off_on_metric_ranges_overlap": {
+        "accepted_application_bytes": true,
+        "accepted_request_count": true,
+        "accepted_page_event_count": true
+      },
+      "write_phase_structure_observationally_compatible": true,
+      "structure_rule": "exact equality, or overlapping off/on ranges when trace-off itself is nondeterministic",
+      "pass": false
+    },
+    "OdinANN": {
+      "off_wall_seconds": {
+        "min": 3.794779844,
+        "median": 4.032410675,
+        "max": 4.166168763
+      },
+      "on_wall_seconds": {
+        "min": 3.361607574,
+        "median": 3.94894558,
+        "max": 4.320245647
+      },
+      "overhead_percent": -2.069856017331373,
+      "zero_drop_and_closure": true,
+      "write_phase_structure_exactly_identical": false,
+      "intrinsic_trace_off_variation": true,
+      "phase_names_identical": true,
+      "off_on_metric_ranges_overlap": {
+        "accepted_application_bytes": true,
+        "accepted_request_count": true,
+        "accepted_page_event_count": true
+      },
+      "write_phase_structure_observationally_compatible": true,
+      "structure_rule": "exact equality, or overlapping off/on ranges when trace-off itself is nondeterministic",
+      "pass": true
+    }
+  }
+}

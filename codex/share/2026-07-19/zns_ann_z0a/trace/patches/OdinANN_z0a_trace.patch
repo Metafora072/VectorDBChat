@@ -1,0 +1,308 @@
+--- a/include/dynamic_index.h
++++ b/include/dynamic_index.h
+@@ -63,8 +63,9 @@
+     mem_index_params_.set(32, 64, 750, 1.2, params_.num_threads, true);
+     cur_index_prefix_ = "./test";
+     // rand value for updating in-memory index.
+-    std::random_device rd;
+-    gen = std::mt19937(rd());
++    // Z0A preflight control: make the short trace workload reproducible so the
++    // trace-off/on comparison measures instrumentation, not RNG drift.
++    gen = std::mt19937(20260719U);
+   }
+ 
+   float rand_uniform() {
+--- a/include/ssd_index.h
++++ b/include/ssd_index.h
+@@ -11,6 +11,7 @@
+ #include "aligned_file_reader.h"
+ #include "ssd_index_defs.h"
+ #include "m3_lifecycle.h"
++#include "z0a_trace.h"
+ #include "filter/attribute.h"
+ #include "filter/selector.h"
+ #include "utils/arch_compat.h"
+@@ -250,6 +251,7 @@
+       std::vector<uint64_t> pages_to_unlock;
+       std::vector<uint64_t> pages_to_deref;
+       std::vector<atlas_m3::VersionRef> m3_versions;
++      AtlasZ0AContext z0a_context;
+       bool terminate = false;
+     };
+ 
+--- a/include/utils/prune_neighbors.h
++++ b/include/utils/prune_neighbors.h
+@@ -236,7 +236,9 @@
+       return 0;
+ 
+     // Thread-local RNG shared by the 2-hop sampler below.
+-    thread_local std::mt19937 rng{std::random_device{}()};
++    // Z0A preflight control: deterministic per-thread sampling for paired
++    // trace-off/on structure checks.
++    thread_local std::mt19937 rng{20260719U};
+     thread_local tsl::robin_set<uint32_t> seen;
+     thread_local std::vector<uint32_t> cands;
+     seen.clear();
+--- a/src/ssd_index.cpp
++++ b/src/ssd_index.cpp
+@@ -138,7 +138,7 @@
+       if (bg_io_thread_[i] != nullptr) {
+         auto bg_task = new BgTask{
+             .thread_data = nullptr, .writes = {}, .pages_to_unlock = {}, .pages_to_deref = {},
+-            .m3_versions = {}, .terminate = true};
++            .m3_versions = {}, .z0a_context = {}, .terminate = true};
+         bg_tasks.push(bg_task);
+         bg_tasks.push_notify_all();
+         bg_io_thread_[i] = nullptr;
+--- a/src/update/direct_insert.cpp
++++ b/src/update/direct_insert.cpp
+@@ -23,6 +23,7 @@
+ #include "linux_aligned_file_reader.h"
+ #include "m2_metrics.h"
+ #include "m3_lifecycle.h"
++#include "z0a_trace.h"
+ 
+ extern "C" void m0_record_role_page(const char *, uint64_t, uint64_t) __attribute__((weak));
+ 
+@@ -289,6 +290,7 @@
+                                 .pages_to_unlock = std::move(pages_locked),
+                                 .pages_to_deref = std::move(write_page_ref),
+                                 .m3_versions = std::move(m3_versions),
++                                .z0a_context = atlas_z0a_get_context(),
+                                 .terminate = false};
+       atlas_m3::enqueued(bg_task->m3_versions);
+       bg_tasks.push(bg_task);
+@@ -333,6 +335,7 @@
+       }
+ 
+       atlas_m3::submitted(task->m3_versions);
++      AtlasZ0AScopedContext z0a_context(task->z0a_context);
+       reader->write(task->writes, ctx);
+       atlas_m3::completed(task->m3_versions);
+       reader->free_io_buf(task->thread_data->update_buf, UPDATE_BUF_SIZE);
+--- a/src/utils/linux_aligned_file_reader.cpp
++++ b/src/utils/linux_aligned_file_reader.cpp
+@@ -19,6 +19,7 @@
+ #include <chrono>
+ #include <pthread.h>
+ #include "liburing.h"
++#include "z0a_trace.h"
+ 
+ namespace {
+   static constexpr uint32_t STRIPE_SIZE = SECTOR_LEN;
+@@ -537,6 +538,7 @@
+ 
+ #elif defined(USE_URING)
+ #include "linux_aligned_file_reader.h"
++#include "z0a_trace.h"
+ 
+ #include <cassert>
+ #include <cstdint>
+@@ -554,9 +556,11 @@
+   void execute_io(void *context, int fd, std::vector<IORequest> &reqs, uint64_t n_retries = 0, bool write = false) {
+     io_uring *ring = (io_uring *) context;
+     while (true) {
++      std::vector<AtlasZ0ATraceToken> z0a_tokens(reqs.size());
+       for (uint64_t j = 0; j < reqs.size(); j++) {
+         auto sqe = io_uring_get_sqe(ring);
+-        sqe->user_data = kNoUserData;
++        atlas_z0a_prepare(&z0a_tokens[j]);
++        sqe->user_data = write ? reinterpret_cast<uint64_t>(&z0a_tokens[j]) : kNoUserData;
+         if (write) {
+           io_uring_prep_write(sqe, fd, reqs[j].buf, reqs[j].len, reqs[j].offset);
+         } else {
+@@ -573,6 +577,12 @@
+           m0_record_async_request("linux_aligned.execute_io.io_uring", fd, req.offset, req.len);
+         }
+       }
++      if (write) {
++        for (uint64_t j = 0; j < reqs.size(); ++j) {
++          atlas_z0a_submit(&z0a_tokens[j], ATLAS_Z0A_SOURCE_IOURING_EXECUTE_IO,
++                            fd, reqs[j].offset, reqs[j].len);
++        }
++      }
+ 
+       io_uring_cqe *cqe = nullptr;
+       bool fail = false;
+@@ -586,6 +596,14 @@
+           LOG(FATAL) << "io_uring_wait_cqe failed: ret=" << ret << " errno=" << -ret
+                      << " (" << std::strerror(-ret) << ")";
+         }
++        if (write) {
++          auto *token = reinterpret_cast<AtlasZ0ATraceToken *>(cqe->user_data);
++          if (token == nullptr || token < z0a_tokens.data() || token >= z0a_tokens.data() + z0a_tokens.size()) {
++            LOG(FATAL) << "io_uring CQE user_data outside Z0A submitted batch";
++          }
++          atlas_z0a_complete(token, static_cast<int64_t>(cqe->res),
++                              cqe->res < 0 ? static_cast<int64_t>(-cqe->res) : 0);
++        }
+         if (cqe->res < 0) {
+           const int cqe_res = cqe->res;
+           io_uring_cqe_seen(ring, cqe);
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -14,6 +14,9 @@
+ add_executable(w1_canary w1_canary.cpp)
+ target_link_libraries(w1_canary ${PROJECT_NAME})
+ 
++add_executable(z0a_canary z0a_canary.cpp)
++target_link_libraries(z0a_canary ${PROJECT_NAME} z0atrace)
++
+ add_executable(test_insert_search test_insert_search.cpp)
+ target_link_libraries(test_insert_search ${PROJECT_NAME})
+ 
+--- a/include/z0a_trace.h
++++ b/include/z0a_trace.h
+@@ -0,0 +1,91 @@
++#pragma once
++
++#include <cstdint>
++#include <limits>
++
++// Stable ABI used by the LD_PRELOAD library and the two instrumented I/O
++// engines.  The trace is intentionally request-oriented; 4 KiB page events
++// are derived offline so request/page byte closure can be checked independently.
++
++enum AtlasZ0APhase : uint16_t {
++  ATLAS_Z0A_PHASE_OTHER = 0,
++  ATLAS_Z0A_PHASE_LOAD = 1,
++  ATLAS_Z0A_PHASE_INSERT = 2,
++  ATLAS_Z0A_PHASE_DELETE = 3,
++  ATLAS_Z0A_PHASE_VISIBILITY = 4,
++  ATLAS_Z0A_PHASE_PUBLISH = 5,
++  ATLAS_Z0A_PHASE_SHADOW_COPY = 6,
++  ATLAS_Z0A_PHASE_REPAIR = 7,
++  ATLAS_Z0A_PHASE_METADATA = 8,
++};
++
++enum AtlasZ0ASource : uint16_t {
++  ATLAS_Z0A_SOURCE_UNKNOWN = 0,
++  ATLAS_Z0A_SOURCE_LIBAIO_EXECUTE_IO = 1,
++  ATLAS_Z0A_SOURCE_IOURING_EXECUTE_IO = 2,
++  ATLAS_Z0A_SOURCE_WRITE = 3,
++  ATLAS_Z0A_SOURCE_PWRITE = 4,
++  ATLAS_Z0A_SOURCE_PWRITE64 = 5,
++  ATLAS_Z0A_SOURCE_WRITEV = 6,
++  ATLAS_Z0A_SOURCE_PWRITEV = 7,
++  ATLAS_Z0A_SOURCE_SENDFILE = 8,
++  ATLAS_Z0A_SOURCE_COPY_FILE_RANGE = 9,
++};
++
++enum AtlasZ0ARole : uint16_t {
++  ATLAS_Z0A_ROLE_UNKNOWN = 0,
++  ATLAS_Z0A_ROLE_PRIMARY_COMBINED = 1,
++  ATLAS_Z0A_ROLE_SHADOW_COMBINED = 2,
++  ATLAS_Z0A_ROLE_GRAPH = 3,
++  ATLAS_Z0A_ROLE_VECTOR = 4,
++  ATLAS_Z0A_ROLE_TAGS = 5,
++  ATLAS_Z0A_ROLE_PQ = 6,
++  ATLAS_Z0A_ROLE_MAP = 7,
++  ATLAS_Z0A_ROLE_REORDERED_DERIVED = 8,
++  ATLAS_Z0A_ROLE_DELETE_TOMBSTONE = 9,
++  ATLAS_Z0A_ROLE_METADATA = 10,
++  ATLAS_Z0A_ROLE_TEMPORARY = 11,
++};
++
++struct AtlasZ0AContext {
++  uint64_t update_or_replacement_id = std::numeric_limits<uint64_t>::max();
++  uint64_t batch_id = std::numeric_limits<uint64_t>::max();
++  uint16_t phase = ATLAS_Z0A_PHASE_OTHER;
++  uint16_t reserved = 0;
++};
++
++// This object must remain alive from kernel submission through completion. For
++// libaio it is stored in iocb.data; for io_uring its address is SQE user_data.
++struct AtlasZ0ATraceToken {
++  uint64_t slot = std::numeric_limits<uint64_t>::max();
++  uint64_t request_id = 0;
++  uint64_t guard = 0;
++};
++
++extern "C" {
++bool atlas_z0a_enabled();
++void atlas_z0a_set_phase_name(const char *name);
++void atlas_z0a_set_context(uint64_t update_or_replacement_id, uint64_t batch_id, uint16_t phase);
++AtlasZ0AContext atlas_z0a_get_context();
++void atlas_z0a_restore_context(AtlasZ0AContext context);
++
++void atlas_z0a_prepare(AtlasZ0ATraceToken *token);
++bool atlas_z0a_submit(AtlasZ0ATraceToken *token, uint16_t source_entrypoint, int fd,
++                      uint64_t offset, uint64_t length);
++void atlas_z0a_complete(AtlasZ0ATraceToken *token, int64_t returned_bytes,
++                        int64_t completion_status);
++void atlas_z0a_flush();
++}
++
++class AtlasZ0AScopedContext {
++ public:
++  explicit AtlasZ0AScopedContext(AtlasZ0AContext next) : prior_(atlas_z0a_get_context()) {
++    atlas_z0a_restore_context(next);
++  }
++  ~AtlasZ0AScopedContext() { atlas_z0a_restore_context(prior_); }
++  AtlasZ0AScopedContext(const AtlasZ0AScopedContext &) = delete;
++  AtlasZ0AScopedContext &operator=(const AtlasZ0AScopedContext &) = delete;
++
++ private:
++  AtlasZ0AContext prior_;
++};
+--- a/tests/z0a_canary.cpp
++++ b/tests/z0a_canary.cpp
+@@ -0,0 +1,58 @@
++// Z0A preflight driver for the real OdinANN io_uring/background-write path.
++#define main odin_legacy_overall_performance_main
++#include "overall_performance.cpp"
++#undef main
++
++#include "z0a_trace.h"
++#include <cstdlib>
++#include <fstream>
++
++extern "C" void m0_set_phase(const char *) __attribute__((weak));
++
++namespace {
++uint64_t mono_ns() {
++  return std::chrono::duration_cast<std::chrono::nanoseconds>(
++             std::chrono::steady_clock::now().time_since_epoch()).count();
++}
++void mark(const char *name) {
++  atlas_z0a_set_phase_name(name);
++  if (m0_set_phase) m0_set_phase(name);
++  const char *path = std::getenv("ATLAS_W1_MARKERS");
++  if (!path || !*path) throw std::runtime_error("ATLAS_W1_MARKERS is required");
++  std::ofstream out(path, std::ios::app);
++  if (!out) throw std::runtime_error("cannot open marker file");
++  out << "{\"marker\":\"" << name << "\",\"monotonic_ns\":" << mono_ns() << "}\n";
++}
++template <typename T>
++void run(const std::string &data, const std::string &prefix, const std::string &trace) {
++  pipeann::IndexBuildParameters parameters; parameters.L = 128;
++  DynamicIndex<T> index(128, pipeann::Metric::L2, &parameters);
++  mark("clone_ready"); index.load(prefix, true); index.omp_set_num_threads(32); mark("index_loaded");
++  std::vector<T> vectors; std::vector<unsigned> deletes, inserts;
++  get_atlas_trace<T, unsigned>(data, trace.c_str(), deletes, inserts, vectors);
++  if (deletes.size() != inserts.size()) throw std::runtime_error("replacement trace shape mismatch");
++  mark("ingest_begin");
++  for (size_t i = 0; i < inserts.size(); ++i) {
++    AtlasZ0AScopedContext context({i, i / 128, ATLAS_Z0A_PHASE_INSERT, 0});
++    index.insert(vectors.data() + 128 * i, inserts[i]);
++    atlas_m3::barrier();
++  }
++  for (size_t i = 0; i < deletes.size(); ++i) {
++    AtlasZ0AScopedContext context({i, i / 128, ATLAS_Z0A_PHASE_DELETE, 0});
++    index.lazy_delete(deletes[i]);
++  }
++  mark("ingest_end"); mark("publish_begin");
++  if (!index.save(prefix, NUM_MERGE_THREADS)) throw std::runtime_error("DynamicIndex::save failed");
++  mark("publish_end");
++}
++}
++int main(int argc, char **argv) {
++  try {
++    if (argc == 5 && std::string(argv[1]) == "run") {
++      run<float>(argv[2], argv[3], argv[4]); return 0;
++    }
++    std::cerr << "usage: z0a_canary run DATA PREFIX TRACE\n"; return 2;
++  } catch (const std::exception &error) {
++    std::cerr << "z0a_canary fatal: " << error.what() << '\n'; return 1;
++  }
++}

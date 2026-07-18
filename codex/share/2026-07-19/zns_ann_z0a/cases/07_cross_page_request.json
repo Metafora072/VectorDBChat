@@ -1,0 +1,12 @@
+{
+  "name": "one unaligned request split across three pages",
+  "config": {"zone_capacity_blocks": 4, "logical_block_size_bytes": 4096, "number_of_zones": 3, "max_open_zones": 1, "max_active_zones": 1, "host_spare_zones": 1},
+  "initial_live": [],
+  "requests": {"r1": {"returned_bytes": 8192}},
+  "events": [
+    {"op": "write", "key": "file@page0", "request_id": "r1", "page_bytes": 2048},
+    {"op": "write", "key": "file@page1", "request_id": "r1", "page_bytes": 4096},
+    {"op": "write", "key": "file@page2", "request_id": "r1", "page_bytes": 2048}
+  ],
+  "expected": {"new_logical_blocks": 3, "relocated_blocks": 0, "reset_count": 0, "host_wa_fraction": "3/3", "application_bytes": 8192, "live_keys": ["file@page0", "file@page1", "file@page2"], "victim_sequence": [], "error_codes": []}
+}

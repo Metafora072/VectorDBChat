@@ -1,0 +1,10 @@
+{
+  "name": "all new writes",
+  "config": {"zone_capacity_blocks": 2, "zone_size_blocks": 2, "logical_block_size_bytes": 4096, "number_of_zones": 3, "max_open_zones": 1, "max_active_zones": 1, "host_spare_zones": 1},
+  "initial_live": [],
+  "events": [
+    {"op": "write", "key": "A"}, {"op": "write", "key": "B"},
+    {"op": "write", "key": "C"}, {"op": "write", "key": "D"}
+  ],
+  "expected": {"new_logical_blocks": 4, "relocated_blocks": 0, "reset_count": 0, "host_wa_fraction": "4/4", "live_keys": ["A", "B", "C", "D"], "victim_sequence": [], "error_codes": []}
+}

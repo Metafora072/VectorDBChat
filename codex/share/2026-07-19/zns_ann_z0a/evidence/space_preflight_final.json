@@ -1,0 +1,37 @@
+{
+  "device_id": "259:10",
+  "disk": {
+    "estimated_peak_bytes": 17405354966,
+    "free_bytes": 917331468288,
+    "items": {
+      "active_mutable_clone_shadow": 1717986918,
+      "base_index_snapshot": 2265595248,
+      "failure_residue": 4294967296,
+      "initial_manifest": 805306368,
+      "normalized_event_file": 1610612736,
+      "safety_margin": 3221225472,
+      "simulator_output": 805306368,
+      "simulator_state": 268435456,
+      "temporary_compression": 1610612736,
+      "trace_binary": 805306368
+    },
+    "pass": true,
+    "required_free_bytes_strictly_greater_than": 26108032449
+  },
+  "ram": {
+    "estimated_peak_bytes": 7784628224,
+    "items": {
+      "application_peak": 4294967296,
+      "normalizer_simulator": 1073741824,
+      "ram_safety_margin": 2147483648,
+      "trace_ram_buffer": 268435456
+    },
+    "mem_available_bytes": 256877223936,
+    "pass": true,
+    "required_available_bytes_strictly_greater_than": 11676942336
+  },
+  "safety_multiplier": 1.5,
+  "schema": "zns-ann-z0a-space-preflight-v1",
+  "status": "pass",
+  "target_root": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/z0a_trace_model_preflight_0719"
+}

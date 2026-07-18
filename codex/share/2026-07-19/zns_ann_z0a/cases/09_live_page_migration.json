@@ -1,0 +1,10 @@
+{
+  "name": "victim live page migration preserves version",
+  "config": {"zone_capacity_blocks": 2, "logical_block_size_bytes": 4096, "number_of_zones": 4, "max_open_zones": 1, "max_active_zones": 1, "host_spare_zones": 1},
+  "initial_live": ["A", "B", "C", "D"],
+  "events": [
+    {"op": "write", "key": "A"}, {"op": "write", "key": "X"},
+    {"op": "write", "key": "C"}
+  ],
+  "expected": {"new_logical_blocks": 3, "relocated_blocks": 1, "reset_count": 1, "host_wa_fraction": "4/3", "live_keys": ["A", "B", "C", "D", "X"], "victim_sequence": [0], "relocation_sequence": ["B"], "error_codes": []}
+}
