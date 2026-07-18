@@ -1,0 +1,96 @@
+--- a/include/ssd_index.h
++++ b/include/ssd_index.h
+@@ -12,6 +12,7 @@
+ #include "aligned_file_reader.h"
+ #include "concurrent_queue.h"
+ #include "parameters.h"
++#include "m3_lifecycle.h"
+ #include "percentile_stats.h"
+ #include "pq_table.h"
+ #include "utils.h"
+@@ -436,6 +437,7 @@
+       std::vector<IORequest> writes;
+       std::vector<uint64_t> pages_to_unlock;
+       std::vector<uint64_t> pages_to_deref;
++      std::vector<atlas_m3::VersionRef> m3_versions;
+     };
+     // its concurrency should not be the bottleneck.
+     ConcurrentQueue<BgTask *> bg_tasks = ConcurrentQueue<BgTask *>(nullptr);
+
+--- a/src/update/direct_insert.cpp
++++ b/src/update/direct_insert.cpp
+@@ -22,6 +22,7 @@
+ 
+ #include "global_stats.h"
+ #include "m2_metrics.h"
++#include "m3_lifecycle.h"
+ 
+ extern "C" void m0_record_role_page(const char *, uint64_t, uint64_t) __attribute__((weak));
+ 
+@@ -36,6 +37,7 @@
+     atlas_m2::configure({"DGAI", "libaio-wbc-write", this->range, this->l_index, this->maxc,
+                          this->beam_width, this->alpha, this->data_dim, this->max_node_len,
+                          this->nnodes_per_sector, 0});
++    atlas_m3::configure("DGAI", "libaio-background-blocking-write", this->_disk_index_file);
+     // write PQ.
+ 
+     #ifdef COLLECT_INFO_2
+@@ -295,6 +297,7 @@
+       const uint64_t page = req.offset / size_per_io;
+       if (page != target_page) submitted_neighbor_only_pages.push_back(page);
+     }
++    auto m3_versions = atlas_m3::generated(logical_neighbor_only_pages, target_id);
+     atlas_m2::record({new_nhood.size(), accepted_reverse_updates,
+                       new_nhood.size() - accepted_reverse_updates, mutated_neighbor_records,
+                       mutated_neighbor_ids.size(), std::move(logical_neighbor_pages),
+@@ -351,7 +354,9 @@
+           .writes = std::move(writes),
+           .pages_to_unlock = std::move(pages_locked),
+           .pages_to_deref = std::move(write_page_ref),
++          .m3_versions = std::move(m3_versions),
+       };
++      atlas_m3::enqueued(bg_task->m3_versions);
+       bg_tasks.push(bg_task);
+       bg_tasks.push_notify_all();
+     } else {
+@@ -360,7 +365,10 @@
+     reader->deref(&page_ref, ctx);
+ #else
+     timer.reset();
++    atlas_m3::enqueued(m3_versions);
++    atlas_m3::submitted(m3_versions);
+     reader->write(writes, ctx);
++    atlas_m3::completed(m3_versions);
+     if(gs != nullptr) {
+       gs->insert_io3 += timer.elapsed();
+       gs->insert_io += timer.elapsed();
+@@ -395,7 +403,9 @@
+       }
+ 
+       timer.reset();
++      atlas_m3::submitted(task->m3_versions);
+       reader->write(task->writes, ctx);
++      atlas_m3::completed(task->m3_versions);
+       if(gs != nullptr) {
+         gs->insert_io3 += timer.elapsed();
+         gs->insert_io += timer.elapsed();
+
+--- a/src/update/delete_merge.cpp
++++ b/src/update/delete_merge.cpp
+@@ -21,6 +21,7 @@
+ #include "linux_aligned_file_reader.h"
+ 
+ #include "global_stats.h"
++#include "m3_lifecycle.h"
+ 
+ namespace pipeann {
+ #define SECTORS_PER_MERGE 65536
+@@ -39,6 +40,7 @@
+     while (!bg_tasks.empty()) {
+       sleep(5);  // simple way to wait for background IO thread.
+     }
++    atlas_m3::barrier();
+     std::string disk_index_out = out_path_prefix + "_disk.index";
+     // Note that the index is immutable currently.
+     // Step 1: populate neighborhoods, allocate IDs.
+

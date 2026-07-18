@@ -1,0 +1,109 @@
+--- a/include/ssd_index.h
++++ b/include/ssd_index.h
+@@ -10,6 +10,7 @@
+ 
+ #include "aligned_file_reader.h"
+ #include "ssd_index_defs.h"
++#include "m3_lifecycle.h"
+ #include "filter/attribute.h"
+ #include "filter/selector.h"
+ #include "utils/arch_compat.h"
+@@ -248,6 +249,7 @@
+       std::vector<IORequest> writes;
+       std::vector<uint64_t> pages_to_unlock;
+       std::vector<uint64_t> pages_to_deref;
++      std::vector<atlas_m3::VersionRef> m3_versions;
+       bool terminate = false;
+     };
+ 
+
+--- a/src/ssd_index.cpp
++++ b/src/ssd_index.cpp
+@@ -137,7 +137,8 @@
+     for (int i = 0; i < kBgIOThreads; ++i) {
+       if (bg_io_thread_[i] != nullptr) {
+         auto bg_task = new BgTask{
+-            .thread_data = nullptr, .writes = {}, .pages_to_unlock = {}, .pages_to_deref = {}, .terminate = true};
++            .thread_data = nullptr, .writes = {}, .pages_to_unlock = {}, .pages_to_deref = {},
++            .m3_versions = {}, .terminate = true};
+         bg_tasks.push(bg_task);
+         bg_tasks.push_notify_all();
+         bg_io_thread_[i] = nullptr;
+
+--- a/src/update/direct_insert.cpp
++++ b/src/update/direct_insert.cpp
+@@ -22,6 +22,7 @@
+ #include <sys/syscall.h>
+ #include "linux_aligned_file_reader.h"
+ #include "m2_metrics.h"
++#include "m3_lifecycle.h"
+ 
+ extern "C" void m0_record_role_page(const char *, uint64_t, uint64_t) __attribute__((weak));
+ 
+@@ -38,6 +39,7 @@
+     atlas_m2::configure({"OdinANN", "io_uring-background-write", this->params.R, this->params.L,
+                          this->params.C, this->params.beam_width, this->params.alpha, this->meta_.data_dim,
+                          this->meta_.max_node_len, this->meta_.nnodes_per_sector, this->meta_.attr_size});
++    atlas_m3::configure("OdinANN", "io_uring-background-blocking-write", this->disk_index_file);
+ 
+     // write neighbor (e.g., PQ).
+     nbr_handler->insert(point, target_id);
+@@ -240,6 +242,7 @@
+       const uint64_t page = req.offset / io_size;
+       if (page != target_page) submitted_neighbor_only_pages.push_back(page);
+     }
++    auto m3_versions = atlas_m3::generated(logical_neighbor_only_pages, target_id);
+     atlas_m2::record({new_nhood.size(), accepted_reverse_updates,
+                       new_nhood.size() - accepted_reverse_updates, mutated_neighbor_records,
+                       mutated_neighbor_ids.size(), std::move(logical_neighbor_pages),
+@@ -285,7 +288,9 @@
+                                 .writes = std::move(writes),
+                                 .pages_to_unlock = std::move(pages_locked),
+                                 .pages_to_deref = std::move(write_page_ref),
++                                .m3_versions = std::move(m3_versions),
+                                 .terminate = false};
++      atlas_m3::enqueued(bg_task->m3_versions);
+       bg_tasks.push(bg_task);
+       bg_tasks.push_notify_all();
+     } else {
+@@ -293,7 +298,10 @@
+     }
+     reader->deref(&insert_ctx.page_ref);
+ #else
++    atlas_m3::enqueued(m3_versions);
++    atlas_m3::submitted(m3_versions);
+     reader->write(writes, ctx);
++    atlas_m3::completed(m3_versions);
+     reader->free_io_buf(read_data->update_buf, UPDATE_BUF_SIZE);
+     read_data->update_buf = nullptr;
+ 
+@@ -324,7 +332,9 @@
+         break;
+       }
+ 
++      atlas_m3::submitted(task->m3_versions);
+       reader->write(task->writes, ctx);
++      atlas_m3::completed(task->m3_versions);
+       reader->free_io_buf(task->thread_data->update_buf, UPDATE_BUF_SIZE);
+       task->thread_data->update_buf = nullptr;
+ 
+
+--- a/src/update/delete_merge.cpp
++++ b/src/update/delete_merge.cpp
+@@ -20,6 +20,7 @@
+ #include <unistd.h>
+ #include <sys/syscall.h>
+ #include "linux_aligned_file_reader.h"
++#include "m3_lifecycle.h"
+ 
+ namespace pipeann {
+   template<typename T, typename TagT>
+@@ -37,6 +38,7 @@
+     while (!bg_tasks.empty()) {
+       sleep(5);  // simple way to wait for background IO thread.
+     }
++    atlas_m3::barrier();
+     std::string disk_index_out = out_path_prefix + "_disk.index";
+     // Note that the index is immutable currently.
+     // Step 1: populate neighborhoods, allocate IDs.
+
