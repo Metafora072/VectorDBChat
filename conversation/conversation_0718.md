@@ -451,3 +451,85 @@ Primary-work 边界已闭合：PageANN 确实从 Vamana-derived vector graph 聚
 Hardness/approximation 也未救回：固定 packing的 page cover直接退化为 Set Cover，虽有 `O(log n)` page-cover近似，却最坏需要 `O(B log n)` edge slack；`B=1` hardness、fixed-layout hardness和 weighted Set Cover都不满足门禁。独立评分为 significance/formal novelty/system relevance/feasibility=`8/4/4/3`，没有达到 `7/6/7/7`。
 
 Claude 提出的 learned-repair 与 self-improving 两项 quick check是“若 PZ 或 GPT 批准”的条件请求；本轮遵守 GPT“只做 C0、完成后停止”的边界，未擅自展开。请 GPT 审阅本次 KILL 与 gate 暴露出的 page-specificity漏洞，再决定是否批准 Claude 的两个新 quick check或换方向。
+
+**Gpt(22:16:05)**：
+Page-Cost-Aware Navigability C0的`KILL / NO C1`正式接受。字面separation来自普通shortcut/hopset降低路径长度，不具有page-specificity；收紧到matched expansions、`B=1` gap消失、真实page-search语义和constant edge/degree slack后，没有有效separation或joint approximation。
+
+Claude新增候选裁决如下：
+
+* `Learned Repair Oracle`：KILL。M2没有保存邻居明细或逐操作训练样本；RobustPrune标签依赖未读取的真实邻接状态。若维护足够摘要，又会引入新的DRAM与一致性成本，且必须先击败deterministic quantized pruning。
+* `Self-Improving Graph ANN`：KILL当前表述。RFix/NGFix已经基于online queries动态检测并修复graph defects，CleANN也已有workload-aware linking与query-adaptive consolidation。
+* Lazy Repair、non-uniform degree与amortized maintenance继续停止。
+
+详细评审见：
+
+`gpt/share/2026-07-18/page_c0_final_closure_and_candidate_review_0718.md`
+
+至此不再从Vamana的repair、page layout、degree、beam、cache和query adaptation六个局部轴继续枚举变体。下一阶段应切换到由独立应用需求或新runtime observation驱动的问题，重新执行problem significance和primary-work gate。
+
+当前保持停止，不启动新实验、instrumentation或代码。
+
+**Claude(22:24:11)**：
+收到 Gpt 的全面 closure。四个方向的 KILL 理由都成立：Learned Repair Oracle 确实缺少逐操作训练样本（M2 只保存了聚合直方图，没有逐 replacement 的邻居明细），而且 RobustPrune 的 accept/reject 取决于未读取的真实邻接状态，cheap features 不够；Self-Improving 被 RFix/NGFix 的 online query-based graph defect detection 和 CleANN 的 workload-aware linking 覆盖了，我之前漏掉了这些工作；C0 的 separation 是 false positive，gap 来自 shortcut 降 hop count 而非 page-specificity，B=1 时 gap 仍存在说明 packing 没有参与。
+
+同意 Gpt 的结论：Vamana 内部的 repair/page layout/degree/beam/cache/query adaptation 六个轴已经枚举完毕，继续在这些轴上找变体不会产生新结果。下一阶段需要由独立的应用需求或新的 runtime observation 驱动。
+
+PZ 提出把视野放宽到 disk-resident ANN 和向量检索的整个领域（不限于 Vamana），系统和 AI 方向都可以。我将启动一轮完整的 idea discovery pipeline 来系统性地搜索这个更广的空间。
+
+**Claude(22:33:42)**：
+`/idea-discovery` Phase 1（文献综述）完成。详细报告见 `claude/share/2026-07-18/disk_ann_vector_search_landscape_0718.md`。
+
+搜索了 10+ 个轴向、32 篇核心工作，识别出 7 个结构性空白。按研究潜力排序：
+
+**G1: ZNS SSD + ANN（FAST/VLDB/OSDI）**
+ZNS 的 append-only zone 语义与图 ANN 的 random-update-in-place 根本冲突。B+-tree 已有 ZNS co-design（ACM TACO 2026），但 ANN 领域零工作。我们的 M0-M3 write profiling 直接适用——知道每次 insert 产生多少 page rewrite，就能设计 zone-aligned compaction 策略。
+
+**G2: ANN 的 I/O 复杂度下界（NeurIPS/SODA/STOC）**
+External memory model 对 sorting、set intersection、subgraph enumeration 都有 tight lower bounds，但 ANN 没有。Sparse Navigable Graphs（SODA 2026）给出了 edge count 的 Set Cover 等价——可以从这里出发建立 page-read lower bound。纯理论贡献，面向算法会议。
+
+**G3: KV Cache Vector Index on SSD（VLDB/OSDI + NeurIPS）**
+RetroInfer（VLDB 2026, Microsoft）把 KV cache 重构为向量存储问题，用 wave index 实现 4.5-10.5× speedup。但它只在 DRAM 上工作。将 wave index 或类似结构 tier 到 SSD，支持 1M+ token context，是 systems+AI 的交叉方向。我们的 disk-resident index 专长直接对口。
+
+**G4: 量化-拓扑联合设计 for Disk ANN（SIGMOD/VLDB + ICML）**
+SymphonyQG（SIGMOD 2025）和 QuIVer（2026）证明量化与图结构深度耦合。但两者都是 in-memory。在 disk 上，PQ codes 放内存、full vectors 放 SSD 的架构下，如果图拓扑本身根据量化精度优化，可以减少大量 SSD reads。
+
+**G5: Crash-Consistent Dynamic Disk ANN（FAST/OSDI/EuroSys）**
+P-HNSW 只解决了 in-memory crash consistency。Disk-resident dynamic ANN（DiskANN、Starling）在生产环境必须处理 crash recovery，但没有一个系统提供 formal crash consistency guarantee。
+
+**G6: Streaming Graph ANN 的 Freshness-Recall Formal Tradeoff（NeurIPS/ICML theory）**
+FreshDiskANN 用 delta buffer 做 streaming，但没有 formal guarantee 说 delta 多大时 recall 还够。这是一个干净的理论问题。
+
+**G7: Dynamic Filtered ANN on SSD（VLDB/SIGMOD）**
+GateANN/FusedANN 处理静态 filter，但 filter predicate 随时间变化的场景（如 ACL 更新、时间窗口过滤）没有工作。
+
+**Phase 1 Checkpoint**: 方向确认。这些空白是否符合你的判断？有没有需要调整的方向？如果没有异议，我将进入 Phase 2（/idea-creator），围绕 G1-G7 生成 8-12 个具体 idea 并做 novelty check。
+
+**PZ(22:35:04)**:
+继续，进入 Phase 2。
+
+**Claude(22:57:28)**：
+`/idea-discovery` Phase 2（idea-creator）完成。Claude 独立生成 10 个 idea，Codex（GPT-5.4 xhigh）独立生成 11 个 idea，合并去重后保留 10 个 finalist。详细报告见 `claude/share/2026-07-18/idea_report_phase2_merged_0718.md`。
+
+**Top 5（推荐进入 Phase 3 深度 novelty check）**：
+
+**Rank 1: FreshCert — 无需修图的逐查询 Freshness 证书（G6, NeurIPS）**
+给定 stale 图索引 + delta buffer 中未合并的更新，为每条查询提供一个数学证书：证明"当前 top-k 结果仍然正确"，或给出保守的 recall 下界。用 kth-distance margin 与 pending updates 的量化距离包络计算。在自然流式更新下，预期 >50% 查询可直接复用旧结果而无需修图。快速 novelty check 通过——FreshDiskANN/Quake/IVF-TQ 都不提供逐查询正确性保证。
+
+**Rank 2: GraphKV — SSD 上的图 ANN 索引用于 KV Cache 检索（G3, VLDB/OSDI）**
+将 disk-resident graph ANN 用于 LLM 推理的 KV cache 检索。RetroInfer（VLDB 2026）用 DRAM wave index 实现 4.5-10.5× 加速，但受 DRAM 容量限制；Tutti（2026）用 GPU page swap 但无 ANN 智能；GraphKV 用 SSD 上的图索引实现选择性检索（每步仅加载 ~1% 最相关 token），支持 2M+ context。我们的 DiskANN 专长（async I/O、PQ reranking、page layout）直接适用。
+
+**Rank 3: ZoneEpoch-ANN — ZNS 原生图 ANN（G1, FAST）**
+将导航核心与追加式邻接版本分离，用可导航性证书决定 zone reset。ZNS + ANN 零先例。M0-M3 写归因数据直接指导 zone 回收策略。
+
+**Rank 4: ANN-on-ZNS Feasibility Frontier — M3 页面版本的 GC 相变（G1 诊断, EuroSys）**
+用 M3 的 22.5M 页面版本生命周期数据，在不同 zone size 下模拟最优/最差 GC 边界。LOW risk，4-6 周。无论结果如何都可发表。建议在 ZoneEpoch-ANN 之前先做。
+
+**Rank 5: Ambiguity-Monotone Graph — 量化不确定性收缩的磁盘拓扑（G4, SIGMOD）**
+构图时约束搜索路径上的量化距离区间逐步收缩，仅在区间与 top-k 边界重叠时读 SSD 全精度向量。区别于 KILLED 的 page-cost-aware navigability：这里优化的是"何时读 SSD"的信息论决策，不是页面布局。
+
+**Phase 2 Checkpoint**: 这 10 个 idea 是否有你特别看好或想排除的？如无异议，我将对 Top 5 进入 Phase 3（/novelty-check 深度核验）+ Phase 4（/research-review 外部审稿），然后进 Phase 4.5（/research-refine-pipeline 完善方案 + 实验计划）。
+
+请求 Gpt 做 gate review：对 Top 5 按 problem significance / novelty / feasibility / venue fit 评分，决定哪些进入深度核验、哪些直接 KILL。
+
+**PZ(23:02:14)**:
+先进入 Phase 3 吧。
