@@ -1,0 +1,79 @@
+--- a/src/update/direct_insert.cpp
++++ b/src/update/direct_insert.cpp
+@@ -21,6 +21,7 @@
+ #include "linux_aligned_file_reader.h"
+ 
+ #include "global_stats.h"
++#include "m2_metrics.h"
+ 
+ extern "C" void m0_record_role_page(const char *, uint64_t, uint64_t) __attribute__((weak));
+ 
+@@ -32,6 +33,9 @@
+ 
+     Timer timer;
+     uint32_t target_id = cur_id++;
++    atlas_m2::configure({"DGAI", "libaio-wbc-write", this->range, this->l_index, this->maxc,
++                         this->beam_width, this->alpha, this->data_dim, this->max_node_len,
++                         this->nnodes_per_sector, 0});
+     // write PQ.
+ 
+     #ifdef COLLECT_INFO_2
+@@ -201,6 +205,9 @@
+     timer.reset();
+     #endif
+     // update the neighbors
++    uint64_t accepted_reverse_updates = 0;
++    uint64_t mutated_neighbor_records = 0;
++    std::set<uint32_t> mutated_neighbor_ids;
+     for (uint32_t i = 0; i < new_nhood.size(); ++i) {
+       auto r_sector = node_sector_no(new_nhood[i]);
+       if (page_buf_map.find(r_sector) == page_buf_map.end()) {
+@@ -211,6 +218,7 @@
+       DiskNode<T> r_nbr_node(new_nhood[i], offset_to_node_coords(r_node_buf), offset_to_node_nhood(r_node_buf));
+       std::vector<uint32_t> nhood(r_nbr_node.nnbrs + 1);
+       nhood.assign(r_nbr_node.nbrs, r_nbr_node.nbrs + r_nbr_node.nnbrs);
++      const std::vector<uint32_t> nhood_before = nhood;
+       nhood.emplace_back(target_id);  // attention: we do not reuse IDs.
+ 
+       if (nhood.size() > this->range) {  // prune neighbors
+@@ -255,6 +263,12 @@
+ #endif
+       }
+ 
++      if (std::find(nhood.begin(), nhood.end(), target_id) != nhood.end()) ++accepted_reverse_updates;
++      if (nhood != nhood_before) {
++        ++mutated_neighbor_records;
++        mutated_neighbor_ids.insert(new_nhood[i]);
++      }
++
+       auto w_sector = loc_sector_no(locs[i]);
+       auto w_node_buf = offset_to_loc(page_buf_map[w_sector], locs[i]);
+       DiskNode<T> w_nbr_node(new_nhood[i], offset_to_node_coords(w_node_buf), offset_to_node_nhood(w_node_buf));
+@@ -270,10 +284,24 @@
+     }
+     timer.reset();
+     #endif
++    const uint64_t target_page = loc_sector_no(locs[new_nhood.size()]);
++    std::set<uint64_t> neighbor_pages;
++    for (uint32_t i = 0; i < new_nhood.size(); ++i) neighbor_pages.insert(loc_sector_no(locs[i]));
++    std::vector<uint64_t> logical_neighbor_pages(neighbor_pages.begin(), neighbor_pages.end());
++    std::vector<uint64_t> logical_neighbor_only_pages;
++    for (uint64_t page : neighbor_pages) if (page != target_page) logical_neighbor_only_pages.push_back(page);
++    std::vector<uint64_t> submitted_neighbor_only_pages;
++    for (const auto &req : writes_4k) {
++      const uint64_t page = req.offset / size_per_io;
++      if (page != target_page) submitted_neighbor_only_pages.push_back(page);
++    }
++    atlas_m2::record({new_nhood.size(), accepted_reverse_updates,
++                      new_nhood.size() - accepted_reverse_updates, mutated_neighbor_records,
++                      mutated_neighbor_ids.size(), std::move(logical_neighbor_pages),
++                      std::move(logical_neighbor_only_pages), neighbor_pages.count(target_page) != 0,
++                      std::move(submitted_neighbor_only_pages)});
++
+     if (m0_record_role_page) {
+-      const uint64_t target_page = loc_sector_no(locs[new_nhood.size()]);
+-      std::set<uint64_t> neighbor_pages;
+-      for (uint32_t i = 0; i < new_nhood.size(); ++i) neighbor_pages.insert(loc_sector_no(locs[i]));
+       for (const auto &req : writes_4k) {
+         const uint64_t page = req.offset / size_per_io;
+         const char *role = "neighbor_repair";

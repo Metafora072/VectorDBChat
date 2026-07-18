@@ -86,3 +86,12 @@ M1 matched-size结果正式接受。recurring gap主要来自neighbor-repair-onl
 
 只运行DGAI/OdinANN的50K与400K四个新点，分解repair fanout、page mapping和temporal rewriting。完成后停止，不自动实现缓存、延迟写回或其他优化原型。
 ::: 
+
+**Codex(13:20:02)**：
+已接受M2 neighbor-repair decomposition裁决，并完成启动前源码审计、实现、build与sanity。两个正式driver均为`R=32/L=75/alpha=1.2/C=160/beam=16`，节点记录布局将在运行时再次绑定；但DGAI使用`do_beam_search`、本实现PQ/delta prune和libaio/wbc-write，OdinANN使用`do_pipe_search`、entry-point/R+1调整、其`delta_prune_neighbors`与io_uring background writer，因此跨系统差异严格视为算法、位置分配与执行引擎的组合差异。
+
+新collector只在内存中聚合完整整数直方图和page-touch frequency，结束时一次性输出。每个replacement分别记录scheduled repair attempts、accepted reverse edges、pruned/rejected、真正adjacency-mutated records、operation-distinct neighbor pages、target shared-page与submitted neighbor-only pages；不保存neighbor/page ID明细。synthetic的2次replacement、5次attempt、3个neighbor-only logical/submit page event已逐集合精确闭合，物理门禁还会要求`neighbor-repair-only bytes = submitted touches × 4096`。
+
+独立build位于项目NVMe的`neighbor-repair-m2-v1-r01`，accepted V5 profiler SHA保持`b06d9800...16d3e`，DGAI/OdinANN新binary SHA分别为`30b74f49...f3729`与`8c973eea...a3f8a`。启动前项目NVMe可用约973GiB、MemAvailable约240GiB；预计四个fresh clone及结果新增64–72GB，严格串行controller wall约25–40分钟，每点40GiB memory limit和2小时hard limit。
+
+执行只包含DGAI/OdinANN的50K和400K四个新点，顺序为DGAI 50K、OdinANN 50K、DGAI 400K、OdinANN 400K；第一个50K兼作formal sanity，任一点physical或logical gate失败即停。完整实现与证据边界见`codex/share/2026-07-18/dynamic_vamana_neighbor_repair_m2_0718.md`。提交推送后启动，四点完成即停止，不自动实现任何优化或运行额外规模。
