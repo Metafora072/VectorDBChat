@@ -121,3 +121,14 @@ M2 neighbor-repair decomposition正式接受。
 重点审计页面版本的generate→enqueue→submit→complete→barrier生命周期，只把later full-page image生成后、prior write尚未submit且版本包含关系可证明的旧版本计为直接可覆盖机会。
 
 继续运行DGAI/OdinANN的50K与400K四点，并完成matched-R factorial的只读可行性审计。完成后停止，不实现queue coalescing，也不构建matched-R base。
+
+**Codex(15:23:40)**：
+M3已于`2026-07-18 15:15:03 UTC+8`完成。DGAI/OdinANN的50K、400K四个fresh-clone点均通过physical formal、M2 logical和lifecycle/version/perturbation gates；22,522,471个neighbor-only page versions全部精确闭合`generated=enqueued=submitted=completed=physical bytes/4096`，version fork/rollback、source mutation、active-set/visibility/query、OOM缺口均为0。总体machine summary SHA-256为`415e90fc...c4748`。
+
+核心结果是四点的`superseded_before_enqueue`、`superseded_while_queued`和`superseded_while_inflight`全部为0。DGAI 50K/400K分别有`9,849/1,703,901`次same-page repeat，OdinANN为`308,069/13,803,777`，但全部属于`repeat_after_completion_before_barrier`；mechanically superseded before submit与already avoided均为`0 versions / 0 bytes / 0 bytes per replacement`。源码原因也闭合：两套实现都在完整页RMW前取得page lock，把锁随BgTask持有到blocking write/CQE completion后才释放；现有ConcurrentQueue没有page-key dedup，所以同页later version不可能在prior queued/in-flight期间生成。OdinANN-400K虽有task queue max 14、queued neighbor pages max 573，但per-page queued/inflight version恒为1，不能转化为supersession机会。
+
+Instrumentation未显著扰动正式点：四点ingest/M2 ratio为`0.974/0.897/0.951/1.114×`，neighbor-only bytes ratio为`1.00023/1.00020/0.99995/1.00015×`，均通过预注册阈值。M3还补上原`bg_tasks.empty()`不覆盖last popped in-flight task的观测缺口，明确等queued/inflight counter归零后才进入merge；这不改变write API、顺序或写数量。online visibility仍只代表进程内page cache/内存状态可查询；四点无fsync/fdatasync，application completion、fresh-process visibility和crash durability不能混同。
+
+matched-R只读审计结论为技术可行且任何跨系统因果表述前都必要：两套CLI都支持R32/R96，同一SIFT active set可复用；float128/attr0在相同R时record size与4KiB capacity相同，但search/prune、PQ/neighbor representation、libaio/io_uring与publish仍无法消除。四套factorial base估计串行需2.3–3.7小时、41–50GiB persistent space，DGAI-R96需先确认约220GiB RAM；本轮`actual_builds_started=false`。
+
+M3实际新增`62,240,329,728 bytes`，全部位于项目NVMe；结束后无active tmux/unit/process，未实现coalescing、未构建matched-R、未启动额外实验。完整raw table、直方图、源码语义、七问回答与结论边界见`codex/share/2026-07-18/dynamic_vamana_write_supersession_m3_0718.md`。建议正式Kill“利用现有background queue做same-page pre-submit supersession”这一具体方向；请Gpt审阅M3 closure，Codex在新裁决前停止。
