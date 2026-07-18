@@ -122,3 +122,17 @@ OdinANN 更新前后发生变化的 6 个文件中，`index_disk.index`、`index
 建议下一步先用项目 NVMe 上的小文件 synthetic workload 复现同一 `std::filesystem::copy()`，确认实际成功返回的底层写入口；随后把该入口纳入 POSIX-output ledger，增加复制目标实时 device/inode、returned bytes、FD reuse、一次物理请求不重复计数和 changed-file coverage 自测。完成后应使用 fresh mutable clone 重跑，且继续禁止规模矩阵。是否保留已经完整 PASS 的 DGAI R03，只以新 identity 重跑 OdinANN，或因公共 profiler 变化而重跑双系统 100K，提交 Gpt 裁决。
 
 R03 result/formal 的 apparent size 分别约 46 MB 和 29 GB，全部位于项目 NVMe；停止后项目 NVMe 仍可用约 1.1 TB，未使用系统盘。
+
+## V5 复制入口修复与 R04 启动门禁
+
+GPT 已确认 R03 停止有效，保留完整 PASS 的 DGAI R03 100K 作为正式锚点，仅授权以 fresh identity 重跑 OdinANN 100K。R04 固定为 `pilot3_sift10m_write_attribution_m0_r04/OdinANN/m0-n100000-04`，复用 R03 中 mode 0555、owner `nobody:nogroup` 的只读输入及 master `[800000:900000]`，从 R12 frozen CP10 source 创建新的 private mutable clone。R03 mutable clone、历史结果和 canonical binary 均不复用或覆盖；R04 通过后只与 DGAI R03 组成双系统 100K closure，并继续禁止规模矩阵。
+
+在项目 NVMe 上使用与正式 OdinANN build 相同的 GCC 13.3.0 和 libstdc++ 执行了精确的 `std::filesystem::copy(..., overwrite_existing)` synthetic workload。`strace` 证实本机实际成功返回入口为 `sendfile(out_fd, in_fd, [0]=>[23296], 23296) = 23296`。源文件与目标文件均位于 `/dev/nvme8n1`，设备号为 `66314`；overwrite 前后目标 inode 保持 `3014727`，目标大小从 26936 bytes 截断为 23296 bytes，最终内容与源文件逐字节相同。该结果把 R03 中仅有动态符号依赖的推断升级为实际 syscall 证据。
+
+V5 profiler 仅新增 `sendfile()` 物理成功返回路径，并将 `r > 0` 的 returned bytes 计入既有 POSIX-output ledger。每次记录都从目标 `out_fd` 实时读取 `fstat()` 的 device/inode、当前 FD 路径和调用前目标 offset；失败或零返回不计数，不复用跨调用 FD identity，也不再调用 `write()` wrapper，因此不会与既有 POSIX 入口重复计数。validator 的固定源码入口清单同步加入 `sendfile()`，并要求 OdinANN 正式运行必须实际触发该入口；changed-file gate 仍要求每个变化文件都有真实物理写记录，未放宽任何覆盖阈值。
+
+独立构建位于项目 NVMe 的 `build/write-attribution-m0-v5-r01`，build manifest 为 PASS。profiler 和 OdinANN instrumented binary 的 SHA-256 分别为 `b06d9800...16d3e` 与 `fcb8ed09...ac12`，canonical binary 保持独立。empty、POSIX、跨边界、FD 复用、libaio、正式 uid/cgroup 形式的 io_uring、filesystem-copy overwrite、copy 零返回以及 DGAI AIO 不触发 `sendfile()` 九项自测全部通过。copy overwrite 自测精确得到一个 `sendfile()` request、23296 returned bytes、目标 `index_shadow_disk.index.tags` 的实时 device/inode identity、inode 稳定和内容一致；零长度 copy 不产生账本记录。
+
+DGAI 源码中存在条件式 filesystem-copy 分支，但 R03 的 W1 路径使用同 prefix 的 `final_merge`，这些分支未被触发；R03 的主 index、tags 与 PQ 三个变化文件已经全部被 V4 覆盖。因此 V5 是针对 OdinANN 实际遗漏入口的严格超集，不把新的 hook 追溯套用到 DGAI R03，也不改变其已通过结论。closure manifest 将同时固化 DGAI R03 的 V4 profiler SHA 与 OdinANN R04 的 V5 profiler SHA，并记录这一版本关系和未触发依据。
+
+R04 启动前 `/dev/nvme8n1` 可用约 1.1 TB，MemAvailable 约 240 GiB，V5 build 实际占用约 278 MB，只读 R03 input 约 32 MB。新的 OdinANN private clone 预计增加约 14–16 GB，结果与日志远低于 1 GB；controller wall 预计 6–12 分钟，systemd stage 的硬上限为 1 小时。runner 还要求启动时无任何 `dv-m0-*` unit、R04 formal/result 路径完全不存在、项目 NVMe 至少剩余 80 GB，并设置 40 GB memory limit。所有构建、clone、profile、结果与临时文件均位于项目 NVMe，不在系统盘运行实验。

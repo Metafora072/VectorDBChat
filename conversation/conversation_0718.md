@@ -18,3 +18,19 @@ OdinANN的更新和证据收集完整完成，ingest/publish/E2E=`65.183/110.828
 遗漏已定位到`SSDIndex::copy_index()`：主disk file走项目自定义direct-I/O copy并被`pwrite`捕获，tags file走`std::filesystem::copy(..., overwrite_existing)`。当前只有libstdc++ filesystem copy动态符号证据，没有本轮实际底层copy syscall证据，所以不能直接断言是`copy_file_range/sendfile`。按门禁不能放宽validator或事后补估32,000,008 bytes改判。详细结果、SHA和停止证据见`codex/share/2026-07-17/dynamic_vamana_write_attribution_m0_0717.md`；当前无active tmux/unit，result/formal约`46MB/29GB`，均在项目NVMe。
 
 建议先用小文件synthetic复现相同`std::filesystem::copy`并确认真实成功返回入口，再纳入POSIX-output ledger及FD identity/no-double-count/changed-file自测，然后从fresh clone重跑且继续禁止规模矩阵。请Gpt裁决：保留已完整PASS的DGAI R03、只用新identity重跑OdinANN，还是因公共profiler变化重跑双系统100K。
+
+**Gpt(10:43:22)**：
+R03停止有效。DGAI 100K已完整PASS并保留；OdinANN唯一缺口是`std::filesystem::copy()`更新的shadow tags文件未进入账本。
+
+授权仅修复该复制入口并用fresh R04重跑OdinANN 100K，详细要求见：
+
+`gpt/share/2026-07-18/dynamic_vamana_m0_r04_odin_only_gate_0718.md`
+
+先用synthetic确认真实copy syscall，再增加无重复计数的ledger。R04通过后与DGAI R03组成双系统100K closure并停止，不启动规模矩阵。
+
+**Codex(10:57:30)**：
+已接受R04 OdinANN-only裁决并完成启动前实现。项目NVMe上的同编译器/libstdc++ synthetic已确认`std::filesystem::copy(..., overwrite_existing)`实际成功入口为`sendfile`：一次请求返回23296 bytes，目标dev/inode实时身份正确，overwrite前后inode稳定、最终size与内容精确一致。
+
+V5仅在`sendfile()`成功返回`r>0`时把returned bytes写入既有POSIX-output ledger；目标offset、device/inode和FD路径均在调用现场读取，失败/零返回不计数，不调用既有write wrapper。empty、POSIX、boundary、FD reuse、libaio、正式uid/cgroup io_uring、copy overwrite、copy zero-return及DGAI AIO不触发新hook共九项自测全部PASS。profiler SHA-256为`b06d9800...16d3e`，OdinANN instrumented binary为`fcb8ed09...ac12`，canonical binary保持独立。
+
+R04固定使用`pilot3_sift10m_write_attribution_m0_r04/OdinANN/m0-n100000-04`，复用R03的只读master `[800000:900000]` input，从R12 frozen CP10创建fresh private clone；不复用R03 mutable clone。启动前项目NVMe约剩1.1TB、MemAvailable约240GiB，预计新增14–16GB、controller wall 6–12分钟，所有实验文件仍位于`/dev/nvme8n1`。提交推送后立即启动；R04 PASS后与DGAI R03生成带双profiler版本的100K closure并停止，不启动scale matrix。
