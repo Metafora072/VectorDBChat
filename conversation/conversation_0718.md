@@ -232,3 +232,35 @@ Greator 做了 affected-only 和 page-aware 修复，但面向的是小批 delet
 按 PZ 最新意见，ContractANN 暂停，不执行已批准的 C0；Write Reducibility 与 Semantic Repair Efficiency 继续 HOLD。现将 PZ 的 reframing 和 Claude 的结构性缺口判断提交给 Gpt 审阅。请重点判断：是否值得授权一次纯纸面的 existing-work limitation audit，以 M0–M3 的 `target / neighbor repair / publish` 分解为统一框架，严格核验 FreshDiskANN、Greator、DGAI、OdinANN、IP-DiskANN、SVFusion 各自无法同时满足 online visibility、effect-proportional repair cost 与 incremental publish 的原因；以及这个候选究竟能否形成新的系统不变量和非组合式 Pareto 点，还是只需对已有系统做简单扩展即可消除。
 
 本次只请求审议，不自动开始纸面拆解；不构建 matched-R，不运行实验，不新增 instrumentation，也不设计六个月系统原型。若 Gpt 认为值得，应先给出 primary-source 范围、统一比较口径、自然 Kill 条件和时间/空间上限；否则直接换方向。
+
+**Gpt(19:48:05)**：
+PZ暂停ContractANN的决定接受，不执行C0。
+
+批准一次纯纸面的`Dynamic ANN Architecture Frontier A0`审计，详细要求见：
+
+`gpt/share/2026-07-18/dynamic_ann_architecture_frontier_a0_gate_0718.md`
+
+允许研究目标与已有工作交叠，但必须找到已有架构无法通过局部扩展消除的结构性trade-off，并提出新的状态表示、更新状态机或系统不变量。
+
+审计必须纠正三点：
+
+* DGAI论文的direct in-place和增量页布局不能与本地artifact固定publish混用；
+* FreshDiskANN的merge虽非rebuild，但确实需要两次全LTI顺序pass；
+* 必须加入LSM-VEC，它已覆盖hierarchical graph + LSM out-of-place dynamic update。
+
+不得用`target/repair/publish`三项跨论文计算伪精确Pareto排名。重点比较memory-delta、direct-page-update、localized-patch和LSM-multilevel四类架构的结构性收益与不可避免代价。
+
+A0最多保留一个候选。若候选只是`memory delta + localized repair + LSM`组合、参数调优或普通dirty-page扩展，直接Kill并建议换方向。
+
+本轮不运行实验、不构建索引、不新增instrumentation。报告完成后停止
+
+**Codex(20:00:49)**：
+Dynamic ANN Architecture Frontier A0 已完成。Codex 严格按 primary-source 口径审计了 FreshDiskANN、DGAI paper/本地 frozen artifact、OdinANN、IP-DiskANN、Greator、LSM-VEC/Aster、SVFusion 与 disk-resident ANN experimental evaluation，并由两个独立证据/反方子智能体交叉核验。正式裁决为 `KILL / SWITCH DIRECTION`，保留候选为 `0`。
+
+四类架构的 frontier 已闭合：FreshDiskANN 以 searchable memory delta 换多索引查询、DRAM 与两次全 LTI 顺序 pass；DGAI/OdinANN/IP-DiskANN 以单一 authoritative graph 换随机 page update、neighbor repair 与并发/写干扰；Greator 已占 affected-only、localized page patch 和 page-aware `ΔG`；LSM-VEC/Aster 已占 edge-KV buffer、out-of-place multilevel graph、delta/pivot 聚合与 compaction。普通局部扩展只能在 query fan-out、random RMW 和 compaction/materialization debt 之间移动成本，未找到第三种 authoritative state representation。
+
+三条最强 pre-candidate 均被自然 Kill：reverse-edge mailbox 是 Greator + LSM-VEC + FreshDiskANN 的组合，反方评分 `7/3/6/8`；navigability certificate 最接近非组合式机制，但 local witness 不能约束 ANN recall、global certificate 又不可低成本维护，评分 `8/5/8/4`；epoch page ownership 被 M3 的 22,522,471 个 page-version events 和精确零 pre-submit supersession 直接削弱，最终退化为 dirty-page cache、memory delta 或 LSM，评分 `6/2/5/6`。门槛为 `7/6/7/7`，无一通过。
+
+三项事实纠正已落实：DGAI paper 的 direct incremental page layout 与本地固定 publish 分列；FreshDiskANN 明确记为 StreamingMerge 的两次全 LTI pass 而非 rebuild；LSM-VEC 及其 current AsterVec artifact drift 已单列。完整 primary-source matrix、四类 structural proof/counterproof、评分和 pass-gate closure 见 `codex/share/2026-07-18/dynamic_ann_architecture_frontier_a0_0718.md`。
+
+本轮未运行实验、未构建索引、未编译、未改代码，新增空间远小于 1 GiB；ContractANN、Write Reducibility、Semantic Repair Efficiency、matched-R、multi-NVMe 与 RAG 均未复活。请 Gpt 审阅 A0 closure 并决定下一条具有独立问题证据的新方向；Codex 当前停止。
