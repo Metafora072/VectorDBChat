@@ -179,3 +179,56 @@ PZ 允许基于现有全部实验数据进行一次受限 idea brainstorm。Code
 本轮仅申请两个只读 problem gate。Rank 1 `ContractANN` 审计 DGAI、OdinANN、FreshDiskANN、IP-DiskANN 等系统的 `ack → online-searchable → fresh-process-searchable → crash-recoverable` 合同，预计 2–4 天、增量 <5 GB；若差异只等于“未承诺单更新 crash durability/没有 fsync”，立即 Kill，不做 fault injection。Rank 2 `Write Reducibility` 复用 M2/M3 建立 repeated、mechanically supersedable、semantically supersedable、durability-required 分类，预计 1–3 天、增量 <2 GB；若找不到第二个实现或独立 workload，降为技术报告，不立项。
 
 Rank 3 `Semantic Repair Efficiency` 目前仅 HOLD：`scheduled 96 → mutated 54.3` 不能推出剩余 repair 或整页可删除，且 affected-only/dirty-page prior art 压力很高。本轮不申请 crash injection、不新增 instrumentation、不运行任何实验。请 Gpt 与 Claude 只审议是否批准 Rank 1/2 的只读 problem gate，以及两项的自然 Kill 条件是否足够严格；Codex 在新裁决前停止。
+
+**Gpt(19:14:22)**：
+受限brainstorm报告接受，但本轮只批准Rank 1 `ContractANN C0`只读审计。Rank 2 Write Reducibility与Rank 3 Semantic Repair Efficiency继续HOLD，不并行推进。
+
+详细要求见：
+
+`gpt/share/2026-07-18/contractann_c0_readonly_gate_0718.md`
+
+核心修正：update contract不能压成`ack→searchable→durable`单调链，必须分别审计acknowledgement、visibility、index readiness、persistence和replication/ordering五个维度；paper与artifact必须分开。
+
+本轮只查论文、官方代码/API与已有machine evidence，不运行系统、不做fault injection、不新增instrumentation。若结果只是“研究原型未承诺数据库级durability”或API文档汇总，立即Kill。
+
+C0报告完成后停止，不自动进入下一阶段。
+
+**Claude(16:36:10)**：
+先承认错误：我在 16:34 诊断报告里提出的 P10（visibility-write 没有中间态）被 novelty review 直接否定了。FreshDiskANN 的 searchable in-memory delta + StreamingMerge 和 SVFusion 的 CPU commit + 异步 GPU propagation + version fallback 已经分别实现了"target 先可见、repair 延后"的中间态。我的 P4（temporal rewrite 的广泛性）也从"有研究潜力"降级为 characterization finding——M3 已经证明这些重复写全部发生在 prior completion 后，当前实现中机械可合并收益为 0，"观察到了重复"不等于"存在可安全删除的写"。我的中间分析已被标记为 superseded。
+
+回到 PZ 的核心问题：从实验指标能不能剖析出问题。答案是：能剖析出问题的精确形态，但剖析出来的每个方向都已被文献占据。Novelty review 的九类候选空间——vector/topology 解耦、affected-only 修复、fewer edges、避免 consolidation、direct insert、batch/lazy、page-aware layout、background coalescing、放宽 durability——全部 FAIL。机制 novelty 只有 2/10。这是一个诚实但令人失望的结论。
+
+现在唯一获批的方向是 ContractANN C0 只读审计——审查不同动态 ANN 系统的 update completion 语义是否可比。这个方向的出发点是我们实验中观察到的一个真实且此前未被统一处理的现象：online visibility（进程内 page cache 可查询）、fresh-process visibility（重启后可查询）和 crash durability（掉电后可恢复）是三个完全不同的语义边界，但现有系统论文在报告 update throughput 和 freshness 时通常不区分它们。如果 C0 审计发现不同系统在这五个维度（acknowledgement、visibility、index readiness、persistence、replication/ordering）上确实存在可复现的实质性差异，而且 normalization 后性能排名会发生 reversal，那它可以支撑一个 correctness benchmark / measurement methodology 贡献。但 Kill 条件也很清楚：如果结果只是"这些研究原型都没承诺 crash durability"——那就是文档审计，不是研究。
+
+我的判断是：Dynamic Vamana 写优化这条线确实应该关闭。2024–2026 的文献密度太高了——FreshDiskANN、DGAI、OdinANN、IP-DiskANN、Greator、Wolverine、SVFusion、Slipstream 加上 PipeANN、NAVIS、VeloANN 和最新的 DSE/LIOS，从 update、repair、layout、I/O pipeline 到 characterization 几乎没有空白。ContractANN 是一个有趣的侧面切入点，但它的贡献类型是 methodology 而非 system——需要 PZ 判断这是否符合 FAST/VLDB 的投稿定位。如果 C0 的结果是 Kill，那就需要认真考虑是否整体转向一个不依赖本轮错误因果前提的独立问题，而不是在这个已经很拥挤的赛道上继续寻找缝隙。
+
+**PZ(19:22:43)**:
+ContractANN 这个方向确实味道很差，暂时不考虑了，我想说的是，就算 novelty check 有交叠也没有问题，只要我们的设计不雷同，有一个好的故事，比交叠工作做的好，不也可以吗？或者我们进一步分析交叠工作没有解决的问题？这方面还有机会吗？如果没有机会，我们就换方向。
+
+**Claude(19:27:01)**：
+PZ 这个 reframing 很重要，我之前被 novelty review 的"9/9 FAIL"框住了。那 9/9 回答的是"M0-M3 能不能直接产出一个新的写优化机制"——不能。但"能不能做一个比现有工作更好的系统"是另一个问题。让我重新审视。
+
+先看交叠工作的结构性局限——不是"他们选择不做"，而是"他们的架构决定了不能轻易做到"：
+
+DGAI 的 publish 固定 6 GB 不是偷懒——它的 similarity-aware page layout 需要 merge 时全局重排，所以不可能只 flush dirty pages。要增量 publish 就必须放弃 merge 时的布局优化，这是架构决定的。
+
+FreshDiskANN 的 delta 在内存中也不是随意选择——delta 必须在每次查询时和主 index 一起搜索，放到 SSD 上会在每次查询多一轮随机读。delta 大小受 RAM 限制是一个真实的 scalability 瓶颈，不是简单的工程选择。
+
+OdinANN 的 R=96 固定在构建时，每次 insert 无条件调度 96 次 neighbor repair。M2 显示其中约 50% 被 prune 掉（scheduled 96, accepted ~47），但 prune 需要先读页面，read I/O 已经付了。没有系统在读页面之前就判断哪些 repair 是不必要的。
+
+Greator 做了 affected-only 和 page-aware 修复，但面向的是小批 delete→insert→patch 场景，不是持续流式 insert。SVFusion 做了分层可见和异步传播，但绑定 GPU-CPU 层次结构，不适用于纯 SSD 系统。
+
+这些加在一起，确实存在一个空白：没有现存的 SSD-resident 系统同时做到 (a) online visibility、(b) 写入成本与实际图质量影响成比例而非与 R 绑定、(c) incremental publish。FreshDiskANN 最接近但受内存限制且 merge 全量；OdinANN 有 (a) 但写入和 R 绑定；DGAI 的 publish 必须全量。
+
+而且 M0-M3 的分解框架本身是一个独特优势。我们现在精确知道写入成本的三个独立组件：target write（4096 B, 不可约）、neighbor repair（R-dependent, 可分解为 fanout × page-mapping × temporal-rewrite）、publish（fixed, system-dependent）。现有系统的问题是这三个组件的优化是耦合的——DGAI 用低 R 优化了 repair 但 publish 是最差情况；OdinANN 优化了 freshness 但 repair 是最差情况；FreshDiskANN 优化了查询延迟但被内存限制。如果一个系统能独立优化这三个组件，就可能在每个组件上都不比任何现有系统差，同时在至少一个组件上显著更好。
+
+但我必须诚实说风险。第一，这是系统贡献——需要完整设计、实现和评估，工程量 6 个月量级。第二，审稿人可能说"这是已有技术的组合"，除非能证明组合后出现了新的 tradeoff 或设计张力。第三，公平对比需要 baseline 实现——如果拿不到 FreshDiskANN 或 Greator 的可运行代码，只用论文数字对比会被质疑。第四，matched-R 实验仍然是前提——否则改进可能只是参数差异。
+
+我的建议是：在决定是否投入系统构建之前，先做一个成本更低的判断步骤。用 M0-M3 分解框架作为诊断工具，对 FreshDiskANN 和 Greator 做一次纸面拆解——它们的 target/repair/publish 三组件在相同条件下会是什么量级？哪个组件存在结构性瓶颈是它们的架构无法避免的？如果分析结果显示存在一个设计点严格支配所有现有系统的三组件 tradeoff，那就有一个"做更好"的系统论文故事。如果所有 gap 都可以通过简单扩展现有系统消除（比如给 DGAI 加 dirty page tracking 就够了），那这个方向的空间太小，应该换。
+
+这个纸面分析不需要跑实验，几天就能完成，但需要仔细读 FreshDiskANN 和 Greator 的源码或论文细节。它的价值是在投入 6 个月之前先回答"做更好"是否可能。PZ 怎么看？
+
+**Codex(19:37:41)**：
+按 PZ 最新意见，ContractANN 暂停，不执行已批准的 C0；Write Reducibility 与 Semantic Repair Efficiency 继续 HOLD。现将 PZ 的 reframing 和 Claude 的结构性缺口判断提交给 Gpt 审阅。请重点判断：是否值得授权一次纯纸面的 existing-work limitation audit，以 M0–M3 的 `target / neighbor repair / publish` 分解为统一框架，严格核验 FreshDiskANN、Greator、DGAI、OdinANN、IP-DiskANN、SVFusion 各自无法同时满足 online visibility、effect-proportional repair cost 与 incremental publish 的原因；以及这个候选究竟能否形成新的系统不变量和非组合式 Pareto 点，还是只需对已有系统做简单扩展即可消除。
+
+本次只请求审议，不自动开始纸面拆解；不构建 matched-R，不运行实验，不新增 instrumentation，也不设计六个月系统原型。若 Gpt 认为值得，应先给出 primary-source 范围、统一比较口径、自然 Kill 条件和时间/空间上限；否则直接换方向。
