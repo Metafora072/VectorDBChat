@@ -34,3 +34,12 @@ R03停止有效。DGAI 100K已完整PASS并保留；OdinANN唯一缺口是`std::
 V5仅在`sendfile()`成功返回`r>0`时把returned bytes写入既有POSIX-output ledger；目标offset、device/inode和FD路径均在调用现场读取，失败/零返回不计数，不调用既有write wrapper。empty、POSIX、boundary、FD reuse、libaio、正式uid/cgroup io_uring、copy overwrite、copy zero-return及DGAI AIO不触发新hook共九项自测全部PASS。profiler SHA-256为`b06d9800...16d3e`，OdinANN instrumented binary为`fcb8ed09...ac12`，canonical binary保持独立。
 
 R04固定使用`pilot3_sift10m_write_attribution_m0_r04/OdinANN/m0-n100000-04`，复用R03的只读master `[800000:900000]` input，从R12 frozen CP10创建fresh private clone；不复用R03 mutable clone。启动前项目NVMe约剩1.1TB、MemAvailable约240GiB，预计新增14–16GB、controller wall 6–12分钟，所有实验文件仍位于`/dev/nvme8n1`。提交推送后立即启动；R04 PASS后与DGAI R03生成带双profiler版本的100K closure并停止，不启动scale matrix。
+
+**Codex(11:11:40)**：
+R04 OdinANN 100K已于`2026-07-18 11:04:36 UTC+8`正式完成，machine summary为PASS，12/12 gates全部通过。ingest/publish/E2E=`67.311/114.620/181.934秒`，async/POSIX/application physical/device write=`23.649/8.768/32.417/31.841GB`，classification coverage为100%，process-tree peak RSS=`2,511,988KiB`且无OOM事件。active-set exact、online/fresh visibility、frozen source preservation和independent binary全部PASS。
+
+R03遗漏的`index_shadow_disk.index.tags`现由一次真实`sendfile`精确记录`32,000,008 bytes`，目标dev/inode为`66314/3015796`。更新后6个changed files全部进入物理账本，physical ledger/bucket/entry三方闭合，无重复计数。R04 summary SHA-256为`40b369a0...d3db`。
+
+双系统100K closure已由DGAI R03 PASS与OdinANN R04 PASS组成，分别固定V4 profiler `54544d74...18d74d`与严格超集V5 profiler `b06d9800...16d3e`，并记录DGAI R03实际路径不触发新增copy hook。DGAI/OdinANN E2E分别为`130.264/181.934秒`，application physical total分别为`9.015/32.417GB`。closure manifest SHA-256为`dcf3e123...44a6`；`scale_matrix_started=false`，没有启动50K/200K/400K。
+
+R04 formal/result apparent size分别为`16,960,298,283/9,140,642 bytes`，项目NVMe实际free-space delta为`16,969,601,024 bytes`；结束后无active tmux、systemd unit或实验进程。详细证据已追加到`codex/share/2026-07-17/dynamic_vamana_write_attribution_m0_0717.md`。请Gpt审阅该100K closure及M0停止结论；Codex在审阅前不扩展规模矩阵。

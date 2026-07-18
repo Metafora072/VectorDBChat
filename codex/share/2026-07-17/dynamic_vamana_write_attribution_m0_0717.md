@@ -136,3 +136,15 @@ V5 profiler 仅新增 `sendfile()` 物理成功返回路径，并将 `r > 0` 的
 DGAI 源码中存在条件式 filesystem-copy 分支，但 R03 的 W1 路径使用同 prefix 的 `final_merge`，这些分支未被触发；R03 的主 index、tags 与 PQ 三个变化文件已经全部被 V4 覆盖。因此 V5 是针对 OdinANN 实际遗漏入口的严格超集，不把新的 hook 追溯套用到 DGAI R03，也不改变其已通过结论。closure manifest 将同时固化 DGAI R03 的 V4 profiler SHA 与 OdinANN R04 的 V5 profiler SHA，并记录这一版本关系和未触发依据。
 
 R04 启动前 `/dev/nvme8n1` 可用约 1.1 TB，MemAvailable 约 240 GiB，V5 build 实际占用约 278 MB，只读 R03 input 约 32 MB。新的 OdinANN private clone 预计增加约 14–16 GB，结果与日志远低于 1 GB；controller wall 预计 6–12 分钟，systemd stage 的硬上限为 1 小时。runner 还要求启动时无任何 `dv-m0-*` unit、R04 formal/result 路径完全不存在、项目 NVMe 至少剩余 80 GB，并设置 40 GB memory limit。所有构建、clone、profile、结果与临时文件均位于项目 NVMe，不在系统盘运行实验。
+
+## R04 OdinANN 100K 结果与双系统 closure
+
+R04 于 `2026-07-18 11:04:36 UTC+8` 完成，OdinANN machine summary 为 PASS，12 个 gate 全部通过。ingest、publish 和 end-to-end wall time 分别为 67.311、114.620 和 181.934 秒；resource probe 的 process-tree peak RSS 为 2,511,988 KiB，40 GiB cgroup limit 下的 `oom`、`oom_kill`、`high` 与 `max` 事件均为 0。active-set exact、18 个 online visibility probe、18 个 fresh-process visibility probe、frozen R12 source preservation、独立 binary、正向 NVMe write 和 input exact 均通过。
+
+V5 application physical total 为 32,417,479,192 bytes，其中 io_uring async ledger 为 23,649,206,272 bytes、2,718,784 requests，POSIX-output ledger 为 8,768,272,920 bytes、139 requests。按 phase 划分，load、insert-neighbor-repair 和 publish-save 分别为 8,480,136,420、15,457,206,272 和 8,480,136,500 bytes；分类覆盖率为 100%。独立 cgroup device delta 为 31,841,308,672 write bytes，只作为正向设备 sanity evidence，不与 application requested bytes 强制相等。
+
+R03 唯一遗漏的 `index_shadow_disk.index.tags` 在 R04 load 阶段由一个真实 `sendfile()` request 精确记录 32,000,008 returned bytes，目标 device 为 `66314`、inode 为 `3015796`。更新前后变化的 `index_disk.index`、`index_disk.index.tags`、`index_pq_compressed.bin`、`index_shadow_disk.index`、`index_shadow_disk.index.tags` 和 `index_shadow_pq_compressed.bin` 六个文件现在全部进入物理账本。physical ledger、bucket 和 entry totals 三方精确闭合，`sendfile()` 没有与其他 POSIX wrapper 重复计数。
+
+正式双系统 100K closure 由 DGAI R03 PASS 与 OdinANN R04 PASS 组成。DGAI 使用 V4 profiler `54544d74...18d74d`，OdinANN 使用严格超集 V5 profiler `b06d9800...16d3e`；closure 明确记录 DGAI R03 的实际工作负载不触发新增 copy hook。DGAI 与 OdinANN 的 end-to-end wall time 分别为 130.264 和 181.934 秒，application physical total 分别为 9,015,298,136 和 32,417,479,192 bytes；这些是各自通过完整性门禁后的正式 100K 锚点。OdinANN 相对 DGAI 的 end-to-end wall、application physical bytes 和 device write bytes 分别为 1.397、3.596 和 3.759 倍。
+
+R04 summary SHA-256 为 `40b369a0...d3db`，closure manifest SHA-256 为 `dcf3e123...44a6`。R04 formal apparent size 为 16,960,298,283 bytes，result apparent size 为 9,140,642 bytes；项目 NVMe 的 free-space delta 为 16,969,601,024 bytes，符合启动前预算。结束后 tmux、systemd unit 和 experiment process 均不存在，result attempt 已设为只读。`scale_matrix_started=false`，50K、200K 与 400K 均未启动；当前按 GPT 的 R04 停止点提交最终 closure 审阅，不自行扩展实验。
