@@ -264,3 +264,17 @@ Dynamic ANN Architecture Frontier A0 已完成。Codex 严格按 primary-source 
 三项事实纠正已落实：DGAI paper 的 direct incremental page layout 与本地固定 publish 分列；FreshDiskANN 明确记为 StreamingMerge 的两次全 LTI pass 而非 rebuild；LSM-VEC 及其 current AsterVec artifact drift 已单列。完整 primary-source matrix、四类 structural proof/counterproof、评分和 pass-gate closure 见 `codex/share/2026-07-18/dynamic_ann_architecture_frontier_a0_0718.md`。
 
 本轮未运行实验、未构建索引、未编译、未改代码，新增空间远小于 1 GiB；ContractANN、Write Reducibility、Semantic Repair Efficiency、matched-R、multi-NVMe 与 RAG 均未复活。请 Gpt 审阅 A0 closure 并决定下一条具有独立问题证据的新方向；Codex 当前停止。
+
+**PZ(20:07:24)**:
+也就是说，主要是因为 novelty check 被 KILL？有没有这样的机会，我们的目标确实和一些工作一致，但是我们采用不同的设计，并取得更好的效果或更低的开销，而不是方向重叠就 KILL？这几个工作和我们的实验结果，我们应该能够得到一些性能上限或开销下限，得到可优化区间，这里面还有空间吗？或者说，非 system 的方向，偏算法优化的方向，我们能够取得突破上下限的效果？
+
+**Codex(20:13:54)**：
+不是因为“目标与 prior work 重叠”就 KILL。目标一致完全可以成立，关键是新设计必须有不同的核心算法/状态、不变量或可证明边界，并在 matched semantics、matched quality 和 strongest baselines 下解释为什么更好。A0 Kill 的是当前三个具体机制：mailbox 是已有技术组合，page epoch 退化为 cache/LSM，navigability certificate 还没有形成可维护的 quality invariant；目标重叠本身不是 Kill 条件。
+
+现有实验确实给出了若干精确但有条件的界：当前 direct-update path 的 target/shared floor 是 4096 B/replacement；固定 M3 锁/queue/visibility 状态机时，queue coalescing 的可省 bytes 上界是 0；perfect-future relayout oracle 每次只省 DGAI 0.79、OdinANN 1.11 pages。但这些都不是动态 ANN 的通用下界。尤其 `scheduled 96 → accepted 46.6 → mutated 54.3` 只能说明执行阶段有数量差，不能推出 41.7 个 repair 可删除；“matched quality 下最少需要哪些 repair”仍是未知区间。
+
+因此我认为还存在一个窄的、偏算法而非系统拼装的机会：`Quality-Constrained Minimum Repair`。给定 update、query distribution、degree、freshness、recall 与 search-cost 约束，定义可行的更新后图集合，再求最少 write/read repair cost；用有效 lower bound 与 strongest constructive upper bound 才能得到 certified optimization window。真正可能形成贡献的是：一个比 degree/connectivity 更接近 ANN quality、又能在读写大部分 candidate pages 前局部计算的 witness，以及接近该下界的 repair algorithm。若只能得到 `0`、target-only、`R` 的重述，或 certificate 需要全图/完整 query workload，就没有算法空间。
+
+我已按 research-refine 的 Problem Anchor 与 formula-derivation 的统一 invariant 口径，把这条路线收敛为只读的 `Dynamic ANN Quality-Constrained Repair Bounds B0` 请求，详见 `codex/share/2026-07-18/dynamic_ann_quality_constrained_bounds_b0_request_0718.md`。其中正面对照 Greator、IP-DiskANN、Wolverine、DEG、CleANN 与 SPatch/random-walk deletion，并给出两条理论路线、conditional bounds、PASS/KILL 条件。
+
+建议 Gpt 只审议是否允许 1–2 天、<1 GiB、无实验的 theory/algorithm feasibility audit。B0 只输出 formal object、prior guarantee matrix、derivation 或 impossibility argument 与 PASS/KILL；不启动 trace、matched-R、instrumentation、prototype 或自动 B1。若 Gpt 判断不存在形成非平凡 bound 的可能，则接受 A0 closure 并换方向。
