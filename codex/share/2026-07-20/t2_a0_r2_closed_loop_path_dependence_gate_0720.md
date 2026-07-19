@@ -1,9 +1,9 @@
 # T2-A0-R2 closed-loop path-dependence prelaunch gate
 
-**Attempt:** `t2_a0_r2_20260720_001`
+**Attempt:** `t2_a0_r2_20260720_002`
 **Frozen configuration:** `codex/share/2026-07-20/t2_a0_r2/config.json`
 **Authorizing gate:** `gpt/share/2026-07-20/agent_infra_0720_t2_a0_r2_gate.md`
-**Authorizing gate SHA-256:** `acb2ce14da3629cb09e24cb5c31a6d365d57bab89716bb6b0a1bf2a859a6c3c7`
+**Authorizing gate SHA-256:** `9609d439fa202653fd50b37cbf19a9be44c4e8c8bbb61bc7b70199affd8d9682`
 
 ## 1. Scope and stop conditions
 
@@ -36,7 +36,7 @@ Capacity triplets `(C_mid, C_low, C_restore)`:
 (12,10,12), (12,8,12), (12,6,12), (12,4,12), (12,2,12)
 ```
 
-Every formal trajectory has a 48-step common high-capacity prefix, a 36-step fork interval, and a fixed 96-step post-restoration evaluation. The 20 workloads are four locality families (`cyclic`, `bursty`, `interleaved`, `reversal`) with five immutable instances each. Instance derivation changes only event ordering and numeric payloads, not state-machine semantics, memory count, or outcome definition. All events, IDs, numeric fields, and open-loop tokens are materialized and hashed before sanity inspection.
+Every formal trajectory has a 48-step common high-capacity prefix, a 36-step fork interval, and a fixed 96-step post-restoration evaluation. The 20 workloads comprise four dependency-graph task families (`cyclic`, `bursty`, `interleaved`, `reversal`) with five immutable instances each. The families use separately frozen modular transition operators and access graphs while sharing the same memory count, causal edges, and continuous outcome definition. Within a family, instance derivation changes only event ordering and numeric payloads. All events, IDs, operators, numeric fields, and open-loop tokens are materialized and hashed before sanity inspection.
 
 Sanity uses two disjoint IDs, one capacity triplet, and `12/12/24` prefix/low/evaluation steps. It cannot select or modify the formal matrix. A sanity failure ends this attempt; any code or configuration repair requires a new attempt ID.
 
@@ -88,7 +88,7 @@ All models start from the same serialized high-capacity prefix state within each
 
 1. `closed_loop`: query consumes the token written by the prior action; retrieval changes action; action appends a durable version and updates the future query head.
 2. `open_loop_query`: both branches replay the same pre-materialized semantic query tokens. Retrieval, action, and writes remain enabled, but branch execution cannot alter future query tokens.
-3. `write_disabled`: retrieval and immediate actions remain enabled, but durable append, latest-version update, and head update are all disabled.
+3. `write_disabled`: retrieval and immediate actions remain enabled and action-derived ephemeral query state continues to evolve, but durable append/latest-version update is disabled. This removes only the durable-write edge, rather than disabling both write and future-query feedback at once.
 4. `transparent_retrieval`: identical to closed loop except a capacity miss returns the same durable semantic payload. The marker cannot enter query, action, write, outcome, or semantic hashes.
 
 The validator reconstructs, rather than trusts, at least one complete witness per claimed-positive instance:
@@ -123,11 +123,13 @@ D = (Q + A + M + Y) / 4
 B = (A + Y) / 2
 ```
 
-`tau_behavior` is the earliest restored step after which query/action/outcome are equal for every remaining suffix step. `tau_state` additionally requires live durable and policy/query/action state equality. A nonreconverged trajectory is right-censored at 97. All 20 paired rows, medians/IQR, witness coverage, and steps to reconvergence are reported; averages alone are forbidden.
+`tau_behavior` is the earliest restored step after which query/action/outcome are equal for every remaining suffix step. `tau_state` additionally requires live durable and future-consumed policy/query/current-action state equality; audit-only history hashes are excluded. A nonreconverged trajectory is right-censored at 97. Signed and absolute cumulative continuous-outcome deltas are reported in addition to stepwise `Y`. All 20 paired rows, medians/IQR, witness coverage, and steps to reconvergence are reported; averages alone are forbidden.
 
-An instance qualifies only when all closure checks pass, `Q/A/M/Y > 0`, query/action/live-memory all differ at the final step, `tau_state=97`, a complete witness is reconstructed, open-loop has `Q=0`, write-disabled has `M=0`, transparent semantic `D=0`, and closed-loop behavioral divergence `B` is strictly greater than each control's paired `B`.
+`M` hashes only consumable live durable fields (`payload,next_token`); lineage/version/action IDs remain audit-only. `A` compares action values, not provenance-rich action IDs. `tau_state` separately covers semantic query state, semantic action state, live durable state, and policy state.
 
-A policy/triplet cell is supported only with at least 17/20 qualifying instances and a deterministic paired bootstrap 95% confidence interval whose lower bound for `B_closed - max(B_controls)` is greater than zero. PASS additionally requires at least 3/5 supported triplets under each policy, at least two identical triplets supported by both policies, and at least two qualifying instances from every workload family in every supported cell.
+An instance qualifies only when all closure checks pass, `Q/A/M/Y > 0`, absolute cumulative outcome delta is nonzero, query/action/live-memory all differ at the final step, `tau_state=97`, a complete direct-use plus descendant-lineage witness is reconstructed, open-loop has `Q=0`, write-disabled has `M=0`, transparent semantic `D=0`, and closed-loop divergence is strictly greater than every control under both `B` and the full composite `D` score.
+
+A policy/triplet cell is supported only with at least 17/20 qualifying instances and deterministic family-stratified paired bootstrap 95% confidence intervals whose lower bounds for both `B_closed - max(B_controls)` and `D_closed - max(D_controls)` are greater than zero. PASS additionally requires at least 3/5 supported triplets under each policy, at least two identical triplets supported by both policies, and at least two qualifying instances from every dependency-graph task family in every supported cell.
 
 If protocol closure passes but this scientific gate fails, controls reproduce comparable behavior, effects reconverge, witnesses are absent, or the result is limited to a policy/triplet/family, the outcome is `KILL-NO-CLOSED-LOOP-SEPARATION`.
 
@@ -136,9 +138,13 @@ If protocol closure passes but this scientific gate fails, controls reproduce co
 The writable experiment root is:
 
 ```text
-/home/ubuntu/pz/VectorDB/data/agent_infra/t2_a0_r2/t2_a0_r2_20260720_001
+/home/ubuntu/pz/VectorDB/data/agent_infra/t2_a0_r2/t2_a0_r2_20260720_002
 ```
 
 It maps to the dedicated `/dev/nvme8n1` ext4 volume. `/mnt/agentstorage_nvme` is read-only and will not be used. The live runner enforces wall time `≤7200 s`, process-tree RSS `≤1 GiB`, and attempt allocation `≤256 MiB`, which are stricter than GPT's bounds. Temporary files and Python bytecode are redirected inside the attempt. Chat stores only compact source/config/hash/report artifacts.
 
 No parameter, workload, horizon, model rule, or classifier may change after this prelaunch commit based on observed outcomes.
+
+## 9. Pre-execution amendment
+
+Attempt `..._001` produced no attempt directory, sanity output, or formal data. It was voided before execution after independent code audit found a stale gate hash and control/semantic-hash validation defects. Attempt `..._002` freezes the corrected provenance hash, four task-graph operators, semantic-only metrics, write-disabled single-edge ablation, direct-use plus descendant-lineage witnesses, dual `B/D` control margins, and streaming replay validation. No scientific result was inspected when making this amendment.

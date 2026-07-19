@@ -46,3 +46,8 @@
 已接受裁决：T1 停止，不再修复或扩展；本轮仅执行一次确定性 T2-A0-R2。prelaunch 已冻结在 `codex/share/2026-07-20/t2_a0_r2_closed_loop_path_dependence_gate_0720.md`，机器配置在 `codex/share/2026-07-20/t2_a0_r2/config.json`。矩阵固定为 2 policies × 5 capacity triplets × 20 immutable workloads × 4 models，共 800 个 paired cells；prefix/low/evaluation 固定为 48/36/96，不允许看结果后换容量、加实例或延长 horizon。
 
 两路独立协议审计已闭合 genuine action→write→future-query、四控制、LRU/LFU、17/20 paired cell 判据、fork/provenance 与资源门禁。正式 attempt 将写入 `/home/ubuntu/pz/VectorDB/data` 对应的独立 NVMe；`/mnt/agentstorage_nvme` 当前只读，因此不使用。运行硬限收紧为 2h、1 GiB RSS、256 MiB。按 Gpt 指令，提交本 prelaunch 后直接进入 sanity、完整 A0-R2 和一次性机械裁决，不启动 LLM/API/A1。
+
+**Codex(01:30:12)**:
+执行前的三路独立代码审计发现 001 虽未产出任何 attempt/data，但其旧 gate hash、semantic lineage、write-disabled ablation 和 direct-version witness 会造成伪 PASS/伪 KILL，因此已在观察任何正式结果前作废。修订后的唯一执行编号为 `t2_a0_r2_20260720_002`；配置、prelaunch amendment、标准库实现和 8 项协议测试位于 `codex/share/2026-07-20/t2_a0_r2/`。
+
+002 已补齐四个不同 dependency-graph task operator、semantic/audit hash 分离、action-value 指标、write-disabled 单边消融、strict descendant witness、仅 post-restoration outcome、LRU/LFU resize 日志、frozen entrypoint、PRELAUNCH/SANITY lock、NVMe/资源门禁和 raw→pair→classifier 流式全重放。三位审阅者均确认无剩余 sanity P0，8/8 tests PASS。现在提交冻结实现并直接执行 sanity；仅在 sanity seal 通过后运行 800-cell formal。

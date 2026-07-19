@@ -4,8 +4,8 @@
     "KILL-NO-CLOSED-LOOP-SEPARATION",
     "FAIL-PROTOCOL-CLOSURE"
   ],
-  "attempt_id": "t2_a0_r2_20260720_001",
-  "attempt_root": "/home/ubuntu/pz/VectorDB/data/agent_infra/t2_a0_r2/t2_a0_r2_20260720_001",
+  "attempt_id": "t2_a0_r2_20260720_002",
+  "attempt_root": "/home/ubuntu/pz/VectorDB/data/agent_infra/t2_a0_r2/t2_a0_r2_20260720_002",
   "cache": {
     "durable_delete_enabled": false,
     "lfu_tie_break": ["frequency", "last_request", "memory_id"],
@@ -38,6 +38,7 @@
     "require_transparent_semantic_divergence": 0.0,
     "require_write_disabled_live_memory_divergence": 0.0,
     "require_behavior_margin_over_each_control": true,
+    "require_full_divergence_margin_over_each_control": true,
     "tau_right_censored_value": 97
   },
   "formal": {
@@ -53,7 +54,7 @@
     "prefix_steps": 48,
     "workload_families": ["cyclic", "bursty", "interleaved", "reversal"]
   },
-  "gate_sha256": "acb2ce14da3629cb09e24cb5c31a6d365d57bab89716bb6b0a1bf2a859a6c3c7",
+  "gate_sha256": "9609d439fa202653fd50b37cbf19a9be44c4e8c8bbb61bc7b70199affd8d9682",
   "models": ["closed_loop", "open_loop_query", "write_disabled", "transparent_retrieval"],
   "resources": {
     "external_agent_frameworks": 0,
