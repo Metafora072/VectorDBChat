@@ -98,6 +98,8 @@ def main() -> None:
         state = "running"
     elif (RUN_ROOT / "PREPARED_OK").is_file():
         state = "prepared_not_running"
+    elif (RUN_ROOT / "CAMPAIGN_IDENTITY.json").is_file():
+        state = "preparing"
 
     report = {
         "schema": "zns-ann-z0b-endpoint-status-v1",
