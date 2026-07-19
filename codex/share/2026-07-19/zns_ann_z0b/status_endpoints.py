@@ -77,16 +77,17 @@ def main() -> None:
     free_bytes = fs.f_bavail * fs.f_frsize
     used = allocated_bytes(RUN_ROOT)
 
-    # Before native benchmark closure this is intentionally a range, not a
-    # false precise deadline.  Operational stage progress is not time progress.
+    # The frozen 5M-event native preflight sustains at least 0.5M policy
+    # steps/s.  Keep the preregistered 6--15h end-to-end range rather than a
+    # false precise deadline. Operational stage progress is not time progress.
     if completed == len(rows):
         eta_low = eta_high = 0
     elif failed:
         eta_low = eta_high = None
     else:
         fraction_left = max(0.0, 1.0 - steps / total_steps)
-        eta_low = round(16 * 3600 * fraction_left)
-        eta_high = round(42 * 3600 * fraction_left)
+        eta_low = round(6 * 3600 * fraction_left)
+        eta_high = round(15 * 3600 * fraction_left)
 
     state = "not_prepared"
     if failed:
@@ -110,7 +111,7 @@ def main() -> None:
         "progress_is_time_percent": False,
         "failed_runs": failed,
         "eta_remaining_seconds_range": [eta_low, eta_high] if eta_low is not None else None,
-        "eta_basis": "pre-native-benchmark planning range; refresh after toolchain benchmark",
+        "eta_basis": "frozen native scale preflight plus preregistered 6-15h end-to-end range",
         "space": {
             "campaign_allocated_bytes": used,
             "registered_peak_bytes": REGISTERED_PEAK_BYTES,
