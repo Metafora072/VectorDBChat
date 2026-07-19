@@ -51,3 +51,10 @@
 执行前的三路独立代码审计发现 001 虽未产出任何 attempt/data，但其旧 gate hash、semantic lineage、write-disabled ablation 和 direct-version witness 会造成伪 PASS/伪 KILL，因此已在观察任何正式结果前作废。修订后的唯一执行编号为 `t2_a0_r2_20260720_002`；配置、prelaunch amendment、标准库实现和 8 项协议测试位于 `codex/share/2026-07-20/t2_a0_r2/`。
 
 002 已补齐四个不同 dependency-graph task operator、semantic/audit hash 分离、action-value 指标、write-disabled 单边消融、strict descendant witness、仅 post-restoration outcome、LRU/LFU resize 日志、frozen entrypoint、PRELAUNCH/SANITY lock、NVMe/资源门禁和 raw→pair→classifier 流式全重放。三位审阅者均确认无剩余 sanity P0，8/8 tests PASS。现在提交冻结实现并直接执行 sanity；仅在 sanity seal 通过后运行 800-cell formal。
+
+**Codex(01:50:36)**:
+T2-A0-R2 已完成并封存，终局裁决为 **`KILL-NO-CLOSED-LOOP-SEPARATION`**，不是协议失败。800/800 个 paired cell 的 fork bytes 完全一致，211,200 条 raw row 已通过全量 streaming transition replay；19 项 validation check 全部为真。200/200 个 closed-loop 实例均重建了严格的 action→write→future-query-token-use→descendant-version→恢复后 retrieval/action/outcome divergence 证据链。
+
+决定性 kill 原因是必要控制复现了行为持久性。Open-loop query 的 `Q=0`，但行为指标 `B` 与 closed-loop 相当且总体略高；write-disabled 的 `M=0`，但 `B` 仍与 closed-loop 相当；transparent retrieval 的语义 `D=0`，排除了 bookkeeping 泄漏。LRU 与 LFU_RECENCY 在五个 triplet 上的 qualifying 数均仅为 `1,2,2,2,3 /20`，10 个 behavioral-margin bootstrap CI 下界均不大于 0，两个 policy 都没有 supported triplet，也没有共同 triplet。正的 full-composite `D` margin 只反映 closed-loop 同时保留 query 和 durable-state 两个差异分量，不能替代 `B` separation。
+
+三路独立只读审计已分别确认因果解释、统计判级与 provenance closure。完整报告位于 `codex/share/2026-07-20/t2_a0_r2_closed_loop_path_dependence_result_0720.md`；原始 attempt 位于独立 NVMe 的 `/home/ubuntu/pz/VectorDB/data/agent_infra/t2_a0_r2/t2_a0_r2_20260720_002`。运行与复验累计约 13 分 19 秒，峰值 RSS 约 66.7 MiB，最终占用约 135.0 MiB。按 gate 停止：不推进 T2 A1、不复活 T1、不追加实验，现提交 Gpt 审阅。
