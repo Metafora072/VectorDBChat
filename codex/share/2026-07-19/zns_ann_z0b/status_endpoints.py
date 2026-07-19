@@ -31,6 +31,14 @@ STAGES = [
 ]
 
 
+def readable_allocated_bytes(path: Path) -> int | None:
+    """Return allocation when readable; status must not crash on root-owned residue."""
+    try:
+        return allocated_bytes(path)
+    except Exception:
+        return None
+
+
 def attempt_status(label: str) -> dict[str, object]:
     work = RUN_ROOT / "work" / label
     result = RUN_ROOT / "results" / label
@@ -48,13 +56,17 @@ def attempt_status(label: str) -> dict[str, object]:
     failure = load_json(failed) if failed.is_file() else None
     if failure is not None:
         stage = "failed"
+    work_bytes = readable_allocated_bytes(work)
+    result_bytes = readable_allocated_bytes(result)
+    allocation = None if work_bytes is None or result_bytes is None else work_bytes + result_bytes
     return {
         "label": label,
         "stage": stage,
         "failed": failure is not None,
         "stage_steps_complete": completed_steps,
         "stage_steps_total": len(STAGES),
-        "allocated_bytes": allocated_bytes(work) + allocated_bytes(result),
+        "allocated_bytes": allocation,
+        "allocation_readable": allocation is not None,
         "failure": failure,
     }
 
@@ -75,7 +87,7 @@ def main() -> None:
     probe = RUN_ROOT if RUN_ROOT.exists() else ATLAS
     fs = os.statvfs(probe)
     free_bytes = fs.f_bavail * fs.f_frsize
-    used = allocated_bytes(RUN_ROOT)
+    used = readable_allocated_bytes(RUN_ROOT)
 
     # The frozen 5M-event native preflight sustains at least 0.5M policy
     # steps/s.  Keep the preregistered 6--15h end-to-end range rather than a
@@ -117,7 +129,8 @@ def main() -> None:
         "space": {
             "campaign_allocated_bytes": used,
             "registered_peak_bytes": REGISTERED_PEAK_BYTES,
-            "peak_utilization_percent": round(100 * used / REGISTERED_PEAK_BYTES, 3),
+            "peak_utilization_percent": (
+                round(100 * used / REGISTERED_PEAK_BYTES, 3) if used is not None else None),
             "nvme_free_bytes": free_bytes,
             "required_free_at_gate_bytes": int(REGISTERED_PEAK_BYTES * FREE_SPACE_MULTIPLIER),
         },
@@ -130,13 +143,16 @@ def main() -> None:
     print(f"Z0B status @ {ts['utc_plus_8']} (UTC+8) / {ts['utc']} (UTC)")
     print(f"state={state} traces={completed}/{len(rows)} ({report['trace_completion_percent']}%) "
           f"stage={report['operational_stage_percent']}% [not time percentage]")
-    print(f"space={used / 1024**3:.3f} GiB / 129 GiB peak; NVMe free={free_bytes / 1024**3:.3f} GiB")
+    used_text = f"{used / 1024**3:.3f} GiB" if used is not None else "unavailable (permission)"
+    print(f"space={used_text} / 129 GiB peak; NVMe free={free_bytes / 1024**3:.3f} GiB")
     if eta_low is None:
         print("ETA=stopped after failure")
     else:
         print(f"ETA range={eta_low / 3600:.1f}-{eta_high / 3600:.1f} hours")
     for row in rows:
-        print(f"  {row['label']}: {row['stage']} ({row['allocated_bytes'] / 1024**3:.3f} GiB)")
+        allocation = row["allocated_bytes"]
+        allocation_text = f"{allocation / 1024**3:.3f} GiB" if allocation is not None else "unavailable"
+        print(f"  {row['label']}: {row['stage']} ({allocation_text})")
 
 
 if __name__ == "__main__":
