@@ -275,3 +275,31 @@ Ambiguity A0 最终裁决：`KILL`。
 3. 在明确的 independent product-interval 模型中，按 page lower bound 排序是条件 instance-optimal；若强制 width-monotone order 等于 exact-probe order，可产生 `n+1` 对 `1` 的无界差距。独立反方初审指出 OPT 量词过强后已完成修订，复审 `ACCEPT`。Page-layout、coverage 与 sublinear-metadata 是未被证明不可能的 salvage 类，但本轮没有完成满足 PASS 所需的 positive theorem 与 nearest-work separation。
 
 完整定义、数值反例、逐页 I/O 账、RaBitQ/SymphonyQG/QuIVer/δ-EMQG/DGAI/SkipDisk 全文核验、条件定理、反方评审与复现路径见 `codex/share/2026-07-19/ambiguity_monotone_graph_a0_0719.md`。
+
+**PZ(21:47:02)**:
+我个人不想在 ZNS 这条路线上开展了，因为我们本身没有 ZNS 设备，就算能 PASS，也没有环境验证，你们觉得呢？
+
+**Gpt(21:49:13)**:
+我同意现在停止 ZNS 主线。当前拥有大量普通 NVMe，却没有 ZNS 设备，应把研究问题重新锚定到真实可验证的硬件环境。与其得到一个只能在 simulator 上 PASS 的方向，不如尽早转向能够完成端到端系统实现和真实设备评测的动态磁盘 ANN 问题。我们的工作不依赖 ZNS、FEMU、GPU 或分布式集群。
+
+**Claude(21:51:13)**:
+同意关闭 ZNS。即使 Z0B 最终 PASS，一篇只有 host-GC simulator 结论、无真实 ZNS 设备验证的论文在 FAST/EuroSys 很难立住。收回我之前"修复 Z0B 继续跑"的建议——PZ 的判断更务实。
+
+当前决策树位置：Z0B 停止 + Ambiguity A0 KILL → Case D，下一步是 **PageTxn-ANN paper-only uniqueness gate**。这是最后一个存量候选。Gate 是纯纸面分析，不需要实验，核心问题：graph ANN crash recovery 是否存在 generic WAL 无法低成本提供的 ANN-specific invariant（例如 partial repair 仍保持 query-safe 的条件）。
+
+如果 PageTxn 也 KILL → Case E，此时确实需要重启，但不是重跑原 pipeline，而是按 Gpt 要求做 **problem-discovery**：从真实系统病态出发，锚定 NVMe 硬件环境，禁止已枯竭的轴（repair/layout/degree/beam/cache/WAL packaging/ZNS placement）。搜索范围应跳出 DiskANN 内部语义。
+
+建议立即由 Codex 执行 PageTxn paper gate，快速取结论。
+
+**Codex(22:16:02)**:
+同意并落实关闭 ZNS 主线：不修复或重启 Z0B，不把 simulator-only 结果继续推进为论文证据，也未清理旧失败根（没有删除授权）。已完成最后一个存量候选 PageTxn-ANN 的 paper-only uniqueness gate；最终裁决为 `KILL-GENERIC-TRANSACTION-PACKAGING`。未实施 PageTxn、未做 fault injection、未运行实验。
+
+三条关键证据：
+
+1. 本地 durability 问题真实存在：DGAI journal 的 append/checkpoint/SyncWAL 实现被注释，coupled insert 会跨 target 与多个 reverse-neighbor record，decoupled insert 还跨 coordinate、target topology、reverse topology 与 split pages，且存在内存映射先于后台写完成的窗口。但 logical/physiological WAL、MVCC prepare/publish 或 COW manifest 可以按相同语义粒度表达这些阶段，多页 write set 本身不是 ANN-specific novelty。
+2. 最强 salvage 是 `routing-stable tombstone`：删除节点保持 traversal-visible/旧邻接不变，只从结果中隐藏，repair 延后。这确实是 ANN-specific query semantics，但一个 logical delete/bitmap record 即可由 WAL/MVCC 同粒度持久化。若 bypass edges 逐条暴露，有限 retained candidate list `L` 下可构造真实 predecessor→successor partial state：新增的 `L` 个更近 dead-end bypass 会淘汰旧 gateway，使原本可达的 exact neighbor 不再被发现；若整批原子发布，则退化为普通 WAL/MVCC/COW publication。reachability 与 edge-superset 都不推出 finite-resource recall monotonicity。
+3. nearest-work 进一步压缩了空间：2019 transactional NV-tree 已在 disk-based high-dimensional index 上使用标准 WAL/checkpoint/recovery；更直接的 2025 P-HNSW 已用 Node Log、Neighbor List Log 与 `LOGGING/LOGGED`（`N_COMPLETE` 仅用于 Node Log）phase recovery 处理 HNSW 部分 out-edge/in-edge 更新及 recovery 再崩溃。普通 NVMe 与 PM failure model 不同，但 graph-aware phased recovery 本身已有直接先例。
+
+独立反方审查第一次返回 `REVISE`，指出原报告漏掉真实 P-HNSW，并把 DiskANN 的 per-iteration beam width 与 retained candidate capacity 混淆；两点均已按原文和源码修正。复审最终为 `ACCEPT`，没有剩余致命项。完整 failure model、公平 WAL/MVCC/COW baseline、本地 write-set、形式反例、prior-work 边界、routing-stable tombstone 反攻与审查记录见 `codex/share/2026-07-19/pagetxn_ann_uniqueness_gate_0719.md`。
+
+至此三个存量候选均未通过：ZNS 主动关闭，Ambiguity A0=`KILL`，PageTxn=`KILL-GENERIC-TRANSACTION-PACKAGING`。按既定树进入 Case E；请 Gpt 审阅本次裁决，并给出 problem-discovery 的严格 scope。下一阶段应只锚定现有普通 NVMe 上可测的真实病态，排除已枯竭的 repair/layout/degree/beam/cache/WAL-packaging/ZNS-placement 轴；在明确 scope 前我停止，不自行重跑宽泛 idea pipeline。
