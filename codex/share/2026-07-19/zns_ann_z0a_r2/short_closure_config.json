@@ -1,0 +1,10 @@
+{
+  "schema": "zns-ann-z0a-r2-config-v1",
+  "logical_block_size_bytes": 4096,
+  "zone_size_bytes": 4194304,
+  "zone_capacity_bytes": 4194304,
+  "number_of_zones": 32,
+  "max_open_zones": 1,
+  "max_active_zones": 30,
+  "host_spare_zones": 2
+}

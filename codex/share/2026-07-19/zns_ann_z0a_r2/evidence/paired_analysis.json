@@ -1,0 +1,2020 @@
+{
+  "all_runs_retained": true,
+  "preregistered_formal_runs": 72,
+  "schema": "zns-ann-z0a-r2-paired-analysis-v1",
+  "status": "pass",
+  "systems": {
+    "DGAI": {
+      "balanced_order_counts": {
+        "full/native/shim": 2,
+        "full/shim/native": 2,
+        "native/full/shim": 2,
+        "native/shim/full": 2,
+        "shim/full/native": 2,
+        "shim/native/full": 2
+      },
+      "distinct_structure_signatures_by_mode": {
+        "full": 1,
+        "native": 1,
+        "shim": 1
+      },
+      "raw_runs": [
+        {
+          "label": "dgai-t01-p1-native",
+          "mode": "native",
+          "position": 1,
+          "run_uuid": "9071dbd9-77f5-50b5-b3d2-16216a704121",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 1,
+          "wall_seconds": 7.926472747,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t01-p2-shim",
+          "mode": "shim",
+          "position": 2,
+          "run_uuid": "bf3b3ab9-01a0-5d12-9272-26e0eb0323ee",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 1,
+          "wall_seconds": 8.066412607,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t01-p3-full",
+          "mode": "full",
+          "position": 3,
+          "run_uuid": "fac00020-9935-5a47-8b19-02410d8f96a5",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 1,
+          "wall_seconds": 7.438226877,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t02-p1-full",
+          "mode": "full",
+          "position": 1,
+          "run_uuid": "13b40167-c928-53b7-982d-d1925bfd74db",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 2,
+          "wall_seconds": 7.367181118,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t02-p2-shim",
+          "mode": "shim",
+          "position": 2,
+          "run_uuid": "a3df46f4-9bba-5b3d-9973-8dbfa7baa960",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 2,
+          "wall_seconds": 9.136745202,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t02-p3-native",
+          "mode": "native",
+          "position": 3,
+          "run_uuid": "bbf193d6-133f-53e6-b520-c79d4fd6e2fb",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 2,
+          "wall_seconds": 8.369341754,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t03-p1-native",
+          "mode": "native",
+          "position": 1,
+          "run_uuid": "ae907339-54e2-536d-b677-f26f302d936b",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 3,
+          "wall_seconds": 8.035517509,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t03-p2-shim",
+          "mode": "shim",
+          "position": 2,
+          "run_uuid": "be16a363-42d6-5e73-bc6b-8ab77271f51c",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 3,
+          "wall_seconds": 6.446397385,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t03-p3-full",
+          "mode": "full",
+          "position": 3,
+          "run_uuid": "09852f2d-1229-5300-8b42-611868951fc6",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 3,
+          "wall_seconds": 8.1239883,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t04-p1-native",
+          "mode": "native",
+          "position": 1,
+          "run_uuid": "d2f86ccd-25c5-5b1e-80bd-1623cf3cad15",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 4,
+          "wall_seconds": 7.345296405,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t04-p2-full",
+          "mode": "full",
+          "position": 2,
+          "run_uuid": "5ef562ac-aecb-5782-bdc7-3c832d1333f7",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 4,
+          "wall_seconds": 5.999276938,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t04-p3-shim",
+          "mode": "shim",
+          "position": 3,
+          "run_uuid": "514b632a-8a3c-5446-a383-7bdc36c24129",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 4,
+          "wall_seconds": 10.43703037,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t05-p1-native",
+          "mode": "native",
+          "position": 1,
+          "run_uuid": "0182b76b-3e8c-537a-b033-3deff3ec0b3a",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 5,
+          "wall_seconds": 7.089872482,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t05-p2-full",
+          "mode": "full",
+          "position": 2,
+          "run_uuid": "a4b860ab-c16e-547b-929b-796ceb5e8e93",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 5,
+          "wall_seconds": 7.570270425,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t05-p3-shim",
+          "mode": "shim",
+          "position": 3,
+          "run_uuid": "9d6c2268-42d2-5c0f-952b-67bb47217b4b",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 5,
+          "wall_seconds": 9.674699391,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t06-p1-shim",
+          "mode": "shim",
+          "position": 1,
+          "run_uuid": "0d71d2a8-bea0-55c0-8d54-cf368f6e9d10",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 6,
+          "wall_seconds": 6.072291345,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t06-p2-full",
+          "mode": "full",
+          "position": 2,
+          "run_uuid": "f974d7d3-b189-5b92-ab1f-343fa913e657",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 6,
+          "wall_seconds": 10.878507635,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t06-p3-native",
+          "mode": "native",
+          "position": 3,
+          "run_uuid": "a5435c36-bfa6-5ec5-abcd-57b8bbfcc12a",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 6,
+          "wall_seconds": 6.329905459,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t07-p1-full",
+          "mode": "full",
+          "position": 1,
+          "run_uuid": "266bc985-7fa5-5642-b53b-729d9ff478fb",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 7,
+          "wall_seconds": 9.35696816,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t07-p2-native",
+          "mode": "native",
+          "position": 2,
+          "run_uuid": "eb46b16e-ebd0-53a0-9f7d-dd3998002108",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 7,
+          "wall_seconds": 6.16145635,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t07-p3-shim",
+          "mode": "shim",
+          "position": 3,
+          "run_uuid": "aa04bf78-ba37-5ef1-99d7-490f6da06797",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 7,
+          "wall_seconds": 7.608180751,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t08-p1-shim",
+          "mode": "shim",
+          "position": 1,
+          "run_uuid": "06d0b895-9431-5e04-8d6a-fb10b4b03220",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 8,
+          "wall_seconds": 6.626306726,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t08-p2-native",
+          "mode": "native",
+          "position": 2,
+          "run_uuid": "d3e36156-adde-52c6-9f04-dc7ea160638d",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 8,
+          "wall_seconds": 8.046576639,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t08-p3-full",
+          "mode": "full",
+          "position": 3,
+          "run_uuid": "0ed05ca9-4594-52ba-abab-26e65178e64c",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 8,
+          "wall_seconds": 9.702004233,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t09-p1-full",
+          "mode": "full",
+          "position": 1,
+          "run_uuid": "93875026-6427-55bb-abef-c841d7c4ae7d",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 9,
+          "wall_seconds": 10.547836819,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t09-p2-shim",
+          "mode": "shim",
+          "position": 2,
+          "run_uuid": "b596bd48-fc10-52a9-8fb3-aaf132ea9d50",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 9,
+          "wall_seconds": 11.017071772,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t09-p3-native",
+          "mode": "native",
+          "position": 3,
+          "run_uuid": "ce02da0a-e301-5bbf-aa19-c3f8f725d135",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 9,
+          "wall_seconds": 8.836337235,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t10-p1-shim",
+          "mode": "shim",
+          "position": 1,
+          "run_uuid": "7f7fbdd2-e38a-59f4-86ad-df5a528e3c70",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 10,
+          "wall_seconds": 11.451599314,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t10-p2-full",
+          "mode": "full",
+          "position": 2,
+          "run_uuid": "c0cb88ed-90fb-5337-9591-522077f0bbef",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 10,
+          "wall_seconds": 9.859255212,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t10-p3-native",
+          "mode": "native",
+          "position": 3,
+          "run_uuid": "7a824ac3-4ea3-5da5-adcb-802fe671dacd",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 10,
+          "wall_seconds": 6.622947233,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t11-p1-shim",
+          "mode": "shim",
+          "position": 1,
+          "run_uuid": "1a7d3234-8c46-58da-81ca-e89e26f79105",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 11,
+          "wall_seconds": 10.042285053,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t11-p2-native",
+          "mode": "native",
+          "position": 2,
+          "run_uuid": "4e22b7ca-27aa-54d8-a0b5-4ab236e67157",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 11,
+          "wall_seconds": 10.629291341,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t11-p3-full",
+          "mode": "full",
+          "position": 3,
+          "run_uuid": "fd84c28a-2323-5765-8130-5c0b0abf5c5f",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 11,
+          "wall_seconds": 9.858938817,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t12-p1-full",
+          "mode": "full",
+          "position": 1,
+          "run_uuid": "c7c96b6b-3ed2-5e03-87c9-47b6e179edea",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 12,
+          "wall_seconds": 9.968967591,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t12-p2-native",
+          "mode": "native",
+          "position": 2,
+          "run_uuid": "9fb7dec8-0fa1-588d-aa2d-1eb01905b1b7",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 12,
+          "wall_seconds": 9.732337121,
+          "warmup": false
+        },
+        {
+          "label": "dgai-t12-p3-shim",
+          "mode": "shim",
+          "position": 3,
+          "run_uuid": "56c47f6e-dcf7-5358-a025-fcab1dca13cd",
+          "structure": {
+            "async_application_bytes": 90447872,
+            "async_page_event_count": 22082,
+            "async_request_count": 19330,
+            "insert_phase_requests": 19329,
+            "neighbor_repair_requests": 18415,
+            "unique_logical_pages": 3166
+          },
+          "system": "DGAI",
+          "triplet": 12,
+          "wall_seconds": 10.278879553,
+          "warmup": false
+        }
+      ],
+      "run_order_raw_seconds": {
+        "full": {
+          "1": [
+            7.367181118,
+            9.35696816,
+            10.547836819,
+            9.968967591
+          ],
+          "2": [
+            5.999276938,
+            7.570270425,
+            10.878507635,
+            9.859255212
+          ],
+          "3": [
+            7.438226877,
+            8.1239883,
+            9.702004233,
+            9.858938817
+          ]
+        },
+        "native": {
+          "1": [
+            7.926472747,
+            8.035517509,
+            7.345296405,
+            7.089872482
+          ],
+          "2": [
+            6.16145635,
+            8.046576639,
+            10.629291341,
+            9.732337121
+          ],
+          "3": [
+            8.369341754,
+            6.329905459,
+            8.836337235,
+            6.622947233
+          ]
+        },
+        "shim": {
+          "1": [
+            6.072291345,
+            6.626306726,
+            11.451599314,
+            10.042285053
+          ],
+          "2": [
+            8.066412607,
+            9.136745202,
+            6.446397385,
+            11.017071772
+          ],
+          "3": [
+            10.43703037,
+            9.674699391,
+            7.608180751,
+            10.278879553
+          ]
+        }
+      },
+      "structure_exact_all_modes": true,
+      "timing": {
+        "full_over_shim": {
+          "bootstrap_resamples": 100000,
+          "ci90_log": [
+            -0.14971876887155958,
+            0.2068972405091956
+          ],
+          "ci90_percent": [
+            -13.904993165917878,
+            22.985618589176426
+          ],
+          "ci90_ratio": [
+            0.8609500683408212,
+            1.2298561858917643
+          ],
+          "equivalence_within_plusminus_5_percent": false,
+          "median_log_ratio": -0.03706974254070167,
+          "median_percent": -3.639107152942289,
+          "median_ratio": 0.9636089284705771,
+          "paired_log_values": [
+            -0.08107635154085877,
+            -0.21526906479180813,
+            0.23129977373775254,
+            -0.5537211430409055,
+            -0.24528537767449993,
+            0.5830530454573483,
+            0.2068972405091956,
+            0.3812848920416386,
+            -0.0435252509506252,
+            -0.14971876887155958,
+            -0.01842614551626436,
+            -0.030614234130778142
+          ]
+        },
+        "shim_over_native": {
+          "bootstrap_resamples": 100000,
+          "ci90_log": [
+            -0.04154927999589443,
+            0.22057359814095326
+          ],
+          "ci90_percent": [
+            -4.069794022495521,
+            24.679168291159037
+          ],
+          "ci90_ratio": [
+            0.9593020597750448,
+            1.2467916829115904
+          ],
+          "equivalence_within_plusminus_5_percent": false,
+          "median_log_ratio": 0.07118308785688901,
+          "median_percent": 7.377780354914187,
+          "median_ratio": 1.0737778035491419,
+          "paired_log_values": [
+            0.017500710916905672,
+            0.08772897931150567,
+            -0.22034997415840096,
+            0.35129993119902425,
+            0.31084681296671424,
+            -0.04154927999589443,
+            0.2109109129216856,
+            -0.19419914466173385,
+            0.22057359814095326,
+            0.5475889260890647,
+            -0.05680884089803909,
+            0.05463719640227235
+          ]
+        },
+        "temporal_equivalence_pass": false
+      }
+    },
+    "OdinANN": {
+      "balanced_order_counts": {
+        "full/native/shim": 2,
+        "full/shim/native": 2,
+        "native/full/shim": 2,
+        "native/shim/full": 2,
+        "shim/full/native": 2,
+        "shim/native/full": 2
+      },
+      "distinct_structure_signatures_by_mode": {
+        "full": 12,
+        "native": 12,
+        "shim": 12
+      },
+      "odin_natural_variability_gate": {
+        "metrics": {
+          "async_application_bytes": {
+            "full_systematically_outside_controls_same_side": false,
+            "native_shim_natural_range": [
+              91471872,
+              91815936
+            ],
+            "native_shim_natural_scale": 344064,
+            "paired_full_minus_shim": [
+              -40960,
+              94208,
+              -118784,
+              176128,
+              -4096,
+              -176128,
+              94208,
+              -122880,
+              -24576,
+              -114688,
+              65536,
+              94208
+            ],
+            "paired_median_shift": -14336.0,
+            "pass": true,
+            "raw_by_mode": {
+              "full": [
+                91668480,
+                91754496,
+                91602944,
+                91693056,
+                91615232,
+                91504640,
+                91566080,
+                91557888,
+                91492352,
+                91500544,
+                91705344,
+                91627520
+              ],
+              "native": [
+                91664384,
+                91578368,
+                91738112,
+                91574272,
+                91693056,
+                91701248,
+                91521024,
+                91525120,
+                91729920,
+                91815936,
+                91549696,
+                91537408
+              ],
+              "shim": [
+                91709440,
+                91660288,
+                91721728,
+                91516928,
+                91619328,
+                91680768,
+                91471872,
+                91680768,
+                91516928,
+                91615232,
+                91639808,
+                91533312
+              ]
+            },
+            "shift_within_natural_scale": true
+          },
+          "async_page_event_count": {
+            "full_systematically_outside_controls_same_side": false,
+            "native_shim_natural_range": [
+              22332,
+              22416
+            ],
+            "native_shim_natural_scale": 84,
+            "paired_full_minus_shim": [
+              -10,
+              23,
+              -29,
+              43,
+              -1,
+              -43,
+              23,
+              -30,
+              -6,
+              -28,
+              16,
+              23
+            ],
+            "paired_median_shift": -3.5,
+            "pass": true,
+            "raw_by_mode": {
+              "full": [
+                22380,
+                22401,
+                22364,
+                22386,
+                22367,
+                22340,
+                22355,
+                22353,
+                22337,
+                22339,
+                22389,
+                22370
+              ],
+              "native": [
+                22379,
+                22358,
+                22397,
+                22357,
+                22386,
+                22388,
+                22344,
+                22345,
+                22395,
+                22416,
+                22351,
+                22348
+              ],
+              "shim": [
+                22390,
+                22378,
+                22393,
+                22343,
+                22368,
+                22383,
+                22332,
+                22383,
+                22343,
+                22367,
+                22373,
+                22347
+              ]
+            },
+            "shift_within_natural_scale": true
+          },
+          "async_request_count": {
+            "full_systematically_outside_controls_same_side": false,
+            "native_shim_natural_range": [
+              19736,
+              19885
+            ],
+            "native_shim_natural_scale": 149,
+            "paired_full_minus_shim": [
+              -26,
+              2,
+              -40,
+              43,
+              2,
+              -51,
+              28,
+              -29,
+              -34,
+              -5,
+              -7,
+              27
+            ],
+            "paired_median_shift": -6.0,
+            "pass": true,
+            "raw_by_mode": {
+              "full": [
+                19814,
+                19838,
+                19796,
+                19809,
+                19795,
+                19778,
+                19764,
+                19781,
+                19738,
+                19779,
+                19806,
+                19786
+              ],
+              "native": [
+                19782,
+                19799,
+                19830,
+                19765,
+                19808,
+                19806,
+                19771,
+                19754,
+                19834,
+                19885,
+                19790,
+                19793
+              ],
+              "shim": [
+                19840,
+                19836,
+                19836,
+                19766,
+                19793,
+                19829,
+                19736,
+                19810,
+                19772,
+                19784,
+                19813,
+                19759
+              ]
+            },
+            "shift_within_natural_scale": true
+          },
+          "insert_phase_requests": {
+            "full_systematically_outside_controls_same_side": false,
+            "native_shim_natural_range": [
+              19735,
+              19884
+            ],
+            "native_shim_natural_scale": 149,
+            "paired_full_minus_shim": [
+              -26,
+              2,
+              -40,
+              43,
+              2,
+              -51,
+              28,
+              -29,
+              -34,
+              -5,
+              -7,
+              27
+            ],
+            "paired_median_shift": -6.0,
+            "pass": true,
+            "raw_by_mode": {
+              "full": [
+                19813,
+                19837,
+                19795,
+                19808,
+                19794,
+                19777,
+                19763,
+                19780,
+                19737,
+                19778,
+                19805,
+                19785
+              ],
+              "native": [
+                19781,
+                19798,
+                19829,
+                19764,
+                19807,
+                19805,
+                19770,
+                19753,
+                19833,
+                19884,
+                19789,
+                19792
+              ],
+              "shim": [
+                19839,
+                19835,
+                19835,
+                19765,
+                19792,
+                19828,
+                19735,
+                19809,
+                19771,
+                19783,
+                19812,
+                19758
+              ]
+            },
+            "shift_within_natural_scale": true
+          },
+          "neighbor_repair_requests": {
+            "full_systematically_outside_controls_same_side": false,
+            "native_shim_natural_range": [
+              18665,
+              18749
+            ],
+            "native_shim_natural_scale": 84,
+            "paired_full_minus_shim": [
+              -10,
+              23,
+              -29,
+              43,
+              -1,
+              -43,
+              23,
+              -30,
+              -6,
+              -28,
+              16,
+              23
+            ],
+            "paired_median_shift": -3.5,
+            "pass": true,
+            "raw_by_mode": {
+              "full": [
+                18713,
+                18734,
+                18697,
+                18719,
+                18700,
+                18673,
+                18688,
+                18686,
+                18670,
+                18672,
+                18722,
+                18703
+              ],
+              "native": [
+                18712,
+                18691,
+                18730,
+                18690,
+                18719,
+                18721,
+                18677,
+                18678,
+                18728,
+                18749,
+                18684,
+                18681
+              ],
+              "shim": [
+                18723,
+                18711,
+                18726,
+                18676,
+                18701,
+                18716,
+                18665,
+                18716,
+                18676,
+                18700,
+                18706,
+                18680
+              ]
+            },
+            "shift_within_natural_scale": true
+          },
+          "unique_logical_pages": {
+            "full_systematically_outside_controls_same_side": false,
+            "native_shim_natural_range": [
+              4564,
+              4601
+            ],
+            "native_shim_natural_scale": 37,
+            "paired_full_minus_shim": [
+              15,
+              4,
+              -4,
+              7,
+              1,
+              0,
+              -19,
+              29,
+              -13,
+              11,
+              1,
+              -6
+            ],
+            "paired_median_shift": 1.0,
+            "pass": true,
+            "raw_by_mode": {
+              "full": [
+                4579,
+                4578,
+                4576,
+                4590,
+                4581,
+                4584,
+                4581,
+                4597,
+                4588,
+                4590,
+                4589,
+                4577
+              ],
+              "native": [
+                4571,
+                4582,
+                4575,
+                4588,
+                4564,
+                4583,
+                4590,
+                4599,
+                4581,
+                4571,
+                4592,
+                4579
+              ],
+              "shim": [
+                4564,
+                4574,
+                4580,
+                4583,
+                4580,
+                4584,
+                4600,
+                4568,
+                4601,
+                4579,
+                4588,
+                4583
+              ]
+            },
+            "shift_within_natural_scale": true
+          }
+        },
+        "pass": true
+      },
+      "raw_runs": [
+        {
+          "label": "odinann-t01-p1-native",
+          "mode": "native",
+          "position": 1,
+          "run_uuid": "a8313600-aa17-52ba-91dd-bbc28d7a1102",
+          "structure": {
+            "async_application_bytes": 91664384,
+            "async_page_event_count": 22379,
+            "async_request_count": 19782,
+            "insert_phase_requests": 19781,
+            "neighbor_repair_requests": 18712,
+            "unique_logical_pages": 4571
+          },
+          "system": "OdinANN",
+          "triplet": 1,
+          "wall_seconds": 3.384329767,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t01-p2-shim",
+          "mode": "shim",
+          "position": 2,
+          "run_uuid": "ebdb7f24-0e20-56fa-b9f2-e77b3dd5c03a",
+          "structure": {
+            "async_application_bytes": 91709440,
+            "async_page_event_count": 22390,
+            "async_request_count": 19840,
+            "insert_phase_requests": 19839,
+            "neighbor_repair_requests": 18723,
+            "unique_logical_pages": 4564
+          },
+          "system": "OdinANN",
+          "triplet": 1,
+          "wall_seconds": 3.629745841,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t01-p3-full",
+          "mode": "full",
+          "position": 3,
+          "run_uuid": "0a47d877-fef1-5bd3-a3eb-86eb17662a97",
+          "structure": {
+            "async_application_bytes": 91668480,
+            "async_page_event_count": 22380,
+            "async_request_count": 19814,
+            "insert_phase_requests": 19813,
+            "neighbor_repair_requests": 18713,
+            "unique_logical_pages": 4579
+          },
+          "system": "OdinANN",
+          "triplet": 1,
+          "wall_seconds": 3.816349445,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t02-p1-full",
+          "mode": "full",
+          "position": 1,
+          "run_uuid": "5b8fffb1-2f15-52d0-a19e-84107e97831d",
+          "structure": {
+            "async_application_bytes": 91754496,
+            "async_page_event_count": 22401,
+            "async_request_count": 19838,
+            "insert_phase_requests": 19837,
+            "neighbor_repair_requests": 18734,
+            "unique_logical_pages": 4578
+          },
+          "system": "OdinANN",
+          "triplet": 2,
+          "wall_seconds": 3.86467564,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t02-p2-shim",
+          "mode": "shim",
+          "position": 2,
+          "run_uuid": "8b44e1df-9526-5495-b597-d561e0e0fcba",
+          "structure": {
+            "async_application_bytes": 91660288,
+            "async_page_event_count": 22378,
+            "async_request_count": 19836,
+            "insert_phase_requests": 19835,
+            "neighbor_repair_requests": 18711,
+            "unique_logical_pages": 4574
+          },
+          "system": "OdinANN",
+          "triplet": 2,
+          "wall_seconds": 3.531379887,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t02-p3-native",
+          "mode": "native",
+          "position": 3,
+          "run_uuid": "efde1e16-e1b7-5f03-9e5b-fa1306bb8826",
+          "structure": {
+            "async_application_bytes": 91578368,
+            "async_page_event_count": 22358,
+            "async_request_count": 19799,
+            "insert_phase_requests": 19798,
+            "neighbor_repair_requests": 18691,
+            "unique_logical_pages": 4582
+          },
+          "system": "OdinANN",
+          "triplet": 2,
+          "wall_seconds": 3.613605864,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t03-p1-native",
+          "mode": "native",
+          "position": 1,
+          "run_uuid": "6eac06a6-1ead-5195-8d00-5860a23dad57",
+          "structure": {
+            "async_application_bytes": 91738112,
+            "async_page_event_count": 22397,
+            "async_request_count": 19830,
+            "insert_phase_requests": 19829,
+            "neighbor_repair_requests": 18730,
+            "unique_logical_pages": 4575
+          },
+          "system": "OdinANN",
+          "triplet": 3,
+          "wall_seconds": 3.297794867,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t03-p2-shim",
+          "mode": "shim",
+          "position": 2,
+          "run_uuid": "cd764104-d20d-5270-8a9b-8a4d6528d06d",
+          "structure": {
+            "async_application_bytes": 91721728,
+            "async_page_event_count": 22393,
+            "async_request_count": 19836,
+            "insert_phase_requests": 19835,
+            "neighbor_repair_requests": 18726,
+            "unique_logical_pages": 4580
+          },
+          "system": "OdinANN",
+          "triplet": 3,
+          "wall_seconds": 3.696028077,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t03-p3-full",
+          "mode": "full",
+          "position": 3,
+          "run_uuid": "ac617ada-2d2b-5ea1-9d29-4cfb13f3f51d",
+          "structure": {
+            "async_application_bytes": 91602944,
+            "async_page_event_count": 22364,
+            "async_request_count": 19796,
+            "insert_phase_requests": 19795,
+            "neighbor_repair_requests": 18697,
+            "unique_logical_pages": 4576
+          },
+          "system": "OdinANN",
+          "triplet": 3,
+          "wall_seconds": 3.890084693,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t04-p1-native",
+          "mode": "native",
+          "position": 1,
+          "run_uuid": "4f4e57fe-d732-5c74-8e4b-4dbd8b1e0cfb",
+          "structure": {
+            "async_application_bytes": 91574272,
+            "async_page_event_count": 22357,
+            "async_request_count": 19765,
+            "insert_phase_requests": 19764,
+            "neighbor_repair_requests": 18690,
+            "unique_logical_pages": 4588
+          },
+          "system": "OdinANN",
+          "triplet": 4,
+          "wall_seconds": 3.484058458,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t04-p2-full",
+          "mode": "full",
+          "position": 2,
+          "run_uuid": "7a18d29d-95c3-59ce-afee-6d246ea2006f",
+          "structure": {
+            "async_application_bytes": 91693056,
+            "async_page_event_count": 22386,
+            "async_request_count": 19809,
+            "insert_phase_requests": 19808,
+            "neighbor_repair_requests": 18719,
+            "unique_logical_pages": 4590
+          },
+          "system": "OdinANN",
+          "triplet": 4,
+          "wall_seconds": 3.494999404,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t04-p3-shim",
+          "mode": "shim",
+          "position": 3,
+          "run_uuid": "f873917f-ba18-562f-9226-40952f05d713",
+          "structure": {
+            "async_application_bytes": 91516928,
+            "async_page_event_count": 22343,
+            "async_request_count": 19766,
+            "insert_phase_requests": 19765,
+            "neighbor_repair_requests": 18676,
+            "unique_logical_pages": 4583
+          },
+          "system": "OdinANN",
+          "triplet": 4,
+          "wall_seconds": 4.085858311,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t05-p1-native",
+          "mode": "native",
+          "position": 1,
+          "run_uuid": "7f2189e9-1d9b-5566-8ceb-f5736320f2c8",
+          "structure": {
+            "async_application_bytes": 91693056,
+            "async_page_event_count": 22386,
+            "async_request_count": 19808,
+            "insert_phase_requests": 19807,
+            "neighbor_repair_requests": 18719,
+            "unique_logical_pages": 4564
+          },
+          "system": "OdinANN",
+          "triplet": 5,
+          "wall_seconds": 3.20676277,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t05-p2-full",
+          "mode": "full",
+          "position": 2,
+          "run_uuid": "73c83674-8f3b-54b4-9756-c6b757bb3965",
+          "structure": {
+            "async_application_bytes": 91615232,
+            "async_page_event_count": 22367,
+            "async_request_count": 19795,
+            "insert_phase_requests": 19794,
+            "neighbor_repair_requests": 18700,
+            "unique_logical_pages": 4581
+          },
+          "system": "OdinANN",
+          "triplet": 5,
+          "wall_seconds": 3.576404209,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t05-p3-shim",
+          "mode": "shim",
+          "position": 3,
+          "run_uuid": "ce2c8bbf-36b6-55fa-8e7d-d67c75c42753",
+          "structure": {
+            "async_application_bytes": 91619328,
+            "async_page_event_count": 22368,
+            "async_request_count": 19793,
+            "insert_phase_requests": 19792,
+            "neighbor_repair_requests": 18701,
+            "unique_logical_pages": 4580
+          },
+          "system": "OdinANN",
+          "triplet": 5,
+          "wall_seconds": 3.258827477,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t06-p1-shim",
+          "mode": "shim",
+          "position": 1,
+          "run_uuid": "205065eb-0248-5d5b-9f7f-183a1eda60f8",
+          "structure": {
+            "async_application_bytes": 91680768,
+            "async_page_event_count": 22383,
+            "async_request_count": 19829,
+            "insert_phase_requests": 19828,
+            "neighbor_repair_requests": 18716,
+            "unique_logical_pages": 4584
+          },
+          "system": "OdinANN",
+          "triplet": 6,
+          "wall_seconds": 3.708368835,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t06-p2-full",
+          "mode": "full",
+          "position": 2,
+          "run_uuid": "f24caa1c-4a2c-51f8-85bf-1e06a53de3c4",
+          "structure": {
+            "async_application_bytes": 91504640,
+            "async_page_event_count": 22340,
+            "async_request_count": 19778,
+            "insert_phase_requests": 19777,
+            "neighbor_repair_requests": 18673,
+            "unique_logical_pages": 4584
+          },
+          "system": "OdinANN",
+          "triplet": 6,
+          "wall_seconds": 3.104506112,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t06-p3-native",
+          "mode": "native",
+          "position": 3,
+          "run_uuid": "ea7d6129-8681-5133-8801-aca4b95fd4e9",
+          "structure": {
+            "async_application_bytes": 91701248,
+            "async_page_event_count": 22388,
+            "async_request_count": 19806,
+            "insert_phase_requests": 19805,
+            "neighbor_repair_requests": 18721,
+            "unique_logical_pages": 4583
+          },
+          "system": "OdinANN",
+          "triplet": 6,
+          "wall_seconds": 3.079791372,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t07-p1-full",
+          "mode": "full",
+          "position": 1,
+          "run_uuid": "d39dbdbc-6cde-5848-91ee-d566d5bf9d3e",
+          "structure": {
+            "async_application_bytes": 91566080,
+            "async_page_event_count": 22355,
+            "async_request_count": 19764,
+            "insert_phase_requests": 19763,
+            "neighbor_repair_requests": 18688,
+            "unique_logical_pages": 4581
+          },
+          "system": "OdinANN",
+          "triplet": 7,
+          "wall_seconds": 3.30614955,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t07-p2-native",
+          "mode": "native",
+          "position": 2,
+          "run_uuid": "b0018f34-45f1-5ad2-9298-12c0d48bb92c",
+          "structure": {
+            "async_application_bytes": 91521024,
+            "async_page_event_count": 22344,
+            "async_request_count": 19771,
+            "insert_phase_requests": 19770,
+            "neighbor_repair_requests": 18677,
+            "unique_logical_pages": 4590
+          },
+          "system": "OdinANN",
+          "triplet": 7,
+          "wall_seconds": 3.476174327,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t07-p3-shim",
+          "mode": "shim",
+          "position": 3,
+          "run_uuid": "4698a682-d91b-53d6-a667-c5499a290ae4",
+          "structure": {
+            "async_application_bytes": 91471872,
+            "async_page_event_count": 22332,
+            "async_request_count": 19736,
+            "insert_phase_requests": 19735,
+            "neighbor_repair_requests": 18665,
+            "unique_logical_pages": 4600
+          },
+          "system": "OdinANN",
+          "triplet": 7,
+          "wall_seconds": 3.542845582,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t08-p1-shim",
+          "mode": "shim",
+          "position": 1,
+          "run_uuid": "b4113166-26bd-5da8-8d7f-c20acbb529a6",
+          "structure": {
+            "async_application_bytes": 91680768,
+            "async_page_event_count": 22383,
+            "async_request_count": 19810,
+            "insert_phase_requests": 19809,
+            "neighbor_repair_requests": 18716,
+            "unique_logical_pages": 4568
+          },
+          "system": "OdinANN",
+          "triplet": 8,
+          "wall_seconds": 3.546444245,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t08-p2-native",
+          "mode": "native",
+          "position": 2,
+          "run_uuid": "06d5aff4-968d-5024-b4fb-09df1a523d12",
+          "structure": {
+            "async_application_bytes": 91525120,
+            "async_page_event_count": 22345,
+            "async_request_count": 19754,
+            "insert_phase_requests": 19753,
+            "neighbor_repair_requests": 18678,
+            "unique_logical_pages": 4599
+          },
+          "system": "OdinANN",
+          "triplet": 8,
+          "wall_seconds": 3.197598142,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t08-p3-full",
+          "mode": "full",
+          "position": 3,
+          "run_uuid": "810be7c1-8e2b-501a-a778-ea0d3f7f1dbf",
+          "structure": {
+            "async_application_bytes": 91557888,
+            "async_page_event_count": 22353,
+            "async_request_count": 19781,
+            "insert_phase_requests": 19780,
+            "neighbor_repair_requests": 18686,
+            "unique_logical_pages": 4597
+          },
+          "system": "OdinANN",
+          "triplet": 8,
+          "wall_seconds": 3.894302227,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t09-p1-full",
+          "mode": "full",
+          "position": 1,
+          "run_uuid": "e1f192ee-28fc-5db7-aee3-c103e4ee2b76",
+          "structure": {
+            "async_application_bytes": 91492352,
+            "async_page_event_count": 22337,
+            "async_request_count": 19738,
+            "insert_phase_requests": 19737,
+            "neighbor_repair_requests": 18670,
+            "unique_logical_pages": 4588
+          },
+          "system": "OdinANN",
+          "triplet": 9,
+          "wall_seconds": 3.926861015,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t09-p2-shim",
+          "mode": "shim",
+          "position": 2,
+          "run_uuid": "776d57b2-062c-56c4-9c65-4f445074472f",
+          "structure": {
+            "async_application_bytes": 91516928,
+            "async_page_event_count": 22343,
+            "async_request_count": 19772,
+            "insert_phase_requests": 19771,
+            "neighbor_repair_requests": 18676,
+            "unique_logical_pages": 4601
+          },
+          "system": "OdinANN",
+          "triplet": 9,
+          "wall_seconds": 3.092762526,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t09-p3-native",
+          "mode": "native",
+          "position": 3,
+          "run_uuid": "e182bdc2-70fe-5153-96e7-07e4bbb07245",
+          "structure": {
+            "async_application_bytes": 91729920,
+            "async_page_event_count": 22395,
+            "async_request_count": 19834,
+            "insert_phase_requests": 19833,
+            "neighbor_repair_requests": 18728,
+            "unique_logical_pages": 4581
+          },
+          "system": "OdinANN",
+          "triplet": 9,
+          "wall_seconds": 3.95047702,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t10-p1-shim",
+          "mode": "shim",
+          "position": 1,
+          "run_uuid": "082549d6-ccce-5f98-872a-4aa08b453fcd",
+          "structure": {
+            "async_application_bytes": 91615232,
+            "async_page_event_count": 22367,
+            "async_request_count": 19784,
+            "insert_phase_requests": 19783,
+            "neighbor_repair_requests": 18700,
+            "unique_logical_pages": 4579
+          },
+          "system": "OdinANN",
+          "triplet": 10,
+          "wall_seconds": 3.182128563,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t10-p2-full",
+          "mode": "full",
+          "position": 2,
+          "run_uuid": "b0e5f4ba-aed6-56f1-a2d6-05e1af517c89",
+          "structure": {
+            "async_application_bytes": 91500544,
+            "async_page_event_count": 22339,
+            "async_request_count": 19779,
+            "insert_phase_requests": 19778,
+            "neighbor_repair_requests": 18672,
+            "unique_logical_pages": 4590
+          },
+          "system": "OdinANN",
+          "triplet": 10,
+          "wall_seconds": 3.896063975,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t10-p3-native",
+          "mode": "native",
+          "position": 3,
+          "run_uuid": "8099f234-5a08-515f-9073-5d0c30bcc78a",
+          "structure": {
+            "async_application_bytes": 91815936,
+            "async_page_event_count": 22416,
+            "async_request_count": 19885,
+            "insert_phase_requests": 19884,
+            "neighbor_repair_requests": 18749,
+            "unique_logical_pages": 4571
+          },
+          "system": "OdinANN",
+          "triplet": 10,
+          "wall_seconds": 3.969819219,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t11-p1-shim",
+          "mode": "shim",
+          "position": 1,
+          "run_uuid": "8d7445ab-dbaa-54a3-8983-c71ef65e2b03",
+          "structure": {
+            "async_application_bytes": 91639808,
+            "async_page_event_count": 22373,
+            "async_request_count": 19813,
+            "insert_phase_requests": 19812,
+            "neighbor_repair_requests": 18706,
+            "unique_logical_pages": 4588
+          },
+          "system": "OdinANN",
+          "triplet": 11,
+          "wall_seconds": 3.858497782,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t11-p2-native",
+          "mode": "native",
+          "position": 2,
+          "run_uuid": "670cf902-9e00-57e1-b316-735f9a89445f",
+          "structure": {
+            "async_application_bytes": 91549696,
+            "async_page_event_count": 22351,
+            "async_request_count": 19790,
+            "insert_phase_requests": 19789,
+            "neighbor_repair_requests": 18684,
+            "unique_logical_pages": 4592
+          },
+          "system": "OdinANN",
+          "triplet": 11,
+          "wall_seconds": 3.663006264,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t11-p3-full",
+          "mode": "full",
+          "position": 3,
+          "run_uuid": "49a6d307-b8a5-54ea-9a97-b6ace3d0ff3e",
+          "structure": {
+            "async_application_bytes": 91705344,
+            "async_page_event_count": 22389,
+            "async_request_count": 19806,
+            "insert_phase_requests": 19805,
+            "neighbor_repair_requests": 18722,
+            "unique_logical_pages": 4589
+          },
+          "system": "OdinANN",
+          "triplet": 11,
+          "wall_seconds": 3.430927258,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t12-p1-full",
+          "mode": "full",
+          "position": 1,
+          "run_uuid": "fa3dec80-42ed-5b4a-a385-1a4f64fefca3",
+          "structure": {
+            "async_application_bytes": 91627520,
+            "async_page_event_count": 22370,
+            "async_request_count": 19786,
+            "insert_phase_requests": 19785,
+            "neighbor_repair_requests": 18703,
+            "unique_logical_pages": 4577
+          },
+          "system": "OdinANN",
+          "triplet": 12,
+          "wall_seconds": 3.7110943,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t12-p2-native",
+          "mode": "native",
+          "position": 2,
+          "run_uuid": "a847a768-e427-5f87-98a4-df280bfbee28",
+          "structure": {
+            "async_application_bytes": 91537408,
+            "async_page_event_count": 22348,
+            "async_request_count": 19793,
+            "insert_phase_requests": 19792,
+            "neighbor_repair_requests": 18681,
+            "unique_logical_pages": 4579
+          },
+          "system": "OdinANN",
+          "triplet": 12,
+          "wall_seconds": 3.313297943,
+          "warmup": false
+        },
+        {
+          "label": "odinann-t12-p3-shim",
+          "mode": "shim",
+          "position": 3,
+          "run_uuid": "83235fa7-4d46-50d1-bc61-c4c111f1e5a5",
+          "structure": {
+            "async_application_bytes": 91533312,
+            "async_page_event_count": 22347,
+            "async_request_count": 19759,
+            "insert_phase_requests": 19758,
+            "neighbor_repair_requests": 18680,
+            "unique_logical_pages": 4583
+          },
+          "system": "OdinANN",
+          "triplet": 12,
+          "wall_seconds": 3.201795741,
+          "warmup": false
+        }
+      ],
+      "run_order_raw_seconds": {
+        "full": {
+          "1": [
+            3.86467564,
+            3.30614955,
+            3.926861015,
+            3.7110943
+          ],
+          "2": [
+            3.494999404,
+            3.576404209,
+            3.104506112,
+            3.896063975
+          ],
+          "3": [
+            3.816349445,
+            3.890084693,
+            3.894302227,
+            3.430927258
+          ]
+        },
+        "native": {
+          "1": [
+            3.384329767,
+            3.297794867,
+            3.484058458,
+            3.20676277
+          ],
+          "2": [
+            3.476174327,
+            3.197598142,
+            3.663006264,
+            3.313297943
+          ],
+          "3": [
+            3.613605864,
+            3.079791372,
+            3.95047702,
+            3.969819219
+          ]
+        },
+        "shim": {
+          "1": [
+            3.708368835,
+            3.546444245,
+            3.182128563,
+            3.858497782
+          ],
+          "2": [
+            3.629745841,
+            3.531379887,
+            3.696028077,
+            3.092762526
+          ],
+          "3": [
+            4.085858311,
+            3.258827477,
+            3.542845582,
+            3.201795741
+          ]
+        }
+      },
+      "timing": {
+        "full_over_shim": {
+          "bootstrap_resamples": 100000,
+          "ci90_log": [
+            -0.06914600665475507,
+            0.0993935751278209
+          ],
+          "ci90_percent": [
+            -6.680958188033149,
+            10.450091811577034
+          ],
+          "ci90_ratio": [
+            0.9331904181196685,
+            1.1045009181157703
+          ],
+          "equivalence_within_plusminus_5_percent": false,
+          "median_log_ratio": 0.07068061888660016,
+          "median_percent": 7.323839905023388,
+          "median_ratio": 1.0732383990502339,
+          "paired_log_values": [
+            0.0501316934586835,
+            0.09018905874190994,
+            0.05117217903129036,
+            -0.15619861393681814,
+            0.09299042371003496,
+            -0.17773747224560923,
+            -0.06914600665475507,
+            0.09356903704328223,
+            0.23877566994288088,
+            0.20241647402841703,
+            -0.11744736982802438,
+            0.14761497122435147
+          ]
+        },
+        "shim_over_native": {
+          "bootstrap_resamples": 100000,
+          "ci90_log": [
+            -0.023017430719949716,
+            0.10354553304890189
+          ],
+          "ci90_percent": [
+            -2.2754550466934975,
+            10.909629275109832
+          ],
+          "ci90_ratio": [
+            0.977245449533065,
+            1.1090962927510983
+          ],
+          "equivalence_within_plusminus_5_percent": false,
+          "median_log_ratio": 0.03549581071007255,
+          "median_percent": 3.6133307456144292,
+          "median_ratio": 1.0361333074561443,
+          "paired_log_values": [
+            0.07000674369885153,
+            -0.023017430719949716,
+            0.11400472735018034,
+            0.15933398125409196,
+            0.016105515635190755,
+            0.18573025449387925,
+            0.01899788320849515,
+            0.10354553304890189,
+            -0.24477162330872856,
+            -0.22117022458151128,
+            0.05199373821164996,
+            -0.034232229284502064
+          ]
+        },
+        "temporal_equivalence_pass": false
+      }
+    }
+  }
+}
