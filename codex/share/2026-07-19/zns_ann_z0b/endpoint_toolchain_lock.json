@@ -1,0 +1,68 @@
+{
+  "artifacts": {
+    "analyze_endpoint_results": {
+      "path": "/home/ubuntu/pz/VectorDB/chat/codex/share/2026-07-19/zns_ann_z0b/analyze_endpoint_results.py",
+      "sha256": "80e74d00a3e96e79b6c639ae872d8ced18878103e0ebef7202cc7958a7722023"
+    },
+    "compact_extent_manifest": {
+      "path": "/home/ubuntu/pz/VectorDB/chat/codex/share/2026-07-19/zns_ann_z0b/compact_extent_manifest.py",
+      "sha256": "31d2837485defe0f0081f175c6712103e0fad8e3594f248324231bf2c2f3f0a9"
+    },
+    "compact_lifecycle": {
+      "path": "/home/ubuntu/pz/VectorDB/chat/codex/share/2026-07-19/zns_ann_z0b/compact_lifecycle.py",
+      "sha256": "c4f7fd31dbc8f4e557bb6f49889b042afea0596f799f39872e1a13662f7bf7fc"
+    },
+    "compare_native_results": {
+      "path": "/home/ubuntu/pz/VectorDB/chat/codex/share/2026-07-19/zns_ann_z0b/compare_native_results.py",
+      "sha256": "3af5e5f0de2d79fbae0c55a1a93eda79b94c01152e74a8e3e9b5206035c1f0c9"
+    },
+    "initial_replay_view": {
+      "path": "/home/ubuntu/pz/VectorDB/chat/codex/share/2026-07-19/zns_ann_z0b/initial_replay_view.py",
+      "sha256": "ec030c189f694067f2f9afd4b2aa6045780d516718544f80393fd15caac147b7"
+    },
+    "native_reference": {
+      "path": "/home/ubuntu/pz/VectorDB/chat/codex/share/2026-07-19/zns_ann_z0b/native-bin-r02/z0b_native_reference",
+      "sha256": "9fa4bfedb924bf998ea3e1ae5ebada66970ffddab4812204e2f161c34ae1d586"
+    },
+    "native_replay": {
+      "path": "/home/ubuntu/pz/VectorDB/chat/codex/share/2026-07-19/zns_ann_z0b/native-bin-r02/z0b_native_replay",
+      "sha256": "3806b00aadd293bbb9d77e003e4a22603d6479f7af8a368bc1db9118f43d4abb"
+    },
+    "stream_normalize": {
+      "path": "/home/ubuntu/pz/VectorDB/chat/codex/share/2026-07-19/zns_ann_z0b/stream_normalize.py",
+      "sha256": "5ba32b1c60e216756e2f676f137c96664de1498ae6139539180c9f0456de1fdf"
+    }
+  },
+  "build": {
+    "command": "bash build_native.sh native-bin-r02",
+    "compiler_flags": "-std=c++20 -O3 -DNDEBUG -Wall -Wextra -Wpedantic -Wno-deprecated-declarations"
+  },
+  "expanded_json_intermediates_permitted": false,
+  "frozen_endpoint_build": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/build/zns-ann-z0b-endpoint-v1-r05",
+  "native_small_crosscheck": {
+    "command": "python3 native_small_crosscheck.py --bin-dir native-bin-r02",
+    "configurations_cross_checked": 12,
+    "events_per_engine": 7,
+    "max_rss_kib": 14336,
+    "max_wall_seconds": 0.00159124,
+    "status": "pass",
+    "timestamp_utc": "2026-07-19T10:09:31Z",
+    "timestamp_utc_plus_8": "2026-07-19T18:09:31+08:00"
+  },
+  "native_scale_preflight": {
+    "benchmark_initial_pages": 3449976,
+    "capacity_blocks": 65536,
+    "cleaners_cross_checked": 2,
+    "command": "python3 native_small_crosscheck.py --bin-dir native-bin-r02 --benchmark-only --benchmark-initial-pages 3449976 --extra-tail-events 5000000 --capacity-blocks 65536 --benchmark-placement canonical --tmp-dir /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/tmp",
+    "configurations_cross_checked": 2,
+    "events_per_engine": 5000000,
+    "minimum_event_policy_steps_per_second_including_load_and_final_hash": 583900.0,
+    "max_rss_kib": 833328,
+    "max_wall_seconds": 8.56311,
+    "status": "pass",
+    "threshold_event_policy_steps_per_second": 500000,
+    "timestamp_utc": "2026-07-19T10:09:31Z",
+    "timestamp_utc_plus_8": "2026-07-19T18:09:31+08:00"
+  },
+  "schema": "zns-ann-z0b-toolchain-lock-v1"
+}

@@ -1,0 +1,109 @@
+{
+  "schema": "zns-ann-z0b-preregistration-v1",
+  "scope": "sequence-only endpoint reclaim; no endpoint run is authorized by this file",
+  "matrix": {
+    "trace_realizations": 6,
+    "zone_capacity_bytes": [268435456, 1073741824],
+    "zone_capacity_blocks_4096": [65536, 262144],
+    "host_spare_zones": [2, 8],
+    "placements": [
+      "Canonical",
+      "RoleSeparated",
+      "RandomPacking-2026071901",
+      "RandomPacking-2026071902",
+      "RandomPacking-2026071903",
+      "OfflineHotColdOracle"
+    ],
+    "cleaners": ["GreedyValidFraction", "OracleMinCopy"],
+    "configurations_per_trace": 48,
+    "total_configurations": 288
+  },
+  "ordering": {
+    "event_order": ["global_seq", "page_index_within_request"],
+    "timestamps_permitted": false,
+    "duplicate_event_coordinate": "fail-closed"
+  },
+  "placement": {
+    "canonical_sort_key": ["file_role", "stable_object_id", "aligned_page_offset"],
+    "role_separated": {
+      "role_order": "canonical file_role order",
+      "within_role_order": "canonical",
+      "new_role_starts_at_zone_boundary": true,
+      "partial_prior_role_zone_state": "CLOSED with its real write pointer; no synthetic padding slots",
+      "only_last_partial_zone_is_initial_append_head": true
+    },
+    "random_packing": {
+      "seeds": [2026071901, 2026071902, 2026071903],
+      "algorithm": "sort canonical pages by (SHA256('z0b-random-packing-v1\\0' || decimal_seed || '\\0' || canonical_page_key), canonical_sort_key)",
+      "permutation_hash": "SHA256 of newline-separated page keys in packed order"
+    },
+    "offline_hot_cold_oracle": {
+      "future_information": "complete sequence write-touch count for each initial logical page",
+      "sort": "descending rewrite_count",
+      "tie_break": "canonical_sort_key",
+      "online_baseline": false
+    }
+  },
+  "free_pool_and_gc": {
+    "initial_free_zone_count": "host_spare_zones",
+    "permanently_reserved_zone_count": 0,
+    "relocation_reserve_zone_count": 1,
+    "new_append_zone_rule": "when there is no writable append head and at least two EMPTY zones, open the lowest-id EMPTY zone for new appends",
+    "gc_trigger": "when there is no writable append head and exactly one EMPTY zone remains, use that zone as the relocation destination before accepting the next page append",
+    "post_reset": "the reset victim returns to the EMPTY free pool",
+    "victim_eligibility": "FULL zones only; exclude current append head and relocation destination",
+    "victim_valid_fraction_denominator": "zone_capacity_blocks",
+    "tie_break": "lowest zone_id"
+  },
+  "cycle": {
+    "complete": "victim selected, every live page relocated, victim reset, and reset victim returned to EMPTY free pool",
+    "cycle_accounting_window": "new page appends after the preceding reset and strictly before the GC that completes this cycle; the append that triggers GC belongs to the next tail/cycle because relocation and reset occur before that append",
+    "boundary_coordinates": ["event_ordinal", "global_seq", "page_index_within_request"],
+    "tail": "events after the last completed reset are reported separately and excluded from cycle trend statistics",
+    "host_wa_cycle": "(allocated_new_append_bytes_in_window + relocation_allocated_bytes_at_closing_gc) / allocated_new_append_bytes_in_window"
+  },
+  "trend": {
+    "eligible_minimum_complete_cycles": 8,
+    "sample": "last ceil(C/2) complete cycles",
+    "sample_start_zero_based": "floor(C/2)",
+    "metrics": ["HostWA_cycle", "relocated_pages_cycle", "victim_valid_fraction"],
+    "estimator": "exact Theil-Sen median of all pairwise slopes on integer cycle index",
+    "intercept": "median(y_i - slope * x_i)",
+    "bootstrap": {
+      "kind": "circular moving-block residual bootstrap around the fitted Theil-Sen line",
+      "residual_center": "subtract arithmetic mean residual",
+      "block_length": "min(n, max(2, ceil(cuberoot(n))))",
+      "resamples": 100000,
+      "master_seed": 2026071904,
+      "derived_seed": "first 64 bits of SHA256(master_seed || config_id || trace_id || metric)",
+      "confidence_interval": "percentile 90% [5th, 95th]",
+      "trend_label": "NO-DETECTED-SEQUENCE-TREND iff the closed interval contains 0; otherwise NONSTATIONARY"
+    }
+  },
+  "cross_realization": {
+    "group_key": ["system", "zone_capacity_bytes", "host_spare_zones", "placement", "cleaner"],
+    "reported_ranges": ["HostWA", "reset_count", "median_victim_valid_fraction"],
+    "relocated_page_distribution_distance": {
+      "pairing": "all three pairwise realization comparisons",
+      "primary": "one-dimensional empirical Wasserstein-1 in pages using exact quantile integration",
+      "normalized": "W1 divided by pooled arithmetic mean when positive; 0 when both distributions are all-zero; NA when either distribution has no complete cycles",
+      "threshold": null
+    },
+    "placement_direction": "exact sign of total HostWA(Canonical)-HostWA(RoleSeparated) at fixed geometry and cleaner",
+    "arbitrary_difference_threshold": null
+  },
+  "materialization": {
+    "logical_block_bytes": 4096,
+    "event": "one reconstructed full 4096-byte page version per touched logical page",
+    "host_wa": "(allocated_append_bytes + relocation_allocated_bytes) / allocated_append_bytes",
+    "initial_image_in_update_host_wa": false,
+    "required_separate_accounts": [
+      "application_returned_bytes",
+      "normalized_fragment_bytes",
+      "allocated_append_bytes",
+      "replacement_rmw_read_bytes",
+      "new_page_zero_fill_bytes",
+      "relocation_allocated_bytes"
+    ]
+  }
+}

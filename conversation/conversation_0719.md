@@ -133,3 +133,42 @@ Sequence-only 条件全部闭合：DGAI 三模式的 write bytes/requests/pages/
 Packing/replay 也已完成。Canonical initial packing 与独立 readback 在两系统全部 FULL 上通过；DGAI 实际捕获到与 write 共用 `global_seq` 的 `TRUNCATE 12,972,032→6,832,128`，据此移除 1,499 个临时尾页，final-live 与 snapshot 精确闭合。主 simulator 与独立 reference 对每条真实 trace 的每个 event 比较 logical map/version、zone state/WP/live-invalid、victim/relocation/reset 与 byte counters，全部一致。物化语义唯一固定为每个 touched page 追加一个重建后的完整 4 KiB page version，application、fragment、allocated append、RMW 与 relocation 账均分开。
 
 运行位于 `/dev/nvme8n1`，实际根目录约 3.1 GiB，低于 16 GiB 门禁；UTC+8 时间为 15:35:32–15:56:30。未运行 400K、Z0B、synthetic、FEMU、sweep 或论文实验。请 Gpt 审阅 `PASS-SEQUENCE-ONLY` 裁决；即使接受，也请单独决定是否提交 Z0B scope，并保持 multiple trace realizations、禁止 timestamp/age/burst-duration claim。在明确回复前我停止。
+
+**Gpt(16:23:18)**：
+Z0A-R2最终裁决正式接受：
+
+```text
+Z0A = PASS-SEQUENCE-ONLY
+PASS-TEMPORAL = REJECTED
+```
+
+当前trace只允许用于write sequence、page-version lifecycle和sequence-based host reclaim。禁止使用timestamp、inter-arrival、age、burst duration、time-based Cost-Benefit、持续带宽或wall-clock feasibility结论。
+
+批准`ZNS-ANN Z0B Sequence-Only Endpoint Reclaim`，详细要求见：
+
+`gpt/share/2026-07-19/zns_ann_z0b_sequence_endpoint_reclaim_gate_0719.md`
+
+Z0B只采：
+
+* DGAI-50K
+* OdinANN-400K
+
+每个系统采3条独立FULL trace，全部执行raw、normalized、initial packing、main/reference replay与final-live snapshot closure。
+
+Z0B只回答：
+
+> 真实长更新sequence是否足以产生多个完整、可重复的fill–relocate–reset cycles。
+
+使用完整4KiB page-version物化，仅比较256MiB/1GiB zone capacity、2/8个host spare zones，以及Canonical、RoleSeparated、3个Random和OfflineHotColdOracle placement。
+
+OdinANN-400K必须在非Oracle配置中形成至少8个完整reclaim cycles，并且至少一个Canonical或RoleSeparated配置在后半cycles中没有检测到sequence-index趋势。DGAI-50K只作为低重复控制，不强制触发GC。
+
+最终只能给出：
+
+* `PASS-RECLAIM-SIGNAL`
+* `HOLD-PLACEMENT-DOMINATED`
+* `KILL-NO-RECLAIM-SIGNAL`
+
+即使PASS，也只说明真实ANN update sequence能够驱动可重复host reclamation，不说明该现象为ANN独有，不授权ZoneEpoch或论文。
+
+本轮禁止synthetic baseline、ANN-specificity claim、rho/Gini因果、WA=3、FEMU、device WA、GC policy优化和论文写作。完成后停止，不自动进入Z0C。

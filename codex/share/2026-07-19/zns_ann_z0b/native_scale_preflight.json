@@ -1,0 +1,31 @@
+{
+  "schema": "zns-ann-z0b-native-scale-preflight-v1",
+  "status": "pass",
+  "timestamps": {
+    "utc": "2026-07-19T10:09:31Z",
+    "utc_plus_8": "2026-07-19T18:09:31+08:00"
+  },
+  "fixture": {
+    "basis": "DGAI M3 initial-page-count-derived deterministic prefix",
+    "initial_pages": 3449976,
+    "normalized_events": 5000000,
+    "capacity_blocks": 65536,
+    "placement": "canonical",
+    "cleaners": ["greedy", "oracle"],
+    "engines": ["native_replay", "native_reference"]
+  },
+  "checks": {
+    "configurations_cross_checked": 2,
+    "main_reference_exact": true,
+    "transition_rolling_sha256_compared": true,
+    "max_wall_seconds_including_initial_load_and_final_hash": 8.56311,
+    "max_rss_kib": 833328,
+    "minimum_event_policy_steps_per_second": 583900.0,
+    "required_event_policy_steps_per_second": 500000,
+    "throughput_pass": true
+  },
+  "binaries": {
+    "native_replay_sha256": "3806b00aadd293bbb9d77e003e4a22603d6479f7af8a368bc1db9118f43d4abb",
+    "native_reference_sha256": "9fa4bfedb924bf998ea3e1ae5ebada66970ffddab4812204e2f161c34ae1d586"
+  }
+}

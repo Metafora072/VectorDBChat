@@ -1,0 +1,26 @@
+--- a/tests/overall_performance.cpp
++++ b/tests/overall_performance.cpp
+@@ -30,1 +30,2 @@
+ #include "global_stats.h"
++#include "z0a_trace.h"
+@@ -225,2 +226,4 @@
+   for (_s64 i = 0; i < (_s64) delete_vec.size(); i++) {
++    AtlasZ0AScopedContext z0b_context({static_cast<uint64_t>(i), static_cast<uint64_t>(i) / 128,
++                                       ATLAS_Z0A_PHASE_DELETE, 0});
+     pipeann::Timer delete_timer;
+@@ -256,3 +259,5 @@
+   for (_s64 i = 0; i < (_s64) insert_vec.size(); i++) {
++    AtlasZ0AScopedContext z0b_context({static_cast<uint64_t>(i), static_cast<uint64_t>(i) / 128,
++                                       ATLAS_Z0A_PHASE_INSERT, 0});
+ 
+     pipeann::Timer insert_timer;
+--- a/tests/w1_canary.cpp
++++ b/tests/w1_canary.cpp
+@@ -7,2 +7,3 @@
+ #include <cstdlib>
+ #include <fstream>
++#include "z0a_trace.h"
+@@ -14,2 +15,3 @@
+ void mark(const char *name, const char *reason = nullptr) {
++  atlas_z0a_set_phase_name(name);
+   if (m0_set_phase) m0_set_phase(name);
