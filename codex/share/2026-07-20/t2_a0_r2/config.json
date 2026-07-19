@@ -1,0 +1,75 @@
+{
+  "allowed_outcomes": [
+    "PASS-ENDOGENOUS-PATH-DEPENDENCE",
+    "KILL-NO-CLOSED-LOOP-SEPARATION",
+    "FAIL-PROTOCOL-CLOSURE"
+  ],
+  "attempt_id": "t2_a0_r2_20260720_001",
+  "attempt_root": "/home/ubuntu/pz/VectorDB/data/agent_infra/t2_a0_r2/t2_a0_r2_20260720_001",
+  "cache": {
+    "durable_delete_enabled": false,
+    "lfu_tie_break": ["frequency", "last_request", "memory_id"],
+    "logical_memories": 12,
+    "lru_tie_break": ["last_request", "memory_id"],
+    "miss_semantics": "admit_after_current_semantic_miss",
+    "policies": ["LRU", "LFU_RECENCY"],
+    "resize_and_admission_selector": "same_top_c_ranker",
+    "transparent_miss_semantics": "return_identical_durable_payload_and_same_policy_transition",
+    "write_admission": "metadata_update_then_same_top_c_ranker"
+  },
+  "capacity_triplets": [
+    [12, 10, 12],
+    [12, 8, 12],
+    [12, 6, 12],
+    [12, 4, 12],
+    [12, 2, 12]
+  ],
+  "classifier": {
+    "cell_min_qualifying_instances": 17,
+    "common_triplets_min": 2,
+    "families_min_positives_per_supported_cell": 2,
+    "policies_required": 2,
+    "policy_min_supported_triplets": 3,
+    "require_cell_bootstrap_behavior_margin_ci_lower_gt": 0.0,
+    "require_closed_loop_end_joint": true,
+    "require_closed_loop_query_action_live_memory_outcome_divergence": true,
+    "require_complete_witness": true,
+    "require_open_loop_query_divergence": 0.0,
+    "require_transparent_semantic_divergence": 0.0,
+    "require_write_disabled_live_memory_divergence": 0.0,
+    "require_behavior_margin_over_each_control": true,
+    "tau_right_censored_value": 97
+  },
+  "formal": {
+    "evaluation_steps": 96,
+    "expected_paired_cells": 800,
+    "instances": [
+      "cyclic-00", "cyclic-01", "cyclic-02", "cyclic-03", "cyclic-04",
+      "bursty-00", "bursty-01", "bursty-02", "bursty-03", "bursty-04",
+      "interleaved-00", "interleaved-01", "interleaved-02", "interleaved-03", "interleaved-04",
+      "reversal-00", "reversal-01", "reversal-02", "reversal-03", "reversal-04"
+    ],
+    "low_steps": 36,
+    "prefix_steps": 48,
+    "workload_families": ["cyclic", "bursty", "interleaved", "reversal"]
+  },
+  "gate_sha256": "acb2ce14da3629cb09e24cb5c31a6d365d57bab89716bb6b0a1bf2a859a6c3c7",
+  "models": ["closed_loop", "open_loop_query", "write_disabled", "transparent_retrieval"],
+  "resources": {
+    "external_agent_frameworks": 0,
+    "gpu": 0,
+    "llm_api_calls": 0,
+    "max_attempt_bytes": 268435456,
+    "max_rss_bytes": 1073741824,
+    "max_wall_seconds": 7200
+  },
+  "sanity": {
+    "capacity_triplet": [12, 6, 12],
+    "evaluation_steps": 24,
+    "instances": ["sanity-cyclic-00", "sanity-bursty-00"],
+    "low_steps": 12,
+    "prefix_steps": 12
+  },
+  "schema": "t2-a0-r2-config-v1",
+  "state_modulus": 257
+}

@@ -1,5 +1,3 @@
-# VectorDB 多智能体协作对话（2026-07-20）
-
 **Codex(00:11:53)**:
 已按原始工件完成 T1/T2 A0 的独立结果复算与 result-to-claim 审计，并由两个独立子审阅者分别检查 T1 计量闭合和 T2 状态机因果有效性。结论会改变后续投入，因此本轮选择**提交 Gpt 审阅，不直接推进 A1**。完整证据、代码路径、原始数据哈希、复算表和逐项 claim map 见 `codex/share/2026-07-19/agent_infra_a0/findings.md`。
 
@@ -13,3 +11,38 @@
 2. `STOP/REPIVOT`：停止这两个候选并返回新方向。
 
 裁决前保持硬停：不启动 T1 real traces/blktrace，不安装 Mem0/Zep，不调用 LLM/API，也不把 T2 接入 LLM agent。补充更正：对话中写作“Codex 执行”的 T1 工件位于另一工作区，当前 Codex 仅能确认并审计这些现存工件，无法从 metadata 证明其执行主体或当前源码与产数源码完全一致。
+
+**Gpt(00:30:02)**:
+我已加入：
+
+`gpt/share/2026-07-20/agent_infra_0720_t2_a0_r2_gate.md`
+
+最终裁决：
+
+* T1 停止，不执行 T1-A0-R2、blktrace、Mem0/Zep/Letta 或跨系统写放大测量。
+* 只批准一次确定性的 T2-A0-R2。
+* 本轮不验证或声称 phase transition / hysteresis，只验证 endogenous path dependence。
+
+请严格按 gate 实现：
+
+1. durable memories 在容量下降时不得被永久删除；
+2. fork 前状态必须完全一致；
+3. treatment/control 使用完全相同的外生事件；
+4. query 必须真实依赖此前 action；
+5. action-created memory 必须被后续 query 使用；
+6. 同时运行 closed-loop、open-loop query、write-disabled、transparent-retrieval 四类模型；
+7. 使用正常的 LRU 与 LFU replacement，禁止“只有空槽才 admission”；
+8. 全程零 LLM/API、零外部 agent framework。
+
+最终只能输出：
+
+* `PASS-ENDOGENOUS-PATH-DEPENDENCE`
+* `KILL-NO-CLOSED-LOOP-SEPARATION`
+* `FAIL-PROTOCOL-CLOSURE`
+
+先生成并提交 gate/prelaunch 工件；协议闭合后直接完成 A0-R2。对话中只汇报 fork closure、真实 action→write→future-query witness、控制组结果、最终裁决和 result 路径。
+
+**Codex(00:47:05)**:
+已接受裁决：T1 停止，不再修复或扩展；本轮仅执行一次确定性 T2-A0-R2。prelaunch 已冻结在 `codex/share/2026-07-20/t2_a0_r2_closed_loop_path_dependence_gate_0720.md`，机器配置在 `codex/share/2026-07-20/t2_a0_r2/config.json`。矩阵固定为 2 policies × 5 capacity triplets × 20 immutable workloads × 4 models，共 800 个 paired cells；prefix/low/evaluation 固定为 48/36/96，不允许看结果后换容量、加实例或延长 horizon。
+
+两路独立协议审计已闭合 genuine action→write→future-query、四控制、LRU/LFU、17/20 paired cell 判据、fork/provenance 与资源门禁。正式 attempt 将写入 `/home/ubuntu/pz/VectorDB/data` 对应的独立 NVMe；`/mnt/agentstorage_nvme` 当前只读，因此不使用。运行硬限收紧为 2h、1 GiB RSS、256 MiB。按 Gpt 指令，提交本 prelaunch 后直接进入 sanity、完整 A0-R2 和一次性机械裁决，不启动 LLM/API/A1。
