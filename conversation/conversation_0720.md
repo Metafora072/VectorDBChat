@@ -58,3 +58,14 @@ T2-A0-R2 已完成并封存，终局裁决为 **`KILL-NO-CLOSED-LOOP-SEPARATION`
 决定性 kill 原因是必要控制复现了行为持久性。Open-loop query 的 `Q=0`，但行为指标 `B` 与 closed-loop 相当且总体略高；write-disabled 的 `M=0`，但 `B` 仍与 closed-loop 相当；transparent retrieval 的语义 `D=0`，排除了 bookkeeping 泄漏。LRU 与 LFU_RECENCY 在五个 triplet 上的 qualifying 数均仅为 `1,2,2,2,3 /20`，10 个 behavioral-margin bootstrap CI 下界均不大于 0，两个 policy 都没有 supported triplet，也没有共同 triplet。正的 full-composite `D` margin 只反映 closed-loop 同时保留 query 和 durable-state 两个差异分量，不能替代 `B` separation。
 
 三路独立只读审计已分别确认因果解释、统计判级与 provenance closure。完整报告位于 `codex/share/2026-07-20/t2_a0_r2_closed_loop_path_dependence_result_0720.md`；原始 attempt 位于独立 NVMe 的 `/home/ubuntu/pz/VectorDB/data/agent_infra/t2_a0_r2/t2_a0_r2_20260720_002`。运行与复验累计约 13 分 19 秒，峰值 RSS 约 66.7 MiB，最终占用约 135.0 MiB。按 gate 停止：不推进 T2 A1、不复活 T1、不追加实验，现提交 Gpt 审阅。
+
+**PZ(15:32:33)**:
+我想知道，现在的工作，其 SSD 吞吐量有没有达到设备上限？有没有不对齐的 I/O？Recall 指标目前是多少？有没有再优化的空间？内存和 SSD 用量分别是多少？有没有进一步节省的空间？列个表给我
+
+**Codex(15:50:19)**:
+已经统计出来，在 `codex/share/2026-07-20/current_work_performance.md` 里，总的判断是：设备没有跑满，Recall 仍可用吞吐换取提升，DGAI 构建内存和历史实验磁盘占用有显著优化空间；但此前研究主线中的 queue coalescing 已经没有空间。
+
+**Codex(15:52:53)**:
+请 Gpt 审阅 `codex/share/2026-07-20/current_work_performance.md`，重点裁决证据边界与下一步。当前 Samsung 990 PRO 查询最高为 `1.163 GB/s / 283.8K IOPS`，CP20 更新最高总吞吐为 `0.912 GB/s`，均明显低于设备标称上限；查询和 graph-update 热路径均为精确 `4 KiB`，未发现有害的非对齐 Direct I/O。CP20 Recall@10 为 `94.255%–97.634%`，提高 L 可增加约 3 个百分点，但损失 `28%–33%` QPS。运行期峰值 RSS 为 `2.53–4.60 GiB`，DGAI build 历史峰值为 `132.2 GiB`。Dynamic Vamana Atlas 当前占 `725.6 GiB`，其中 `formal/` 为 `474.3 GiB`，存在较大的只读清理审计价值。
+
+我的初判是：SSD 未达到带宽/IOPS 上限，仍有并发度、依赖链和构建内存方面的工程 profiling 空间；但没有 registered fio/iostat queue-depth/util 基线，因此尚不能把差距归为 SSD、CPU 或软件路径中的任一单因素。M3 已证明 queue coalescing 的 pre-submit supersedable bytes 精确为 0，不应复活该机制。请 Gpt 决定是授权最小只读 bottleneck/space audit 并制定新 gate，还是维持 Dynamic Vamana 全线停止；裁决前不运行 fio、不删除工件、不启动新实验。
