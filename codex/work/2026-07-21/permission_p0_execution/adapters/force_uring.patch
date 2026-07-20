@@ -34,3 +34,13 @@ index f40a9b8..972052f 100644
  
  if(IO_ENGINE STREQUAL "aio" OR NOT PIPEANN_IO_URING_COMPILE_RESULT OR NOT "${PIPEANN_IO_URING_RUN_RESULT}" STREQUAL "0")
  	# AIO is specified or uring is unavailable.
+@@ -72,7 +78,8 @@ if(IO_ENGINE STREQUAL "aio" OR NOT PIPEANN_IO_URING_COMPILE_RESULT OR NOT "${PIPE
+ 	set(IO_ENGINE "aio" CACHE STRING "I/O engine: uring, aio, or spdk" FORCE)
+ 	message(STATUS "Using AIO for asynchronous I/O, compatible but slower.")
+ else()
+-	include_directories(${PROJECT_SOURCE_DIR}/third_party/liburing/src/include)
++	# Use the distro liburing headers, which match this host's kernel UAPI.
++	include_directories(/usr/include)
+ 	link_directories(${PROJECT_SOURCE_DIR}/third_party/liburing/src)
+ 	if(IO_ENGINE STREQUAL "spdk")
+ 		add_definitions(-DUSE_SPDK)

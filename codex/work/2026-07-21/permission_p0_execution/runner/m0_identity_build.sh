@@ -80,7 +80,7 @@ cmake -S "$SRC" -B "$BUILD" \
   -DBLAS_LIBRARIES=/lib/x86_64-linux-gnu/libblas.so.3 \
   -DCMAKE_C_COMPILER_LAUNCHER= \
   -DCMAKE_CXX_COMPILER_LAUNCHER= \
-  -DCMAKE_CXX_FLAGS="-include /usr/include/liburing.h -I$ADAPTER"
+  -DCMAKE_CXX_FLAGS="-I$ADAPTER"
 
 grep -q '^IO_ENGINE:STRING=uring$' "$BUILD/CMakeCache.txt"
 grep -q -- '-DUSE_URING' "$BUILD/compile_commands.json"
