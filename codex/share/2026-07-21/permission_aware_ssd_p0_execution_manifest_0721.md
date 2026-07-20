@@ -49,6 +49,7 @@ clean official commit 在本机缺少 `cblas.h`，且没有 tcmalloc；官方 CM
 
 - 仅声明系统 BLAS ABI 的 `adapters/cblas.h`，显式链接 `/lib/x86_64-linux-gnu/libblas.so.3`；
 - `adapters/force_uring.patch`，只在独立 regular-ring probe 通过后允许 `PIPEANN_FORCE_URING=ON`；
+- 强制预包含本机 `liburing-dev 2.5` header，并冻结其 hash；官方 vendored 2.10 header 使用当前 Ubuntu 6.8 UAPI 未定义的 discard opcode，不能与本机 kernel headers 直接编译，但运行时仍链接系统 `liburing.so.2`；
 - `USE_TCMALLOC=OFF`，明确记为 allocator deviation；
 - adapter diff/hash、CMakeCache、compile_commands、ldd 和最终 binary hash 全部冻结。
 

@@ -32,6 +32,8 @@ cp "$HARNESS_ROOT/adapters/cblas.h" "$ADAPTER/cblas.h"
 cp "$HARNESS_ROOT/adapters/uring_probe.cpp" "$ADAPTER/uring_probe.cpp"
 cp "$HARNESS_ROOT/adapters/force_uring.patch" "$ADAPTER/force_uring.patch"
 sha256sum "$ADAPTER"/* > "$MANIFEST/adapter_sha256.txt"
+sha256sum /usr/include/liburing.h /usr/include/liburing/*.h \
+  > "$MANIFEST/system_liburing_header_sha256.txt"
 
 git -C "$SRC" apply --check "$ADAPTER/force_uring.patch"
 git -C "$SRC" apply "$ADAPTER/force_uring.patch"
@@ -58,6 +60,7 @@ g++ -O2 "$ADAPTER/uring_probe.cpp" -o "$ADAPTER/uring_probe"
   echo "use_tcmalloc=OFF"
   echo "allocator_deviation=system-default-malloc"
   echo "adapter=external-cblas-abi-header-plus-force-regular-uring-after-probe"
+  echo "liburing_header_adapter=system-liburing-2.5-for-ubuntu-6.8-uapi"
 } > "$MANIFEST/identity.env"
 
 sha256sum \
@@ -77,7 +80,7 @@ cmake -S "$SRC" -B "$BUILD" \
   -DBLAS_LIBRARIES=/lib/x86_64-linux-gnu/libblas.so.3 \
   -DCMAKE_C_COMPILER_LAUNCHER= \
   -DCMAKE_CXX_COMPILER_LAUNCHER= \
-  -DCMAKE_CXX_FLAGS="-I$ADAPTER"
+  -DCMAKE_CXX_FLAGS="-include /usr/include/liburing.h -I$ADAPTER"
 
 grep -q '^IO_ENGINE:STRING=uring$' "$BUILD/CMakeCache.txt"
 grep -q -- '-DUSE_URING' "$BUILD/compile_commands.json"
