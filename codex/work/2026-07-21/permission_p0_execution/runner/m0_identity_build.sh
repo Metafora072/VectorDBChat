@@ -103,7 +103,12 @@ if grep -q 'not found' "$MANIFEST/build_disk_index_filtered.ldd"; then
   exit 71
 fi
 
-grep -q 'liburing.so' "$MANIFEST/build_disk_index_filtered.ldd"
+if grep -q 'not found' "$MANIFEST/search_disk_index_filtered.ldd"; then
+  echo "unresolved search runtime dependency" >&2
+  exit 72
+fi
+
+grep -q 'liburing.so' "$MANIFEST/search_disk_index_filtered.ldd"
 grep -q '/lib/x86_64-linux-gnu/libblas.so.3' "$MANIFEST/build_disk_index_filtered.ldd"
 git -C "$SRC" status --porcelain > "$MANIFEST/source_status_after_build.txt"
 cmp "$MANIFEST/source_status_before_build.txt" "$MANIFEST/source_status_after_build.txt"
