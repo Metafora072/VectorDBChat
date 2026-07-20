@@ -305,6 +305,7 @@ def assert_contract(results: Iterable[Mapping[str, object]]) -> None:
     assert pre_stale["returned_node"] == DECOY
     assert pre_fresh["target_node_event_sequence"] == [
         "pre_filter_include",
+        "main_pool_admit",
         "main_pool_read",
         "device_submit",
         "exact_allow",
