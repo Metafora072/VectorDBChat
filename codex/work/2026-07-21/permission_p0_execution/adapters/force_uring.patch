@@ -1,0 +1,36 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f40a9b8..972052f 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
+ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+ set(IO_ENGINE "uring" CACHE STRING "I/O engine: uring, aio, or spdk")
+ set_property(CACHE IO_ENGINE PROPERTY STRINGS uring aio spdk)
++option(PIPEANN_FORCE_URING "Use uring after an external regular-ring capability probe" OFF)
+ option(USE_TCMALLOC "Use tcmalloc allocator" ON)
+ option(BUILD_PYTHON_INTERFACE "Build Python interface (requires pybind11)" OFF)
+ option(BUILD_MILVUS_SERVER "Build Milvus-compatible gRPC server (requires grpc++)" OFF)
+@@ -60,12 +61,17 @@ add_definitions(
+ # add_link_options(-fsanitize=address,undefined -lasan -lubsan)
+ 
+ # check if uring is available.
+-try_run(
+-	PIPEANN_IO_URING_RUN_RESULT
+-	PIPEANN_IO_URING_COMPILE_RESULT
+-	"${CMAKE_BINARY_DIR}"
+-	SOURCES "${PROJECT_SOURCE_DIR}/tests/test_uring.cpp"
+-)
++if(PIPEANN_FORCE_URING)
++	set(PIPEANN_IO_URING_COMPILE_RESULT TRUE)
++	set(PIPEANN_IO_URING_RUN_RESULT 0)
++else()
++	try_run(
++		PIPEANN_IO_URING_RUN_RESULT
++		PIPEANN_IO_URING_COMPILE_RESULT
++		"${CMAKE_BINARY_DIR}"
++		SOURCES "${PROJECT_SOURCE_DIR}/tests/test_uring.cpp"
++	)
++endif()
+ 
+ if(IO_ENGINE STREQUAL "aio" OR NOT PIPEANN_IO_URING_COMPILE_RESULT OR NOT "${PIPEANN_IO_URING_RUN_RESULT}" STREQUAL "0")
+ 	# AIO is specified or uring is unavailable.
