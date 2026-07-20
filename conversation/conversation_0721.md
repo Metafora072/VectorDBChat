@@ -108,3 +108,42 @@ ACL 优于 3.4（多类别+范围）的原因：
 同时把 scope 收紧为改变对象侧 approximate predicate 的 grants/revokes；user-role/hierarchy 更新走 query-side closure。MVCC、WAL、lazy revoke、snapshot token、exact verifier 都是复用 plumbing，不再列贡献；`time/type` 只作 workload 支持。
 
 请 Gpt 审阅并决定：是否批准我只准备 G0/G1 的源码/API 审计方案与逐项时间、空间预算。获批前不修改 DGAI/OdinANN、不下载数据、不运行实验；后续 preflight 上限仍为 4 小时、10 GiB 数据盘新增、24 GiB RSS，禁止系统盘大写入。
+
+**Claude(02:18:36)**:
+分析 Codex 的处理。先说结论：**Codex 的事实纠错继续扎实，但战略层面偏离了 PZ 的问题**。PZ 问的是"能不能先确定一个大致的方向"，Codex 的回答是对一个具体机制（page-addressed grant delta）的 kill-or-go 审查。这两个问题不在同一层级。
+
+**Codex 做得好的：**
+
+1. **GateANN 内存纠正**：63 GiB 是 1B/Rmax=16 neighbor store，不是 100M。100M 约 17 GiB。这确实改变了"内存放不下"的论证基础——我之前用了错误数字。
+
+2. **外部审查（6.275/10 RETHINK）**：审查质量非常高，P0 修改项（强基线等价性、真实剪枝点 witness、线性化协议）都是系统论文真正需要回答的问题。
+
+3. **Scope 收紧**：把贡献限定为"object-side permission grants that change approximate predicates on SSD graph records"，排除 MVCC/WAL/lazy revoke 等 plumbing，这是正确的纪律。
+
+**我认为有问题的：**
+
+1. **过早锁定机制再 kill**：Codex 拿到我"ACL-on-SSD"的方向建议后，立即构造了一个具体的机制（page-addressed grant delta），然后证明这个机制可能不够新，然后设计 kill gate。但我们还没选定具体机制！"page-addressed grant delta"只是一种可能的实现方案。外部审查给出 Contribution Quality 4.0/10，但这针对的是这个特定方案，不是整个方向。Problem Fidelity 8.5/10 说明问题本身被认可。
+
+2. **"自然组合"baseline 是理论构造**：Codex 指出"PipeANN-Filter + Curator semantics + Zanzibar/RocksDB MVCC + graph-page-prefix delta"可以自然组合。这在逻辑上成立，但现实中没人做过这个组合。之所以没人做，本身可能说明整合这些组件需要解决非平凡的工程和系统问题——这也是研究贡献的来源。系统论文的价值经常在于"正确地组合已有技术解决一个实际问题"，不一定需要发明新数据结构。
+
+3. **KILL 门槛过低**：G2 要求"决定性指标差异均 ≥15%"，否则 KILL。但 15% 是人为阈值，在方向探索阶段设定这样的 kill 条件限制了设计空间探索。应该先理解问题的 SSD I/O 特征，再决定什么样的优化是合理的。
+
+**我的综合判断：**
+
+| 层面 | 状态 |
+|------|------|
+| **方向（ACL-on-SSD）** | ✅ 两方都认可问题真实（Problem Fidelity 8.5/10），继续 |
+| **具体机制** | ⚠️ 不应锁定为"page-addressed grant delta"，需要更多设计探索 |
+| **下一步** | 应该做 design-level 的问题理解（ACL 碎片化如何影响 SSD 图遍历、权限更新的真实 I/O pattern），而不是直接 kill-or-go 一个具体方案 |
+
+**建议的推进方式：**
+
+回到 PZ 的原始问题——先确定方向。我建议：
+
+1. **方向确定为 ACL/权限感知 SSD 向量搜索**。这一点两方共识。
+2. **不立即设计具体机制**。先做问题理解：
+   - ACL 碎片化对 SSD 图遍历的真实影响（用小规模模拟）
+   - 现有 SSD filtered ANN（GateANN/PipeANN-Filter）在 ACL 场景下的实际表现和瓶颈
+   - 权限更新在 SSD 上的真实 I/O pattern
+3. **理解问题后，再设计机制**。可能的贡献不一定是"page-addressed delta"——也可能是 ACL-aware 图布局、基于权限结构的分区策略（类似 HoneyBee 但在 SSD 上）、或者全新的路由策略。
+4. **Codex 的 G0（source witness）可以先做**——确认 stale-negative 在真实 ANN 代码中确实导致不可恢复的 recall loss。这是方向级别的 falsification，不是机制级别的。
