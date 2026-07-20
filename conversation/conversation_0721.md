@@ -60,3 +60,51 @@ Claude 提出的新方向，即复合查询的方向我挺感兴趣的，让 Cla
 残余机会收窄为严格 DRAM 上限下的 out-of-core policy metadata、权限 churn 的 SSD 写放大，以及索引与权限状态的 freshness/snapshot 一致性。`tenant+ACL+time/type` 目前只证明了 policy-aware 场景，尚未证明 time/type 带来不可分解的复合查询问题；必须用 ACL-only 作成对控制。若坚持真正的 compound predicate，KHI 已证明 multi-attribute range 是独立活跃查询族，应升为第一备选，但同样需先找 SSD 页级 I/O residual。
 
 请 Gpt 二选一签发下一轮：A）policy workload + strong-baseline feasibility preflight，只闭合 workload、100M/1B 内存外推、baseline 可复现性与 A0 成本；B）转向 multi-attribute range on SSD 做同级 preflight。当前未修改 DGAI/OdinANN、未下载数据、未启动实验。建议首轮若获批仍限定 1M、4 小时、10 GiB 数据盘新增、24 GiB RSS，全部大工件放 `/dev/nvme8n1`。
+
+**PZ(01:41:02)**:
+Codex，你要明白有平行工作不代表我们不能做，如果已有工作还有未解决的问题，或者我们可以做一个更好的设计，达到更好的效果，也是可以做的。Claude，请分析 Codex 此轮的推进结果，看看能不能先确定一个大致的方向。是做 ACL 场景，还是考虑 3.4 多类别或是其它方向。
+
+**Claude(01:51:57)**:
+分析了 Codex 的审查结论。Codex 的 7 项事实纠错全部成立，我逐条接受（HoneyBee 是 SIGMOD 2026 非 2025、漏检 Curator、安全语义写反等）。"SSD ACL=零、动态更新=零"的表述确实过强，已修正。
+
+但 Codex 的结论过于保守。关键区分：**机制级别的 novelty vs 系统级别的贡献**。
+
+Codex 证明了 Bloom 预检、graph tunneling、grant/revoke、multi-predicate conjunction 等单个机制不是新的。但这些机制**从未在同一个 SSD 系统中被整合解决**：
+- HoneyBee / Curator / Veda：有 ACL，但**纯内存**
+- GateANN：有 SSD + multi-predicate，但 **63 GB/100M 内存**，无 ACL 语义
+- PipeANN-Filter：有 SSD + Bloom，但**无 ACL、无动态更新**
+
+没有系统同时满足：SSD-resident + ACL-aware + bounded DRAM + permission churn。
+
+Codex 自己也识别了三个真正的残余空间：(1) 严格 DRAM 上限下的 out-of-core policy metadata；(2) 权限 churn 的 SSD 写放大；(3) 撤权可见性/snapshot 一致性。**这三个问题足以支撑系统论文。**
+
+**方向判断：仍然推荐 ACL 方向**，但修正 framing：
+- **旧 framing**（已否定）："SSD ACL = 零，所有机制新"
+- **修正 framing**："现有 ACL-aware 系统全是内存，现有 SSD filtered ANN 不考虑 ACL 特殊需求（策略元数据超 DRAM、权限 churn 写放大、撤权可见性延迟）。我们设计首个在严格 DRAM 预算下支持 ACL 感知的 SSD 向量搜索系统"
+
+ACL 优于 3.4（多类别+范围）的原因：
+1. 故事冲击力：安全 > 性能优化
+2. 差异化清晰度：ACL 与普通 label 有明确性质差异，不会被审稿人说"只是 GateANN 的增量改进"
+3. Baseline 更 clean：HoneyBee（内存）vs 我们（SSD），而非 GateANN（SSD 但 63GB）vs 我们（同样 SSD）
+4. 3.4 竞争更拥挤：KHI 已做多属性范围 2.46-16.22× 加速
+
+接受 Codex 的质疑：ACL+time/type 的"复合"贡献暂不强调。主贡献锚定 ACL-on-SSD 系统，time/type 作为附带支持。
+
+详细分析：`claude/share/2026-07-21/compound_query_direction_decision_0721.md`。建议 PZ 确认方向后，先做 design-level 可行性分析（GateANN DRAM 外推、HoneyBee SSD 空间/更新放大估算、权限 churn rate 真实数据），再进入 preflight。
+
+**Codex(02:15:29)**:
+我接受 Claude 关于“保留 ACL-on-SSD 大方向、先做 design-level feasibility”的主判断，并用 `research-refine` 加三路独立审计把方法推进到可审议门禁；详细结论见 `codex/share/2026-07-21/permission_aware_ssd_design_feasibility_0721.md`，完整评审历史见 `codex/work/2026-07-21/policy_ssd_refine/refine-logs/`。
+
+先纠正一个会改变 framing 的资源事实：GateANN 的 63 GiB 是 **1B/Rmax=16 neighbor store 单项**，不是 100M；其 100M artifact 约 17 GiB。当前机器为 251 GiB DRAM、约 238 GiB available，因此不能以“本机装不下”立题。64 GiB 只能作为明确的 deployment cost cap，用 cgroup 对所有 baseline 公平约束。当前数据盘 `/dev/nvme8n1` 尚有约 759 GiB 可用。
+
+外部方法审查评分为 **6.275/10，RETHINK**。它不否定 ACL 问题：object-side grant 的 stale-negative 可能损害 authorized recall，revoke 的 stale-positive 可由 exact authorization 兜底；它否定的是当前机制已经成立。`PipeANN-Filter + Curator semantics + Zanzibar/RocksDB MVCC + graph-page-prefix delta` 已能自然获得 WAL、page-local lookup、cache、batching 与 compaction。若 page-addressed delta 只把 RocksDB key 从 node 换成 graph page，即使性能更好也很难构成独立机制贡献。
+
+因此我没有启动代码或实验，而将下一步收紧为三道低成本门禁：
+
+1. `G0 Source witness`：在真实 ANN 代码中定位 approximate predicate 的剪枝点，并用最小确定性图证明 stale object-side grant 会造成 exact recheck 无法恢复的 recall loss；失败则 `KILL-NO-ANN-WITNESS`。
+2. `G1 Strong natural baseline`：允许 RocksDB 使用同样的 graph-page prefix、cache、WAL、batching、durability 与 compaction，禁止 node-keyed 弱基线。
+3. `G2 Unique property`：只寻找一个强自然组合无法获得的、可形式化的物理性质，例如把 policy overlay lookup 与已有 graph-page I/O 合并并给出额外 I/O 上界；若只是 schema/cache，或决定性指标差异均小于 15%，则 `KILL-RENAME-MVCC-LSM`。
+
+同时把 scope 收紧为改变对象侧 approximate predicate 的 grants/revokes；user-role/hierarchy 更新走 query-side closure。MVCC、WAL、lazy revoke、snapshot token、exact verifier 都是复用 plumbing，不再列贡献；`time/type` 只作 workload 支持。
+
+请 Gpt 审阅并决定：是否批准我只准备 G0/G1 的源码/API 审计方案与逐项时间、空间预算。获批前不修改 DGAI/OdinANN、不下载数据、不运行实验；后续 preflight 上限仍为 4 小时、10 GiB 数据盘新增、24 GiB RSS，禁止系统盘大写入。
