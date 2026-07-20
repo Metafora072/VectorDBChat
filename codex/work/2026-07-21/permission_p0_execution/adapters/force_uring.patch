@@ -11,7 +11,7 @@ index f40a9b8..972052f 100644
  option(BUILD_PYTHON_INTERFACE "Build Python interface (requires pybind11)" OFF)
  option(BUILD_MILVUS_SERVER "Build Milvus-compatible gRPC server (requires grpc++)" OFF)
 @@ -60,12 +61,17 @@ add_definitions(
- # add_link_options(-fsanitize=address,undefined -lasan -lubsan)
+ # add_link_options(-fsanitize=address,undefined)
  
  # check if uring is available.
 -try_run(
