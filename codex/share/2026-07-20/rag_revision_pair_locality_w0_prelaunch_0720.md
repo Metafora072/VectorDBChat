@@ -1,9 +1,15 @@
 # RAG Document Revision：Paired-Replacement Locality W0 Prelaunch
 
+> **Amendment status (2026-07-20):** GPT's later amendment supersedes the
+> ordinal/occurrence pairing text in Sections 3.2, 4.1, and Control C below.
+> The implemented rule and final artifact closure are recorded in Section 13,
+> which also supersedes all earlier `OPEN`/review-request state:
+> stable exact-payload LCS anchors, with only unmatched `1 -> 1` spans admitted.
+
 **Date:** 2026-07-20（UTC+8）  
 **Owner:** Codex  
 **Upstream gate:** `gpt/share/2026-07-20/rag_revision_pair_locality_w0_gate_0720.md`  
-**Current state:** `REVIEW_REQUIRED`  
+**Current state:** `FAIL-W0-WORKLOAD-CLOSURE`
 **Execution authorized:** `false`
 
 ## 0. Boundary and current verdict
@@ -239,7 +245,7 @@ R = {16, 32, 64}
 4. Unit tests compare blockwise output with a full stable sort and include duplicate vectors, a tie exactly at rank 64, self-exclusion, and block-boundary ties.
 5. For each pair/control, filter the top-321 rows/queries to its exact 8,192-member background, then take top-R. Persist top-321 IDs/scores plus filtered top-R records, not the full distance matrix.
 
-For rank, append the excluded anchor to its exact 8,192-member background, giving an active corpus of exactly 8,193 items in every condition. `x_new` is absent. Rank ties use `(distance ascending, canonical_chunk_id ascending)`.
+For rank, append the excluded anchor to its exact 8,192-member fixed reference corpus, giving a pair-specific fixed reference population of exactly 8,193 items in every condition. `x_new` is absent. Rank ties use `(distance ascending, canonical_chunk_id ascending)`.
 
 For each `R`, candidate order is independently:
 
@@ -396,3 +402,50 @@ Please review the frozen design and choose one of two actions:
 2. return the prelaunch for revision.
 
 Until the final run gate is explicitly issued after those OPEN items close, W0 remains at 0% measurement progress.
+
+## 13. Amendment implementation and final preparation closure
+
+This section supersedes the ordinal pairing design and all earlier OPEN-state tables.
+
+### 13.1 Corrected implemented rule
+
+- Every unchanged `(document path, normalized section path)` is aligned by a lexicographically stable, occurrence-aware LCS over exact full-payload SHA-256 values.
+- Exact matches are anchors and excluded. Only an unmatched `1 -> 1` span is admitted; insertion, deletion, split, merge, many-to-many, and reorder spans receive explicit reason codes.
+- Pair identity binds source, first-parent/child SHA, path, section, left/right exact anchors or boundaries, span ordinal, and both payload hashes.
+- First-parent merge commits are explicitly diffed against parent one using NUL-safe `diff-tree -M100% --raw`; the previous `git log --name-status` enumeration was rejected because it omitted merge deltas.
+- Control C includes `lo` plus every relevant content event, even when that commit is excluded from the real-pair population. Delete/rename-old tombstones and re-add/rename-new/copy-new segment starts prevent lineage from crossing a path-absence boundary. Control C reuses the same exact-LCS `1 -> 1` admission.
+
+The final preparation suite passed 42/42 tests, including all ten mandatory fixtures, merge first-parent handling, multi-document history, delete/re-add segmentation, exact top-321 equivalence, controls, and clustered statistics.
+
+### 13.2 Model and resource preparation
+
+Both pinned CPU model canaries passed across two fresh processes. Token IDs, raw FP32 embeddings, normalized embeddings, shapes, and weights matched byte-for-byte. Nomic additionally closed its original/runtime config and pinned remote-code hashes.
+
+Final canary comparison hashes:
+
+- MiniLM: `69f060a5dab28f4aca44440a251a2276b13d12d7b000189788806f9564f6fa81`
+- Nomic: `6a5746d34b454904f665c022263a298638a5b64953d6535c21b074d6c64da48e`
+
+The shared stage clock and full storage ledger were enforced across processes. At the failure seal, wall time was 4,948.0 seconds, accounted storage was 2,404,774,044 bytes including the reused environment/model, W0-owned data was about 870 MiB, source-materialization peak RSS was 1,131,425,792 bytes, and host `MemAvailable` was about 256.1 GB. All W0-owned artifacts remained on `/dev/nvme8n1`.
+
+### 13.3 Decisive workload-closure failure
+
+The first source in canonical order, CPython, produced:
+
+| Gate | Observed | Required | State |
+|---|---:|---:|---|
+| Fixed reference corpus | 8,448 | exactly 8,448 | pass |
+| Control A | 538 pairs / 213 documents | at least 128 / 64 | pass |
+| Control C | 25 pairs / 23 documents | at least 128 / 64 | **fail** |
+
+Of 513 missing Control C records, 511 lack a distinct historical anchor, one lacks any non-adjacent version, and one cannot form an exact-LCS `1 -> 1` alignment. No fallback or substitution is permitted. The sealed workload summary SHA-256 is `214b9739134c087ccb8df18f55cf71552b97d2652ea48d85d7abe1926443dd71`.
+
+By the frozen precedence rule, this is immediately:
+
+```text
+FAIL-W0-WORKLOAD-CLOSURE
+```
+
+Kubernetes materialization, full model-specific Control B encoding, projection, and every complete-workload outcome metric were skipped by fail-fast. Measurement remains 0%; `full_measurement=false`; the measurement CLI remains disabled. `PASS-W0-PRELAUNCH` is not issued.
+
+Detailed preparation evidence: `codex/share/2026-07-20/rag_revision_pair_locality_w0_preparation_result_0720.md`.

@@ -1,0 +1,132 @@
+{
+  "authorization": {
+    "artifact_preparation": true,
+    "full_measurement": false,
+    "required_run_token": "PASS-W0-PRELAUNCH"
+  },
+  "version": "w0-preparation-v2-lcs",
+  "seed": "527050c04eec3dd2c10e9865af170e2e7946582c3934909ab8d91baebfe6bb74",
+  "data_root": "/home/ubuntu/pz/VectorDB/data/VectorDB/rag_revision_pair_locality_w0",
+  "sources": {
+    "kubernetes_website": {
+      "repo": "/home/ubuntu/pz/VectorDB/data/VectorDB/rag_revision_pair_locality_w0/src/kubernetes-website",
+      "url": "https://github.com/kubernetes/website.git",
+      "lo": "7b11b1626a8fd9a64a6237e8ca9033a09aed1845",
+      "hi": "a01d6f3f0487860b12c47fe9953606db9508e3f9",
+      "format": "markdown",
+      "path_regex": "^content/en/docs/(?:.*/)?[^/]+\\.md$"
+    },
+    "cpython_doc": {
+      "repo": "/home/ubuntu/pz/VectorDB/data/VectorDB/rag_revision_pair_locality_w0/src/python-cpython",
+      "url": "https://github.com/python/cpython.git",
+      "lo": "c5438fdf4706a70bdd19338edc000dacffff6837",
+      "hi": "c4ab024530feb3a66d51bcef2e33b309ca0d543f",
+      "format": "rst",
+      "path_regex": "^Doc/(?:.*/)?[^/]+\\.rst$"
+    }
+  },
+  "blob_policy": {
+    "git_mode": "100644",
+    "min_bytes": 256,
+    "max_bytes": 524288,
+    "encoding": "utf-8-strict",
+    "rename_similarity": "100%"
+  },
+  "chunking": {
+    "name": "heading-aware-v2-lcs",
+    "max_payload_tokens_without_specials": 254,
+    "breadcrumb_prefix": "[SECTION] ",
+    "breadcrumb_separator": " > ",
+    "payload_separator": "\n\n",
+    "root_section": "<root>",
+    "overlap": 0
+  },
+  "sampling": {
+    "max_documents_per_source": 256,
+    "max_pairs_per_document": 4,
+    "max_pairs_per_source": 1024,
+    "min_documents_per_control_per_source": 64,
+    "min_pairs_per_control_per_source": 128
+  },
+  "fixed_reference": {
+    "core_size": 8192,
+    "reserve_size": 256,
+    "universe_size": 8448,
+    "control_anchor_payload_multiplicity": 1
+  },
+  "models": {
+    "minilm": {
+      "repo_id": "sentence-transformers/all-MiniLM-L6-v2",
+      "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+      "weights_sha256": "53aa51172d142c89d9012cce15ae4d6cc0ca6895895114379cacb4fab128d9db",
+      "config_sha256": "953f9c0d463486b10a6871cc2fd59f223b2c70184f49815e7efbcab5d8908b41",
+      "artifact_sha256": {
+        "1_Pooling/config.json": "4be450dde3b0273bb9787637cfbd28fe04a7ba6ab9d36ac48e92b11e350ffc23",
+        "config.json": "953f9c0d463486b10a6871cc2fd59f223b2c70184f49815e7efbcab5d8908b41",
+        "config_sentence_transformers.json": "061ca9d39661d6c6d6de5ba27f79a1cd5770ea247f8d46412a68a498dc5ac9f3",
+        "model.safetensors": "53aa51172d142c89d9012cce15ae4d6cc0ca6895895114379cacb4fab128d9db",
+        "modules.json": "84e40c8e006c9b1d6c122e02cba9b02458120b5fb0c87b746c41e0207cf642cf",
+        "sentence_bert_config.json": "fc1993fde0a95c24ec6c022539d41cf6e2f7c9721e5415d6fb6897472a9cd4b7",
+        "special_tokens_map.json": "303df45a03609e4ead04bc3dc1536d0ab19b5358db685b6f3da123d05ec200e3",
+        "tokenizer.json": "be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037",
+        "tokenizer_config.json": "acb92769e8195aabd29b7b2137a9e6d6e25c476a4f15aa4355c233426c61576b",
+        "vocab.txt": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"
+      },
+      "dimension": 384,
+      "prefix": ""
+    },
+    "nomic": {
+      "repo_id": "nomic-ai/nomic-embed-text-v1.5",
+      "revision": "e9b6763023c676ca8431644204f50c2b100d9aab",
+      "weights_sha256": "9e7d262b1fe5ea350782829496efa831901b77486bbde1cea54a4c822d010d5c",
+      "config_sha256": "9ab00bd92cee80a569f708140b7b6c1661a65891ff3765b1519e181ba2f2c92b",
+      "code_repo_id": "nomic-ai/nomic-bert-2048",
+      "code_revision": "7710840340a098cfb869c4f65e87cf2b1b70caca",
+      "runtime_config_sha256": "08db17458d4b2abaf874514b18b5a81cc0961512ea13fb354c01b00b5a245139",
+      "configuration_code_sha256": "f7871694b8de3d3df4ac6640313d5799ce323261a0fb90c5cc567ecc34a0039e",
+      "modeling_code_sha256": "3b24a366c4cc31b869466ccfb7bbb8879e138c97f8de06c83d4fa1e31a21f149",
+      "artifact_sha256": {
+        "1_Pooling/config.json": "3d6180f7233df2f529d65ea60c8db4af614fb78cbe99fd81103dcfeb9f8166a5",
+        "model.safetensors": "9e7d262b1fe5ea350782829496efa831901b77486bbde1cea54a4c822d010d5c",
+        "modules.json": "f93c503b32fa7bc2e186843f0add961caa14eb68f7be516e327df3cadbcd541a",
+        "sentence_bert_config.json": "9ee3935137f87c9ce6662ae17fe7afb7c9c64744a41247359fd228dc37e627b3",
+        "special_tokens_map.json": "5d5b662e421ea9fac075174bb0688ee0d9431699900b90662acd44b2a350503a",
+        "tokenizer.json": "d241a60d5e8f04cc1b2b3e9ef7a4921b27bf526d9f6050ab90f9267a1f9e5c66",
+        "tokenizer_config.json": "d7e0000bcc80134debd2222220427e6bf5fa20a669f40a0d0d1409cc18e0a9bc",
+        "vocab.txt": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"
+      },
+      "dimension": 768,
+      "prefix": "search_document: "
+    }
+  },
+  "oracle": {
+    "query_block": 256,
+    "corpus_block": 4096,
+    "stored_topk": 321,
+    "r_values": [16, 32, 64],
+    "candidate_budgets": [16, 32, 64, 128, 256, 512, 1024]
+  },
+  "statistics": {
+    "bootstrap_replicates": 20000,
+    "alpha": 0.05,
+    "primary_family_size": 30,
+    "curve_family_size": 63
+  },
+  "resources": {
+    "stage_started_unix": 1784548255,
+    "cpu_ids": "0-15",
+    "threads": 16,
+    "soft_storage_bytes": 9663676416,
+    "hard_storage_bytes": 10737418240,
+    "soft_rss_bytes": 23622320128,
+    "hard_rss_bytes": 25769803776,
+    "min_mem_available_bytes": 34359738368,
+    "min_cgroup_headroom_bytes": 30064771072,
+    "accounted_external_roots": [
+      "/home/ubuntu/pz/VectorDB/data/VectorDB/a0_topology_reuse/venv",
+      "/home/ubuntu/pz/VectorDB/data/VectorDB/a0_topology_reuse/models/models--sentence-transformers--all-MiniLM-L6-v2/snapshots/1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+    ],
+    "projection_wall_seconds": 12600,
+    "hard_wall_seconds": 14400
+  }
+}
