@@ -142,6 +142,24 @@ sudo systemd-run --wait --unit=permission-p0-m2 \
 
 M2 固定 build 参数 `R=64, R_dense=64, L=96, PQ=32, memory=8 GiB, threads=8`。ACL 为单 role、全对象与全部 16 query 授权；普通 GT 前 16 行等于 authorized GT。其唯一主张是 filtered build/search/input path 是否闭合。attribute index 是 buffered I/O，必须与 direct graph path 分开报告。
 
+M2 PASS 后追加一次同一 16-query/L=40 的短 syscall witness（不计入性能结果）：
+
+```bash
+sudo systemd-run --wait --unit=permission-p0-m2-trace \
+  -p User=ubuntu -p WorkingDirectory="$RUN_ROOT" \
+  -p MemoryHigh=20G -p MemoryMax=24G -p MemorySwapMax=0 \
+  -p RuntimeMaxSec=14400 -p LimitCORE=0 -p IOAccounting=yes \
+  -p ProtectSystem=strict -p ProtectHome=read-only -p NoNewPrivileges=yes \
+  -p ReadOnlyPaths=/home/ubuntu/pz/VectorDB/data \
+  -p ReadWritePaths="$RUN_ROOT" \
+  /usr/bin/python3 "$HARNESS_ROOT/runner/run_guard.py" \
+    --run-root "$RUN_ROOT" --stage m2_direct_io_trace -- \
+    /usr/bin/env RUN_ROOT="$RUN_ROOT" \
+      /usr/bin/bash "$HARNESS_ROOT/runner/m2_trace_search.sh"
+```
+
+该 trace 只用于确认 graph fd 的 `O_DIRECT`、`io_uring_setup/enter` 与程序报告的 4096-byte graph I/O size；不把带 `strace` 的 latency/QPS 写成性能结果。
+
 ## 6. M3 待 Gpt/Claude 的最小回复
 
 Claude：提交带 SHA-256 的 machine-readable workload manifest、query-user binding、authorized GT 规范与 matched-selectivity 公式。
