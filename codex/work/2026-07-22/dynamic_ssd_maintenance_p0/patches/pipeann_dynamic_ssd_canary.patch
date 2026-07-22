@@ -1,0 +1,636 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f40a9b8..c2109eb 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -172,6 +172,9 @@ if(BLAS_FOUND)
+ 		message(STATUS "BLAS is MKL, adding mkl_rt")
+ 		set(BLAS_LIBRARIES mkl_rt)
+     endif()
++else()
++	set(BLAS_LIBRARIES /lib/x86_64-linux-gnu/libblas.so.3)
++	message(STATUS "Using reference libblas fallback")
+ endif()
+ 
+ add_subdirectory(src)
+diff --git a/include/dynamic_index.h b/include/dynamic_index.h
+index baaad18..af94c09 100644
+--- a/include/dynamic_index.h
++++ b/include/dynamic_index.h
+@@ -100,6 +100,7 @@ class DynamicIndex : public BaseDynamicIndex {
+       }
+ 
+       disk_index_->load(load_prefix.c_str(), true); // force recopy for SPDK.
++      disk_index_->set_stats_deleted_tags(&deleted_nodes_set_);
+       if (use_mem_index_for_disk_index_) {
+         // mem_index is disk_index's navigation graph.
+         disk_index_->mem_index_.reset(mem_index_.get());
+@@ -617,6 +618,14 @@ class DynamicIndex : public BaseDynamicIndex {
+     return attr_size_;
+   }
+ 
++  void reset_update_trace() {
++    if (use_disk_index_) disk_index_->reset_update_trace();
++  }
++
++  typename pipeann::SSDIndex<T, TagT>::UpdateTraceSnapshot update_trace_snapshot() const {
++    return disk_index_->update_trace_snapshot();
++  }
++
+  private:
+   void do_insert(const T *point_p, TagT tag, const pipeann::Attributes *attrs = nullptr) {
+     uint32_t attr_vector_id;
+diff --git a/include/ssd_index.h b/include/ssd_index.h
+index cbaded5..bbba436 100644
+--- a/include/ssd_index.h
++++ b/include/ssd_index.h
+@@ -4,6 +4,7 @@
+ #include <limits>
+ #include <string>
+ #include <set>
++#include <unordered_set>
+ #include <omp.h>
+ 
+ #include <memory>
+@@ -17,6 +18,7 @@
+ #include "utils/lock_table.h"
+ #include "utils/percentile_stats.h"
+ #include "utils/tsl/robin_map.h"
++#include "utils/tsl/robin_set.h"
+ #include "nbr/abstract_nbr.h"
+ #include "utils.h"
+ #include "index.h"
+@@ -30,6 +32,38 @@ namespace pipeann {
+     static constexpr uint32_t kAllocatedID = std::numeric_limits<uint32_t>::max() - 1;
+     static constexpr uint32_t kExpandedNodesFactor = 10;
+ 
++    struct UpdateTraceSnapshot {
++      uint64_t write_page_touches = 0;
++      uint64_t distinct_dirty_pages = 0;
++      uint64_t read_page_touches = 0;
++      uint64_t distinct_read_pages = 0;
++      double position_search_us = 0;
++      double prune_us = 0;
++      double rmw_flush_us = 0;
++    };
++
++    void reset_update_trace() {
++      std::lock_guard<std::mutex> lock(update_trace_mu_);
++      update_write_page_touches_ = 0;
++      update_read_page_touches_ = 0;
++      update_position_search_us_ = 0;
++      update_prune_us_ = 0;
++      update_rmw_flush_us_ = 0;
++      update_dirty_pages_.clear();
++      update_read_pages_.clear();
++    }
++
++    UpdateTraceSnapshot update_trace_snapshot() const {
++      std::lock_guard<std::mutex> lock(update_trace_mu_);
++      return UpdateTraceSnapshot{update_write_page_touches_, update_dirty_pages_.size(), update_read_page_touches_,
++                                 update_read_pages_.size(), update_position_search_us_, update_prune_us_,
++                                 update_rmw_flush_us_};
++    }
++
++    void set_stats_deleted_tags(const tsl::robin_set<TagT> *deleted_tags) {
++      stats_deleted_tags_ = deleted_tags;
++    }
++
+     std::unique_ptr<Index<T, uint32_t>> mem_index_;  // in-memory navigation graph
+ 
+     // Index metadata (consolidated).
+@@ -314,6 +348,16 @@ namespace pipeann {
+     bool enable_tag2id = false;
+     libcuckoo::cuckoohash_map<TagT, uint32_t> tag2id_;
+ 
++    const tsl::robin_set<TagT> *stats_deleted_tags_ = nullptr;
++    mutable std::mutex update_trace_mu_;
++    uint64_t update_write_page_touches_ = 0;
++    uint64_t update_read_page_touches_ = 0;
++    double update_position_search_us_ = 0;
++    double update_prune_us_ = 0;
++    double update_rmw_flush_us_ = 0;
++    std::unordered_set<uint64_t> update_dirty_pages_;
++    std::unordered_set<uint64_t> update_read_pages_;
++
+     // Mirror a single id->tag mapping into tag2id_ (no-op unless enabled).
+     inline void track_tag2id(uint32_t id, const TagT &tag) {
+       if (enable_tag2id)
+diff --git a/include/utils/percentile_stats.h b/include/utils/percentile_stats.h
+index 51fd463..2be0063 100644
+--- a/include/utils/percentile_stats.h
++++ b/include/utils/percentile_stats.h
+@@ -18,6 +18,10 @@ namespace pipeann {
+     double cpu_us2 = 0;         // total time spent in CPU
+     double n_cmps = 0;          // # cmps
+     double n_hops = 0;          // # search hops
++    double n_distinct_pages = 0; // unique graph sectors requested by this query
++    double n_page_accesses = 0;  // graph sector read requests, including repeats
++    double n_deleted_hops = 0;   // expanded nodes whose tags are logically deleted
++    double nodes_per_page = 0;   // expanded nodes / distinct graph sectors
+     double n_current_used = 0;  // # force return for latency limit
+     double n_filter[N_FILTER_TYPES] = {0};
+     double n_est_filter_reads[N_FILTER_TYPES] = {0};
+diff --git a/src/search/pipe_search_common.h b/src/search/pipe_search_common.h
+index 8544127..f5bcb85 100644
+--- a/src/search/pipe_search_common.h
++++ b/src/search/pipe_search_common.h
+@@ -274,11 +274,13 @@ namespace pipeann {
+       }
+     };
+     std::queue<io_t> on_flight_ios;
++    std::unordered_set<unsigned> distinct_graph_pages;
+ 
+     auto send_read_req = [&](Neighbor &item) -> bool {
+       item.flag = false;
+       this->lock_idx(idx_lock_table, item.id, std::vector<uint32_t>(), true);
+       const unsigned loc = id2loc(item.id), pid = loc_sector_no(loc);
++      distinct_graph_pages.insert(pid);
+ 
+       uint64_t &cur_buf_idx = query_buf->sector_idx;
+       auto buf = sector_scratch + cur_buf_idx * read_io_size;
+@@ -292,6 +294,7 @@ namespace pipeann {
+ 
+       if (stats != nullptr) {
+         stats->n_ios += (double) read_io_size / SECTOR_LEN;
++        stats->n_page_accesses += (double) read_io_size / SECTOR_LEN;
+       }
+       return true;
+     };
+@@ -337,6 +340,12 @@ namespace pipeann {
+       if (node != nullptr) {
+         auto it = id_buf_map.find(node->id);
+         auto &[id, dnode] = *it;
++        if (stats != nullptr) {
++          stats->n_hops++;
++          if (stats_deleted_tags_ != nullptr && stats_deleted_tags_->find(id2tag(id)) != stats_deleted_tags_->end()) {
++            stats->n_deleted_hops++;
++          }
++        }
+         if (compute_exact_dists_and_push(dnode, id)) {
+           node->is_member = true;
+         }
+@@ -424,6 +433,8 @@ namespace pipeann {
+ 
+     if (stats != nullptr) {
+       stats->total_us = (double) query_timer.elapsed();
++      stats->n_distinct_pages = (double) distinct_graph_pages.size();
++      stats->nodes_per_page = stats->n_distinct_pages > 0 ? stats->n_hops / stats->n_distinct_pages : 0;
+     }
+   }
+ 
+diff --git a/src/update/direct_insert.cpp b/src/update/direct_insert.cpp
+index db43387..05130f5 100644
+--- a/src/update/direct_insert.cpp
++++ b/src/update/direct_insert.cpp
+@@ -27,6 +27,7 @@ namespace pipeann {
+ 
+   template<typename T, typename TagT>
+   int SSDIndex<T, TagT>::insert_in_place(const T *point1, const TagT &tag, const Attributes *attrs) {
++    auto trace_start = std::chrono::steady_clock::now();
+     QueryBuffer *read_data = this->pop_query_buf(point1);
+     T *point = read_data->aligned_query<T>();  // normalized point for cosine.
+     void *ctx = reader->get_ctx(); // initialize ctx here, avoid SQ polling for insert.
+@@ -39,6 +40,7 @@ namespace pipeann {
+     std::vector<Neighbor> exp_node_info;
+     InsertContext insert_ctx(kExpandedNodesFactor * this->params.L, this->aligned_dim);
+     this->do_pipe_search(point1, params.L, 0, params.L, params.beam_width, exp_node_info, nullptr, &insert_ctx);
++    auto trace_after_position = std::chrono::steady_clock::now();
+     std::vector<uint32_t> new_nhood;
+ 
+     // SPACEV1B frequently chooses entry_point as a neighbor, which causes contention.
+@@ -47,6 +49,7 @@ namespace pipeann {
+     pipeann::prune_neighbors(exp_node_info, new_nhood, params_copy, metric, [this, &insert_ctx](uint32_t a, uint32_t b) {
+       return this->dist_cmp->compare(insert_ctx.coord_map[a], insert_ctx.coord_map[b], this->meta_.data_dim);
+     });
++    auto trace_after_prune = std::chrono::steady_clock::now();
+ 
+     // Produce one more neighbor, and remove entry_point in the final results.
+     // Only points close enough to the entry point can connect to it.
+@@ -140,6 +143,22 @@ namespace pipeann {
+     }
+     writes_4k.pop_back();
+ 
++    {
++      std::lock_guard<std::mutex> trace_lock(update_trace_mu_);
++      for (const auto &req : reads) {
++        uint64_t first = req.offset / SECTOR_LEN;
++        uint64_t pages = (req.len + SECTOR_LEN - 1) / SECTOR_LEN;
++        update_read_page_touches_ += pages;
++        for (uint64_t p = 0; p < pages; ++p) update_read_pages_.insert(first + p);
++      }
++      for (const auto &req : writes) {
++        uint64_t first = req.offset / SECTOR_LEN;
++        uint64_t pages = (req.len + SECTOR_LEN - 1) / SECTOR_LEN;
++        update_write_page_touches_ += pages;
++        for (uint64_t p = 0; p < pages; ++p) update_dirty_pages_.insert(first + p);
++      }
++    }
++
+     reader->read_alloc(reads, ctx, &insert_ctx.page_ref);
+ 
+     // update the target node.
+@@ -260,6 +279,14 @@ namespace pipeann {
+     reader->deref(&insert_ctx.page_ref);
+     this->push_query_buf(read_data);
+ #endif
++    auto trace_end = std::chrono::steady_clock::now();
++    {
++      std::lock_guard<std::mutex> trace_lock(update_trace_mu_);
++      update_position_search_us_ +=
++          std::chrono::duration<double, std::micro>(trace_after_position - trace_start).count();
++      update_prune_us_ += std::chrono::duration<double, std::micro>(trace_after_prune - trace_after_position).count();
++      update_rmw_flush_us_ += std::chrono::duration<double, std::micro>(trace_end - trace_after_prune).count();
++    }
+     return target_id;
+   }
+ 
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index a73c111..e3efb35 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -34,3 +34,6 @@ target_link_libraries(build_disk_index_filtered ${PROJECT_NAME})
+ 
+ add_executable(search_disk_index_filtered search_disk_index_filtered.cpp)
+ target_link_libraries(search_disk_index_filtered ${PROJECT_NAME})
++
++add_executable(dynamic_ssd_canary dynamic_ssd_canary.cpp)
++target_link_libraries(dynamic_ssd_canary ${PROJECT_NAME})
+diff --git a/include/cblas.h b/include/cblas.h
+new file mode 100644
+index 0000000..60a0e47
+--- /dev/null
++++ b/include/cblas.h
+@@ -0,0 +1,21 @@
++#pragma once
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++typedef enum CBLAS_LAYOUT { CblasRowMajor = 101, CblasColMajor = 102 } CBLAS_LAYOUT;
++typedef CBLAS_LAYOUT CBLAS_ORDER;
++typedef enum CBLAS_TRANSPOSE { CblasNoTrans = 111, CblasTrans = 112, CblasConjTrans = 113 } CBLAS_TRANSPOSE;
++typedef enum CBLAS_UPLO { CblasUpper = 121, CblasLower = 122 } CBLAS_UPLO;
++
++float cblas_sdot(int n, const float *x, int incx, const float *y, int incy);
++float cblas_snrm2(int n, const float *x, int incx);
++void cblas_sgemm(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transa, CBLAS_TRANSPOSE transb, int m, int n, int k,
++                 float alpha, const float *a, int lda, const float *b, int ldb, float beta, float *c, int ldc);
++void cblas_ssyrk(CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k, float alpha,
++                 const float *a, int lda, float beta, float *c, int ldc);
++
++#ifdef __cplusplus
++}
++#endif
+diff --git a/tests/dynamic_ssd_canary.cpp b/tests/dynamic_ssd_canary.cpp
+new file mode 100644
+index 0000000..2114d7b
+--- /dev/null
++++ b/tests/dynamic_ssd_canary.cpp
+@@ -0,0 +1,346 @@
++#include "dynamic_index.h"
++
++#include <algorithm>
++#include <chrono>
++#include <cmath>
++#include <cstdint>
++#include <fstream>
++#include <iomanip>
++#include <iostream>
++#include <limits>
++#include <numeric>
++#include <sstream>
++#include <string>
++#include <thread>
++#include <unordered_set>
++#include <vector>
++
++#include "utils.h"
++
++namespace {
++
++struct ProcIo {
++  uint64_t read_bytes = 0;
++  uint64_t write_bytes = 0;
++};
++
++ProcIo read_proc_io() {
++  ProcIo out;
++  std::ifstream in("/proc/self/io");
++  std::string key;
++  uint64_t value;
++  while (in >> key >> value) {
++    if (key == "read_bytes:") out.read_bytes = value;
++    if (key == "write_bytes:") out.write_bytes = value;
++  }
++  return out;
++}
++
++double percentile(std::vector<double> values, double q) {
++  if (values.empty()) return 0;
++  std::sort(values.begin(), values.end());
++  size_t pos = std::min(values.size() - 1, static_cast<size_t>(q * values.size()));
++  return values[pos];
++}
++
++double mean(const std::vector<double> &values) {
++  if (values.empty()) return 0;
++  return std::accumulate(values.begin(), values.end(), 0.0) / values.size();
++}
++
++std::string quote(const std::string &s) {
++  std::string out = "\"";
++  for (char c : s) {
++    if (c == '\\' || c == '\"') out.push_back('\\');
++    out.push_back(c);
++  }
++  out.push_back('\"');
++  return out;
++}
++
++template<typename T>
++std::vector<T> load_rows(const std::string &path, uint64_t start, uint64_t count, size_t &dim) {
++  std::ifstream in(path, std::ios::binary);
++  if (!in) throw std::runtime_error("cannot open data file: " + path);
++  int32_t n = 0, d = 0;
++  in.read(reinterpret_cast<char *>(&n), sizeof(n));
++  in.read(reinterpret_cast<char *>(&d), sizeof(d));
++  if (start + count > static_cast<uint64_t>(n)) throw std::runtime_error("requested rows exceed data file");
++  dim = static_cast<size_t>(d);
++  std::vector<T> rows(count * dim);
++  in.seekg(2 * sizeof(int32_t) + static_cast<std::streamoff>(start * dim * sizeof(T)));
++  in.read(reinterpret_cast<char *>(rows.data()), rows.size() * sizeof(T));
++  if (!in) throw std::runtime_error("short read from data file");
++  return rows;
++}
++
++std::vector<uint32_t> load_u32_bin(const std::string &path) {
++  uint32_t *ptr = nullptr;
++  size_t n = 0, d = 0;
++  pipeann::load_bin<uint32_t>(path, ptr, n, d);
++  std::vector<uint32_t> out(ptr, ptr + n * d);
++  delete[] ptr;
++  return out;
++}
++
++struct SearchSummary {
++  double recall = 0;
++  double cmps_mean = 0, cmps_p50 = 0, cmps_p95 = 0, cmps_p99 = 0;
++  double hops_mean = 0, hops_p50 = 0, hops_p95 = 0, hops_p99 = 0;
++  double pages_mean = 0, pages_p50 = 0, pages_p95 = 0, pages_p99 = 0;
++  double accesses_mean = 0;
++  double bytes_mean = 0;
++  double nodes_per_page_mean = 0;
++  double deleted_hops_mean = 0;
++  double deleted_hop_fraction = 0;
++  double latency_p50_us = 0, latency_p95_us = 0, latency_p99_us = 0;
++  uint64_t nqueries = 0;
++};
++
++SearchSummary run_search(DynamicIndex<float> &index, const std::string &query_path, const std::string &gt_path,
++                         uint64_t requested_nq, const std::unordered_set<uint32_t> &deleted) {
++  float *queries = nullptr;
++  size_t nq = 0, dim = 0;
++  pipeann::load_bin<float>(query_path, queries, nq, dim);
++  nq = std::min<size_t>(nq, requested_nq);
++
++  uint32_t *gt_ids = nullptr, *gt_tags = nullptr;
++  float *gt_dists = nullptr;
++  size_t gt_nq = 0, gt_dim = 0;
++  pipeann::load_truthset(gt_path, gt_ids, gt_dists, gt_nq, gt_dim, &gt_tags);
++  if (nq > gt_nq) throw std::runtime_error("ground truth has fewer queries than requested");
++
++  constexpr uint32_t k = 10;
++  constexpr uint32_t L = 96;
++  std::vector<double> cmps, hops, pages, accesses, nodes_per_page, deleted_hops, latencies;
++  cmps.reserve(nq);
++  hops.reserve(nq);
++  pages.reserve(nq);
++  accesses.reserve(nq);
++  nodes_per_page.reserve(nq);
++  deleted_hops.reserve(nq);
++  latencies.reserve(nq);
++
++  std::vector<uint32_t> ids(k);
++  std::vector<float> dists(k);
++  for (size_t i = 0; i < std::min<size_t>(50, nq); ++i) {
++    index.search(queries + i * dim, k, L, ids.data(), dists.data());
++  }
++
++  uint64_t hits = 0;
++  for (size_t i = 0; i < nq; ++i) {
++    pipeann::QueryStats stats;
++    auto begin = std::chrono::steady_clock::now();
++    index.search(queries + i * dim, k, L, ids.data(), dists.data(), &stats);
++    auto end = std::chrono::steady_clock::now();
++
++    std::unordered_set<uint32_t> truth;
++    for (size_t j = 0; j < gt_dim && truth.size() < k; ++j) {
++      uint32_t tag = gt_tags != nullptr ? gt_tags[i * gt_dim + j] : gt_ids[i * gt_dim + j];
++      if (deleted.find(tag) == deleted.end()) truth.insert(tag);
++    }
++    for (uint32_t id : ids) hits += truth.find(id) != truth.end();
++
++    cmps.push_back(stats.n_cmps);
++    hops.push_back(stats.n_hops);
++    pages.push_back(stats.n_distinct_pages);
++    accesses.push_back(stats.n_page_accesses);
++    nodes_per_page.push_back(stats.nodes_per_page);
++    deleted_hops.push_back(stats.n_deleted_hops);
++    latencies.push_back(std::chrono::duration<double, std::micro>(end - begin).count());
++  }
++
++  SearchSummary out;
++  out.nqueries = nq;
++  out.recall = static_cast<double>(hits) / (nq * k);
++  out.cmps_mean = mean(cmps);
++  out.cmps_p50 = percentile(cmps, 0.50);
++  out.cmps_p95 = percentile(cmps, 0.95);
++  out.cmps_p99 = percentile(cmps, 0.99);
++  out.hops_mean = mean(hops);
++  out.hops_p50 = percentile(hops, 0.50);
++  out.hops_p95 = percentile(hops, 0.95);
++  out.hops_p99 = percentile(hops, 0.99);
++  out.pages_mean = mean(pages);
++  out.pages_p50 = percentile(pages, 0.50);
++  out.pages_p95 = percentile(pages, 0.95);
++  out.pages_p99 = percentile(pages, 0.99);
++  out.accesses_mean = mean(accesses);
++  out.bytes_mean = out.accesses_mean * 4096.0;
++  out.nodes_per_page_mean = mean(nodes_per_page);
++  out.deleted_hops_mean = mean(deleted_hops);
++  out.deleted_hop_fraction = out.hops_mean > 0 ? out.deleted_hops_mean / out.hops_mean : 0;
++  out.latency_p50_us = percentile(latencies, 0.50);
++  out.latency_p95_us = percentile(latencies, 0.95);
++  out.latency_p99_us = percentile(latencies, 0.99);
++
++  delete[] queries;
++  delete[] gt_ids;
++  delete[] gt_dists;
++  delete[] gt_tags;
++  return out;
++}
++
++std::string search_json(const std::string &label, const std::string &phase, const SearchSummary &s) {
++  std::ostringstream o;
++  o << std::setprecision(12) << "{\"record\":\"search\",\"label\":" << quote(label)
++    << ",\"phase\":" << quote(phase) << ",\"nqueries\":" << s.nqueries << ",\"recall_at_10\":" << s.recall
++    << ",\"distance_calcs_mean\":" << s.cmps_mean << ",\"distance_calcs_p50\":" << s.cmps_p50
++    << ",\"distance_calcs_p95\":" << s.cmps_p95 << ",\"distance_calcs_p99\":" << s.cmps_p99
++    << ",\"visited_nodes_mean\":" << s.hops_mean << ",\"visited_nodes_p50\":" << s.hops_p50
++    << ",\"visited_nodes_p95\":" << s.hops_p95 << ",\"visited_nodes_p99\":" << s.hops_p99
++    << ",\"distinct_pages_mean\":" << s.pages_mean << ",\"distinct_pages_p50\":" << s.pages_p50
++    << ",\"distinct_pages_p95\":" << s.pages_p95 << ",\"distinct_pages_p99\":" << s.pages_p99
++    << ",\"page_accesses_mean\":" << s.accesses_mean << ",\"graph_bytes_mean\":" << s.bytes_mean
++    << ",\"nodes_per_page_mean\":" << s.nodes_per_page_mean
++    << ",\"deleted_nodes_visited_mean\":" << s.deleted_hops_mean
++    << ",\"deleted_visit_fraction\":" << s.deleted_hop_fraction
++    << ",\"latency_p50_us\":" << s.latency_p50_us << ",\"latency_p95_us\":" << s.latency_p95_us
++    << ",\"latency_p99_us\":" << s.latency_p99_us << "}";
++  return o.str();
++}
++
++void append_line(const std::string &path, const std::string &line) {
++  std::ofstream out(path, std::ios::app);
++  out << line << '\n';
++}
++
++void insert_rows(DynamicIndex<float> &index, const std::string &data_path, uint64_t start, uint64_t count,
++                 uint32_t first_tag) {
++  size_t dim = 0;
++  auto rows = load_rows<float>(data_path, start, count, dim);
++  for (uint64_t i = 0; i < count; ++i) index.insert(rows.data() + i * dim, first_tag + i);
++}
++
++void delete_tags(DynamicIndex<float> &index, const std::vector<uint32_t> &tags, size_t count,
++                 std::unordered_set<uint32_t> &deleted) {
++  count = std::min(count, tags.size());
++  for (size_t i = 0; i < count; ++i) {
++    index.lazy_delete(tags[i]);
++    deleted.insert(tags[i]);
++  }
++}
++
++std::string update_json(const std::string &label, uint64_t count, double wall_s, const ProcIo &before,
++                        const ProcIo &after,
++                        const pipeann::SSDIndex<float, uint32_t>::UpdateTraceSnapshot &t) {
++  std::ostringstream o;
++  o << std::setprecision(12) << "{\"record\":\"update\",\"label\":" << quote(label)
++    << ",\"insert_count\":" << count << ",\"wall_seconds\":" << wall_s
++    << ",\"proc_read_bytes\":" << (after.read_bytes - before.read_bytes)
++    << ",\"proc_write_bytes\":" << (after.write_bytes - before.write_bytes)
++    << ",\"write_page_touches\":" << t.write_page_touches
++    << ",\"distinct_dirty_pages\":" << t.distinct_dirty_pages
++    << ",\"repeat_write_touches\":" << (t.write_page_touches - t.distinct_dirty_pages)
++    << ",\"read_page_touches\":" << t.read_page_touches
++    << ",\"distinct_read_pages\":" << t.distinct_read_pages
++    << ",\"position_search_us\":" << t.position_search_us << ",\"prune_us\":" << t.prune_us
++    << ",\"rmw_flush_us\":" << t.rmw_flush_us << "}";
++  return o.str();
++}
++
++std::unique_ptr<DynamicIndex<float>> make_index(const std::string &prefix) {
++  pipeann::IndexBuildParameters params;
++  params.set(64, 96, 384, 1.2, 1, true, 8);
++  params.max_nthreads = 16;
++  auto index = std::make_unique<DynamicIndex<float>>(128, pipeann::Metric::L2, &params);
++  index->load(prefix, false);
++  index->omp_set_num_threads(1);
++  return index;
++}
++
++}  // namespace
++
++int main(int argc, char **argv) {
++  try {
++    if (argc < 3) {
++      std::cerr << "usage: dynamic_ssd_canary MODE ...\n";
++      return 2;
++    }
++    std::string mode = argv[1];
++    std::string label = argv[2];
++
++    if (mode == "search") {
++      if (argc != 8) throw std::runtime_error("search LABEL PREFIX QUERY GT NQ OUT");
++      auto index = make_index(argv[3]);
++      auto result = run_search(*index, argv[4], argv[5], std::stoull(argv[6]), {});
++      append_line(argv[7], search_json(label, "search", result));
++      return 0;
++    }
++
++    if (mode == "insert_search") {
++      if (argc != 12) throw std::runtime_error("insert_search LABEL PREFIX QUERY GT DATA START COUNT FIRST_TAG NQ OUT");
++      auto index = make_index(argv[3]);
++      index->reset_update_trace();
++      ProcIo before = read_proc_io();
++      auto begin = std::chrono::steady_clock::now();
++      uint64_t count = std::stoull(argv[8]);
++      insert_rows(*index, argv[6], std::stoull(argv[7]), count, std::stoul(argv[9]));
++      std::this_thread::sleep_for(std::chrono::seconds(2));
++      auto end = std::chrono::steady_clock::now();
++      ProcIo after = read_proc_io();
++      append_line(argv[11], update_json(label, count, std::chrono::duration<double>(end - begin).count(), before,
++                                        after, index->update_trace_snapshot()));
++      auto result = run_search(*index, argv[4], argv[5], std::stoull(argv[10]), {});
++      append_line(argv[11], search_json(label, "post_insert", result));
++      return 0;
++    }
++
++    if (mode == "churn_search") {
++      if (argc != 13)
++        throw std::runtime_error("churn_search LABEL PREFIX QUERY GT DATA START COUNT FIRST_TAG DELETE_TAGS NQ OUT");
++      auto index = make_index(argv[3]);
++      auto tags = load_u32_bin(argv[10]);
++      std::unordered_set<uint32_t> deleted;
++      index->reset_update_trace();
++      ProcIo before = read_proc_io();
++      auto begin = std::chrono::steady_clock::now();
++      uint64_t count = std::stoull(argv[8]);
++      insert_rows(*index, argv[6], std::stoull(argv[7]), count, std::stoul(argv[9]));
++      delete_tags(*index, tags, count, deleted);
++      std::this_thread::sleep_for(std::chrono::seconds(2));
++      auto end = std::chrono::steady_clock::now();
++      ProcIo after = read_proc_io();
++      append_line(argv[12], update_json(label, count, std::chrono::duration<double>(end - begin).count(), before,
++                                        after, index->update_trace_snapshot()));
++      auto result = run_search(*index, argv[4], argv[5], std::stoull(argv[11]), deleted);
++      append_line(argv[12], search_json(label, "post_churn", result));
++      return 0;
++    }
++
++    if (mode == "tombstone_search" || mode == "merge_search") {
++      if ((mode == "tombstone_search" && argc != 10) || (mode == "merge_search" && argc != 11))
++        throw std::runtime_error("tombstone_search LABEL PREFIX QUERY GT DELETE_TAGS COUNT NQ OUT [MERGE_PREFIX]");
++      auto index = make_index(argv[3]);
++      auto tags = load_u32_bin(argv[6]);
++      std::unordered_set<uint32_t> deleted;
++      delete_tags(*index, tags, std::stoull(argv[7]), deleted);
++      auto before_search = run_search(*index, argv[4], argv[5], std::stoull(argv[8]), deleted);
++      append_line(argv[9], search_json(label, "pre_merge", before_search));
++      if (mode == "merge_search") {
++        ProcIo before = read_proc_io();
++        auto begin = std::chrono::steady_clock::now();
++        bool ok = index->save(argv[10], 32);
++        auto end = std::chrono::steady_clock::now();
++        ProcIo after = read_proc_io();
++        std::ostringstream merge;
++        merge << std::setprecision(12) << "{\"record\":\"merge\",\"label\":" << quote(label)
++              << ",\"ok\":" << (ok ? "true" : "false")
++              << ",\"wall_seconds\":" << std::chrono::duration<double>(end - begin).count()
++              << ",\"proc_read_bytes\":" << (after.read_bytes - before.read_bytes)
++              << ",\"proc_write_bytes\":" << (after.write_bytes - before.write_bytes) << "}";
++        append_line(argv[9], merge.str());
++        // The compacted index no longer contains tombstones, but recall must still
++        // be evaluated against the active-set ground truth with deleted tags removed.
++        auto after_search = run_search(*index, argv[4], argv[5], std::stoull(argv[8]), deleted);
++        append_line(argv[9], search_json(label, "post_merge", after_search));
++      }
++      return 0;
++    }
++
++    throw std::runtime_error("unknown mode: " + mode);
++  } catch (const std::exception &e) {
++    std::cerr << "dynamic_ssd_canary: " << e.what() << '\n';
++    return 1;
++  }
++}

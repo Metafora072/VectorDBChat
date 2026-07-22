@@ -1,0 +1,91 @@
+{
+  "layout_gate": {
+    "deltas": {
+      "S1_insert": {
+        "distinct_pages_pct_vs_s0": -3.76229080908127,
+        "nodes_per_page_pct_vs_s0": 3.424513396638207,
+        "page_accesses_pct_vs_s0": 0.14517690074202783,
+        "visited_nodes_pct_vs_s0": -0.615195041656702
+      },
+      "S2_churn": {
+        "distinct_pages_pct_vs_s0": -6.121586885010166,
+        "nodes_per_page_pct_vs_s0": 6.628941644931463,
+        "page_accesses_pct_vs_s0": 0.43463454851775385,
+        "visited_nodes_pct_vs_s0": -0.1627646074338296
+      },
+      "S3_rebuild": {
+        "distinct_pages_pct_vs_s0": -0.4206287861084679,
+        "nodes_per_page_pct_vs_s0": 0.40775573506930396,
+        "page_accesses_pct_vs_s0": -0.44449223930888015,
+        "visited_nodes_pct_vs_s0": -0.016552332959374194
+      }
+    },
+    "distinct_pages_increase_gt_10pct": false,
+    "pass": false,
+    "rebuild_within_5pct_of_s0": true,
+    "stable_visited_lt_5pct": true
+  },
+  "merge": {
+    "distinct_pages_pct_post_vs_pre": 0.6076303313288012,
+    "label": "C_MERGE_10",
+    "latency_p50_pct_post_vs_pre": -23.264908565928778,
+    "ok": true,
+    "proc_read_bytes": 1641627648,
+    "proc_write_bytes": 769826816,
+    "recall_delta_pp": 0.050000000000005596,
+    "record": "merge",
+    "wall_seconds": 11.302561987
+  },
+  "page_local_signal": false,
+  "raw_files": [
+    "layout_aging.jsonl",
+    "write_path.jsonl",
+    "deletion_cost.jsonl"
+  ],
+  "schema_version": 1,
+  "tombstone": {
+    "C_TOMBSTONE_10": {
+      "deleted_visit_fraction": 0.108142212398,
+      "distinct_pages_pct_vs_0": -0.6032628182144117,
+      "enrichment_over_uniform_fraction": 1.08142212398,
+      "latency_p50_pct_vs_0": 21.725637146551936,
+      "visited_nodes_pct_vs_0": -0.21965094799143436
+    },
+    "C_TOMBSTONE_5": {
+      "deleted_visit_fraction": 0.0606055020506,
+      "distinct_pages_pct_vs_0": -0.7054499820724369,
+      "enrichment_over_uniform_fraction": 1.212110041012,
+      "latency_p50_pct_vs_0": 16.306253652834602,
+      "visited_nodes_pct_vs_0": -0.27938865351212483
+    }
+  },
+  "verdict": "KILL-DYNAMIC-SSD-MAINTENANCE",
+  "write_path": {
+    "1000": {
+      "cow_bytes_per_insert": 55717.888,
+      "cow_distinct_dirty_pages": 12596,
+      "cow_repeat_touches": 1007,
+      "cow_wall_seconds": 4.238532545,
+      "cow_write_bytes": 55717888,
+      "inplace_bytes_per_insert": 265609.216,
+      "inplace_distinct_dirty_pages": 39711,
+      "inplace_over_cow_actual_bytes": 4.767036683084614,
+      "inplace_repeat_touches": 25135,
+      "inplace_wall_seconds": 4.666140798,
+      "inplace_write_bytes": 265609216
+    },
+    "10000": {
+      "cow_bytes_per_insert": 65847.7056,
+      "cow_distinct_dirty_pages": 108376,
+      "cow_repeat_touches": 52385,
+      "cow_wall_seconds": 27.294920808,
+      "cow_write_bytes": 658477056,
+      "inplace_bytes_per_insert": 265426.1248,
+      "inplace_distinct_dirty_pages": 152910,
+      "inplace_over_cow_actual_bytes": 4.0309092379370615,
+      "inplace_repeat_touches": 495103,
+      "inplace_wall_seconds": 25.063326712,
+      "inplace_write_bytes": 2654261248
+    }
+  }
+}

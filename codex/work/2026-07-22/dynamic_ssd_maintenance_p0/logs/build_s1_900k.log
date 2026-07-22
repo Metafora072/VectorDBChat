@@ -1,0 +1,34 @@
+Script started on 2026-07-22 10:08:56+00:00 [COMMAND="/usr/bin/time -v ./build-canary/tests/build_disk_index float /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_ssd_maintenance_p0_0722/data/base_900k.bin /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_ssd_maintenance_p0_0722/indexes/s1_base900k/index 64 96 32 1 32 l2 pq" <not executed on terminal>]
+[index_build_utils.cpp:355:INFO] Starting Vamana index build: R=64 R_dense=0 L=96 Build RAM budget: 1GB T: 32 bytes per neighbor: 32
+[pq_nbr.h:117:INFO] File: /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_ssd_maintenance_p0_0722/data/base_900k.bin has: 900000 points.
+[pq_nbr.h:118:INFO] Using 32 PQ chunks.
+[pq_nbr.h:128:INFO] Generating PQ pivots with training data of size: 89842
+[pq_nbr.h:374:INFO] Kmeans time: 1.64015s.
+terminate called after throwing an instance of 'std::__ios_failure'
+  what():  basic_ios::clear: iostream error
+Command terminated by signal 6
+	Command being timed: "./build-canary/tests/build_disk_index float /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_ssd_maintenance_p0_0722/data/base_900k.bin /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_ssd_maintenance_p0_0722/indexes/s1_base900k/index 64 96 32 1 32 l2 pq"
+	User time (seconds): 44.90
+	System time (seconds): 4.50
+	Percent of CPU this job got: 2033%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.43
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 3088248
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 852856
+	Voluntary context switches: 169
+	Involuntary context switches: 46
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+Script done on 2026-07-22 10:08:58+00:00 [COMMAND_EXIT_CODE="134"]

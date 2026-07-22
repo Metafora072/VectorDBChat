@@ -1,0 +1,91 @@
+Script started on 2026-07-22 10:10:43+00:00 [COMMAND="/usr/bin/time -v ./build-canary/tests/dynamic_ssd_canary insert_search S1_insert /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_ssd_maintenance_p0_0722/indexes/s1_base900k/index /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_ssd_maintenance_p0_0722/data/query_1000.bin /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/groundtruth/sift1m/gt_cp00 /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift1m/full_1m.bin 900000 100000 900000 1000 /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/dynamic_ssd_maintenance_p0/results/layout_aging.jsonl" <not executed on terminal>]
+[index.cpp:41:INFO] Getting distance function for metric: l2
+[utils.h:392:INFO] IndexBuildParameters with L: 96 R: 64 C: 384 alpha: 1.2 num_threads: 1 beam_width: 8 saturate_graph: 1 max_nthreads: 16
+[ssd_index.cpp:74:INFO] Use PQNeighbor as neighbor handler, metric: l2
+[ssd_index_defs.h:144:INFO] Loading metadata from disk index, sharded: 0 nr: 9 nc: 1
+[ssd_index_defs.h:123:INFO] Max npts: 900000 Npoints: 900000 Entry point: 123742 Data dim: 128 Range: 64 Range dense: 64 Range ood: 0
+[ssd_index_defs.h:126:INFO] Normal node len (without dense nbrs): 772 Max node len (with dense nbrs): 772 Nnodes per sector: 5 Npts cur shard: 900000 Attr size: 0
+[ssd_index.h:116:INFO] IO size (normal): 4096 IO size (dense): 4096
+[ssd_index.h:122:INFO] Cur location: 900000
+[pq_nbr.h:85:INFO] PQ Pivots offset: 0 PQ Vectors offset: 0
+[pq_nbr.h:90:INFO] Load compressed vectors from file: /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_ssd_maintenance_p0_0722/indexes/s1_base900k/index_pq_compressed.bin offset: 0 num points: 900000 n_chunks: 32
+[pq_table.h:125:INFO] Loaded PQ Pivots: #centroids: 256, #dims: 128, #chunks: 32
+[ssd_index.cpp:114:INFO] Init buffers for 16 threads, setup 32 buffers.
+[ssd_index.cpp:126:INFO] Setup 1 background I/O threads for insert...
+[ssd_index.cpp:258:INFO] /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_ssd_maintenance_p0_0722/indexes/s1_base900k/index_partition.bin.aligned does not exist, use equal partition mapping
+[ssd_index.cpp:271:INFO] Page layout loaded.
+[ssd_index.cpp:200:INFO] Loading tags from /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_ssd_maintenance_p0_0722/indexes/s1_base900k/index_disk.index.tags
+[ssd_index.cpp:285:INFO] Load tags from existing file: /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_ssd_maintenance_p0_0722/indexes/s1_base900k/index_disk.index.tags
+[ssd_index.cpp:295:INFO] Loaded 900000 tags
+[ssd_index.cpp:206:INFO] SSDIndex loaded successfully.
+[ssd_index.cpp:584:INFO] Resize loc2id_ to 1350000
+[ssd_index.cpp:543:INFO] Resize id2loc_ to 1350000
+[direct_insert.cpp:322:INFO] Processed 2411 tasks, throughput: 482.135 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2572 tasks, throughput: 514.267 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2580 tasks, throughput: 515.805 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2544 tasks, throughput: 508.659 tasks/sec.
+[ssd_index.cpp:584:INFO] Resize loc2id_ to 2025000
+[direct_insert.cpp:322:INFO] Processed 2559 tasks, throughput: 511.633 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2586 tasks, throughput: 517.13 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2550 tasks, throughput: 509.912 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2569 tasks, throughput: 513.639 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2605 tasks, throughput: 520.829 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2025 tasks, throughput: 404.992 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2595 tasks, throughput: 518.853 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2673 tasks, throughput: 534.562 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2495 tasks, throughput: 498.832 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2653 tasks, throughput: 530.566 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2689 tasks, throughput: 537.733 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2136 tasks, throughput: 427.073 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2660 tasks, throughput: 531.849 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2680 tasks, throughput: 535.909 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2706 tasks, throughput: 541.068 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2645 tasks, throughput: 528.895 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2717 tasks, throughput: 543.339 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2737 tasks, throughput: 547.377 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2775 tasks, throughput: 554.887 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2020 tasks, throughput: 403.991 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2730 tasks, throughput: 545.947 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2329 tasks, throughput: 465.756 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2681 tasks, throughput: 536.166 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2764 tasks, throughput: 552.66 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2727 tasks, throughput: 545.266 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2452 tasks, throughput: 490.393 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2172 tasks, throughput: 434.278 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2122 tasks, throughput: 424.371 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2097 tasks, throughput: 419.295 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2128 tasks, throughput: 425.583 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2138 tasks, throughput: 427.459 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2088 tasks, throughput: 417.59 tasks/sec.
+[ssd_index.cpp:584:INFO] Resize loc2id_ to 3037500
+[direct_insert.cpp:322:INFO] Processed 2148 tasks, throughput: 429.566 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2182 tasks, throughput: 436.138 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2181 tasks, throughput: 436.094 tasks/sec.
+[direct_insert.cpp:322:INFO] Processed 2185 tasks, throughput: 436.946 tasks/sec.
+[ssd_index.cpp:79:INFO] Lock table size: 0
+[ssd_index.cpp:80:INFO] Page cache size: 0
+	Command being timed: "./build-canary/tests/dynamic_ssd_canary insert_search S1_insert /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_ssd_maintenance_p0_0722/indexes/s1_base900k/index /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_ssd_maintenance_p0_0722/data/query_1000.bin /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/groundtruth/sift1m/gt_cp00 /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift1m/full_1m.bin 900000 100000 900000 1000 /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/dynamic_ssd_maintenance_p0/results/layout_aging.jsonl"
+	User time (seconds): 157.04
+	System time (seconds): 78.14
+	Percent of CPU this job got: 113%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 3:27.60
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 273684
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 430953
+	Voluntary context switches: 2942927
+	Involuntary context switches: 2356
+	Swaps: 0
+	File system inputs: 82324608
+	File system outputs: 15775248
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+Script done on 2026-07-22 10:14:10+00:00 [COMMAND_EXIT_CODE="0"]

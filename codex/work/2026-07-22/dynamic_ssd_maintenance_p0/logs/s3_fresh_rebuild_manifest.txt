@@ -1,0 +1,15 @@
+date_utc=2026-07-22
+source=/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift1m/full_1m.bin
+prefix=/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_ssd_maintenance_p0_0722/indexes/s3_rebuild/index
+build_command=./build-canary/tests/build_disk_index float SOURCE PREFIX 64 96 32 1 32 l2 pq
+build_wall_seconds=48.56
+build_max_rss_kib=3442076
+build_exit_status=0
+metadata_npoints=1000000
+metadata_R=64
+metadata_node_len=772
+metadata_nodes_per_sector=5
+metadata_attr_size=0
+search_nqueries=1000
+search_result=results/layout_aging.jsonl label S3_rebuild
+note=The earlier reused-static control log is retained as s3_initial_reused_control.log, but its JSON row was replaced by this fresh rebuild result.

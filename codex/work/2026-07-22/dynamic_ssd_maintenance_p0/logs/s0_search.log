@@ -1,0 +1,24 @@
+Script started on 2026-07-22 10:10:21+00:00 [COMMAND="./build-canary/tests/dynamic_ssd_canary search S0_static /home/ubuntu/pz/VectorDB/data/VectorDB/permission_aware_ssd_p0/r01/index/m2_smoke/sift1m_all_role0 /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_ssd_maintenance_p0_0722/data/query_1000.bin /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/groundtruth/sift1m/gt_cp00 1000 /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/dynamic_ssd_maintenance_p0/results/layout_aging.jsonl" <not executed on terminal>]
+[index.cpp:41:INFO] Getting distance function for metric: l2
+[utils.h:392:INFO] IndexBuildParameters with L: 96 R: 64 C: 384 alpha: 1.2 num_threads: 1 beam_width: 8 saturate_graph: 1 max_nthreads: 16
+[ssd_index.cpp:74:INFO] Use PQNeighbor as neighbor handler, metric: l2
+[ssd_index_defs.h:144:INFO] Loading metadata from disk index, sharded: 0 nr: 9 nc: 1
+[ssd_index_defs.h:123:INFO] Max npts: 1000000 Npoints: 1000000 Entry point: 123742 Data dim: 128 Range: 64 Range dense: 64 Range ood: 0
+[ssd_index_defs.h:126:INFO] Normal node len (without dense nbrs): 788 Max node len (with dense nbrs): 788 Nnodes per sector: 5 Npts cur shard: 1000000 Attr size: 16
+[ssd_index.h:116:INFO] IO size (normal): 4096 IO size (dense): 4096
+[ssd_index.h:122:INFO] Cur location: 1000000
+[pq_nbr.h:85:INFO] PQ Pivots offset: 0 PQ Vectors offset: 0
+[pq_nbr.h:90:INFO] Load compressed vectors from file: /home/ubuntu/pz/VectorDB/data/VectorDB/permission_aware_ssd_p0/r01/index/m2_smoke/sift1m_all_role0_pq_compressed.bin offset: 0 num points: 1000000 n_chunks: 32
+[pq_table.h:125:INFO] Loaded PQ Pivots: #centroids: 256, #dims: 128, #chunks: 32
+[ssd_index.cpp:114:INFO] Init buffers for 16 threads, setup 32 buffers.
+[ssd_index.cpp:126:INFO] Setup 1 background I/O threads for insert...
+[ssd_index.cpp:258:INFO] /home/ubuntu/pz/VectorDB/data/VectorDB/permission_aware_ssd_p0/r01/index/m2_smoke/sift1m_all_role0_partition.bin.aligned does not exist, use equal partition mapping
+[ssd_index.cpp:271:INFO] Page layout loaded.
+[ssd_index.cpp:200:INFO] Loading tags from /home/ubuntu/pz/VectorDB/data/VectorDB/permission_aware_ssd_p0/r01/index/m2_smoke/sift1m_all_role0_disk.index.tags
+[ssd_index.cpp:285:INFO] Load tags from existing file: /home/ubuntu/pz/VectorDB/data/VectorDB/permission_aware_ssd_p0/r01/index/m2_smoke/sift1m_all_role0_disk.index.tags
+[ssd_index.cpp:295:INFO] Loaded 1000000 tags
+[ssd_index.cpp:206:INFO] SSDIndex loaded successfully.
+[ssd_index.cpp:79:INFO] Lock table size: 0
+[ssd_index.cpp:80:INFO] Page cache size: 0
+
+Script done on 2026-07-22 10:10:23+00:00 [COMMAND_EXIT_CODE="0"]
