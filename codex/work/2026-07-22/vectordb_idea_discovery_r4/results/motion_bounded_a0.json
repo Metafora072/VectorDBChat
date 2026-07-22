@@ -1,0 +1,803 @@
+{
+  "experiment": "motion_bounded_a0",
+  "hypothesis": "Bounded-motion envelopes expose a selective candidate set in regimes where stale search fails and fixed old-order overfetch is insufficient.",
+  "dataset": "MiniLM Quora corpus and held-out query embeddings",
+  "config": {
+    "docs": "/home/ubuntu/pz/VectorDB/data/VectorDB/a0_topology_reuse/embeddings/formal_100k/minilm_l6_v1_v2/old_corpus.fbin",
+    "queries": "/home/ubuntu/pz/VectorDB/data/VectorDB/a0_topology_reuse/embeddings/formal_100k/minilm_l6_v1_v2/old_queries.fbin",
+    "documents": 60000,
+    "query_count": 160,
+    "k": 10,
+    "moved_fractions": [
+      0.1,
+      0.2
+    ],
+    "radius_fractions": [
+      0.05,
+      0.1
+    ],
+    "modes": [
+      "random",
+      "workload_aligned"
+    ],
+    "overfetch": [
+      20,
+      50,
+      100,
+      200,
+      500
+    ],
+    "seed": 71,
+    "output": "codex/work/2026-07-22/vectordb_idea_discovery_r4/results/motion_bounded_a0.json"
+  },
+  "median_exact_kth_distance": 0.9626749753952026,
+  "gate": {
+    "definition": "exists regime with stale recall <=0.95, envelope p95 <=5k, and fixed-old-top50 recall <0.99",
+    "rows": [
+      {
+        "mode": "random",
+        "moved_fraction": 0.1,
+        "radius_fraction": 0.05,
+        "nontrivial": false,
+        "selective": true,
+        "fixed_top50_not_enough": false,
+        "row_pass": false
+      },
+      {
+        "mode": "random",
+        "moved_fraction": 0.1,
+        "radius_fraction": 0.1,
+        "nontrivial": false,
+        "selective": true,
+        "fixed_top50_not_enough": false,
+        "row_pass": false
+      },
+      {
+        "mode": "random",
+        "moved_fraction": 0.2,
+        "radius_fraction": 0.05,
+        "nontrivial": false,
+        "selective": true,
+        "fixed_top50_not_enough": false,
+        "row_pass": false
+      },
+      {
+        "mode": "random",
+        "moved_fraction": 0.2,
+        "radius_fraction": 0.1,
+        "nontrivial": false,
+        "selective": true,
+        "fixed_top50_not_enough": false,
+        "row_pass": false
+      },
+      {
+        "mode": "workload_aligned",
+        "moved_fraction": 0.1,
+        "radius_fraction": 0.05,
+        "nontrivial": false,
+        "selective": true,
+        "fixed_top50_not_enough": false,
+        "row_pass": false
+      },
+      {
+        "mode": "workload_aligned",
+        "moved_fraction": 0.1,
+        "radius_fraction": 0.1,
+        "nontrivial": true,
+        "selective": true,
+        "fixed_top50_not_enough": false,
+        "row_pass": false
+      },
+      {
+        "mode": "workload_aligned",
+        "moved_fraction": 0.2,
+        "radius_fraction": 0.05,
+        "nontrivial": true,
+        "selective": true,
+        "fixed_top50_not_enough": false,
+        "row_pass": false
+      },
+      {
+        "mode": "workload_aligned",
+        "moved_fraction": 0.2,
+        "radius_fraction": 0.1,
+        "nontrivial": true,
+        "selective": true,
+        "fixed_top50_not_enough": false,
+        "row_pass": false
+      }
+    ],
+    "pass": false
+  },
+  "records": [
+    {
+      "mode": "random",
+      "moved_fraction": 0.1,
+      "moved_count": 6000,
+      "radius_fraction_of_median_kth": 0.05,
+      "absolute_radius": 0.048133748769760135,
+      "stale_recall_at_k": {
+        "mean": 0.9949999999999999,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1.0
+      },
+      "fresh_topk_moved_items": {
+        "mean": 0.925,
+        "p50": 1.0,
+        "p95": 2.049999999999983,
+        "p99": 4.409999999999997,
+        "max": 5.0
+      },
+      "sound_envelope_candidate_count": {
+        "mean": 11.56875,
+        "p50": 11.0,
+        "p95": 15.0,
+        "p99": 18.819999999999993,
+        "max": 25.0
+      },
+      "sound_envelope_expansion_over_k": {
+        "mean": 1.1568749999999999,
+        "p50": 1.1,
+        "p95": 1.5,
+        "p99": 1.8819999999999992,
+        "max": 2.5
+      },
+      "oracle_minimum_candidate_count": {
+        "mean": 11.55625,
+        "p50": 11.0,
+        "p95": 15.0,
+        "p99": 18.819999999999993,
+        "max": 25.0
+      },
+      "sound_envelope_recall_at_k": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1.0
+      },
+      "fixed_old_prefix_rerank_recall": {
+        "20": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "50": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "100": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "200": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "500": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        }
+      }
+    },
+    {
+      "mode": "random",
+      "moved_fraction": 0.1,
+      "moved_count": 6000,
+      "radius_fraction_of_median_kth": 0.1,
+      "absolute_radius": 0.09626749753952027,
+      "stale_recall_at_k": {
+        "mean": 0.9925,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1.0
+      },
+      "fresh_topk_moved_items": {
+        "mean": 0.95,
+        "p50": 1.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "max": 4.0
+      },
+      "sound_envelope_candidate_count": {
+        "mean": 15.9375,
+        "p50": 14.0,
+        "p95": 26.049999999999983,
+        "p99": 36.22999999999999,
+        "max": 156.0
+      },
+      "sound_envelope_expansion_over_k": {
+        "mean": 1.5937499999999998,
+        "p50": 1.4,
+        "p95": 2.604999999999998,
+        "p99": 3.622999999999999,
+        "max": 15.6
+      },
+      "oracle_minimum_candidate_count": {
+        "mean": 15.5875,
+        "p50": 14.0,
+        "p95": 26.049999999999983,
+        "p99": 36.22999999999999,
+        "max": 111.0
+      },
+      "sound_envelope_recall_at_k": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1.0
+      },
+      "fixed_old_prefix_rerank_recall": {
+        "20": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "50": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "100": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "200": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "500": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        }
+      }
+    },
+    {
+      "mode": "random",
+      "moved_fraction": 0.2,
+      "moved_count": 12000,
+      "radius_fraction_of_median_kth": 0.05,
+      "absolute_radius": 0.048133748769760135,
+      "stale_recall_at_k": {
+        "mean": 0.99375,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1.0
+      },
+      "fresh_topk_moved_items": {
+        "mean": 2.13125,
+        "p50": 2.0,
+        "p95": 4.0,
+        "p99": 5.409999999999997,
+        "max": 6.0
+      },
+      "sound_envelope_candidate_count": {
+        "mean": 12.79375,
+        "p50": 12.0,
+        "p95": 18.0,
+        "p99": 21.409999999999997,
+        "max": 38.0
+      },
+      "sound_envelope_expansion_over_k": {
+        "mean": 1.2793750000000002,
+        "p50": 1.2,
+        "p95": 1.8,
+        "p99": 2.1409999999999996,
+        "max": 3.8
+      },
+      "oracle_minimum_candidate_count": {
+        "mean": 12.7625,
+        "p50": 12.0,
+        "p95": 18.0,
+        "p99": 21.409999999999997,
+        "max": 38.0
+      },
+      "sound_envelope_recall_at_k": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1.0
+      },
+      "fixed_old_prefix_rerank_recall": {
+        "20": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "50": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "100": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "200": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "500": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        }
+      }
+    },
+    {
+      "mode": "random",
+      "moved_fraction": 0.2,
+      "moved_count": 12000,
+      "radius_fraction_of_median_kth": 0.1,
+      "absolute_radius": 0.09626749753952027,
+      "stale_recall_at_k": {
+        "mean": 0.98375,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1.0
+      },
+      "fresh_topk_moved_items": {
+        "mean": 1.83125,
+        "p50": 2.0,
+        "p95": 4.0,
+        "p99": 5.0,
+        "max": 5.0
+      },
+      "sound_envelope_candidate_count": {
+        "mean": 21.31875,
+        "p50": 17.0,
+        "p95": 40.14999999999995,
+        "p99": 58.81999999999999,
+        "max": 181.0
+      },
+      "sound_envelope_expansion_over_k": {
+        "mean": 2.131875,
+        "p50": 1.7,
+        "p95": 4.014999999999995,
+        "p99": 5.881999999999999,
+        "max": 18.1
+      },
+      "oracle_minimum_candidate_count": {
+        "mean": 20.91875,
+        "p50": 17.0,
+        "p95": 37.04999999999998,
+        "p99": 58.81999999999999,
+        "max": 181.0
+      },
+      "sound_envelope_recall_at_k": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1.0
+      },
+      "fixed_old_prefix_rerank_recall": {
+        "20": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "50": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "100": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "200": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "500": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        }
+      }
+    },
+    {
+      "mode": "workload_aligned",
+      "moved_fraction": 0.1,
+      "moved_count": 6000,
+      "radius_fraction_of_median_kth": 0.05,
+      "absolute_radius": 0.048133748769760135,
+      "stale_recall_at_k": {
+        "mean": 0.9712500000000001,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1.0
+      },
+      "fresh_topk_moved_items": {
+        "mean": 1.225,
+        "p50": 1.0,
+        "p95": 3.0,
+        "p99": 4.409999999999997,
+        "max": 5.0
+      },
+      "sound_envelope_candidate_count": {
+        "mean": 11.33125,
+        "p50": 11.0,
+        "p95": 13.049999999999983,
+        "p99": 16.0,
+        "max": 24.0
+      },
+      "sound_envelope_expansion_over_k": {
+        "mean": 1.1331250000000002,
+        "p50": 1.1,
+        "p95": 1.3049999999999984,
+        "p99": 1.6,
+        "max": 2.4
+      },
+      "oracle_minimum_candidate_count": {
+        "mean": 10.94375,
+        "p50": 11.0,
+        "p95": 13.0,
+        "p99": 14.409999999999997,
+        "max": 23.0
+      },
+      "sound_envelope_recall_at_k": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1.0
+      },
+      "fixed_old_prefix_rerank_recall": {
+        "20": {
+          "mean": 0.996875,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "50": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "100": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "200": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "500": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        }
+      }
+    },
+    {
+      "mode": "workload_aligned",
+      "moved_fraction": 0.1,
+      "moved_count": 6000,
+      "radius_fraction_of_median_kth": 0.1,
+      "absolute_radius": 0.09626749753952027,
+      "stale_recall_at_k": {
+        "mean": 0.9106250000000001,
+        "p50": 0.9,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1.0
+      },
+      "fresh_topk_moved_items": {
+        "mean": 1.875,
+        "p50": 2.0,
+        "p95": 5.0,
+        "p99": 6.409999999999997,
+        "max": 7.0
+      },
+      "sound_envelope_candidate_count": {
+        "mean": 15.4625,
+        "p50": 14.0,
+        "p95": 23.049999999999983,
+        "p99": 45.81999999999999,
+        "max": 92.0
+      },
+      "sound_envelope_expansion_over_k": {
+        "mean": 1.5462500000000001,
+        "p50": 1.4,
+        "p95": 2.304999999999998,
+        "p99": 4.581999999999999,
+        "max": 9.2
+      },
+      "oracle_minimum_candidate_count": {
+        "mean": 13.60625,
+        "p50": 12.0,
+        "p95": 20.0,
+        "p99": 34.0,
+        "max": 59.0
+      },
+      "sound_envelope_recall_at_k": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1.0
+      },
+      "fixed_old_prefix_rerank_recall": {
+        "20": {
+          "mean": 0.9731249999999999,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "50": {
+          "mean": 0.999375,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "100": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "200": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "500": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        }
+      }
+    },
+    {
+      "mode": "workload_aligned",
+      "moved_fraction": 0.2,
+      "moved_count": 12000,
+      "radius_fraction_of_median_kth": 0.05,
+      "absolute_radius": 0.048133748769760135,
+      "stale_recall_at_k": {
+        "mean": 0.946875,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1.0
+      },
+      "fresh_topk_moved_items": {
+        "mean": 2.53125,
+        "p50": 2.0,
+        "p95": 5.0,
+        "p99": 6.409999999999997,
+        "max": 7.0
+      },
+      "sound_envelope_candidate_count": {
+        "mean": 12.48125,
+        "p50": 12.0,
+        "p95": 17.0,
+        "p99": 21.22999999999999,
+        "max": 32.0
+      },
+      "sound_envelope_expansion_over_k": {
+        "mean": 1.248125,
+        "p50": 1.2,
+        "p95": 1.7,
+        "p99": 2.122999999999999,
+        "max": 3.2
+      },
+      "oracle_minimum_candidate_count": {
+        "mean": 11.7375,
+        "p50": 11.0,
+        "p95": 15.049999999999983,
+        "p99": 19.819999999999993,
+        "max": 23.0
+      },
+      "sound_envelope_recall_at_k": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1.0
+      },
+      "fixed_old_prefix_rerank_recall": {
+        "20": {
+          "mean": 0.9956250000000001,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "50": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "100": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "200": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "500": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        }
+      }
+    },
+    {
+      "mode": "workload_aligned",
+      "moved_fraction": 0.2,
+      "moved_count": 12000,
+      "radius_fraction_of_median_kth": 0.1,
+      "absolute_radius": 0.09626749753952027,
+      "stale_recall_at_k": {
+        "mean": 0.88375,
+        "p50": 0.9,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1.0
+      },
+      "fresh_topk_moved_items": {
+        "mean": 3.2,
+        "p50": 3.0,
+        "p95": 6.0,
+        "p99": 7.0,
+        "max": 8.0
+      },
+      "sound_envelope_candidate_count": {
+        "mean": 20.0875,
+        "p50": 17.0,
+        "p95": 35.04999999999998,
+        "p99": 66.63999999999999,
+        "max": 184.0
+      },
+      "sound_envelope_expansion_over_k": {
+        "mean": 2.00875,
+        "p50": 1.7,
+        "p95": 3.504999999999998,
+        "p99": 6.663999999999999,
+        "max": 18.4
+      },
+      "oracle_minimum_candidate_count": {
+        "mean": 16.65625,
+        "p50": 14.5,
+        "p95": 26.249999999999915,
+        "p99": 49.04999999999998,
+        "max": 119.0
+      },
+      "sound_envelope_recall_at_k": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1.0
+      },
+      "fixed_old_prefix_rerank_recall": {
+        "20": {
+          "mean": 0.9712500000000001,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "50": {
+          "mean": 0.999375,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "100": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "200": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        },
+        "500": {
+          "mean": 1.0,
+          "p50": 1.0,
+          "p95": 1.0,
+          "p99": 1.0,
+          "max": 1.0
+        }
+      }
+    }
+  ],
+  "elapsed_seconds": 12.855566501617432
+}

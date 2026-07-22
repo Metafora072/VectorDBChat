@@ -1,0 +1,515 @@
+{
+  "experiment": "motion_bounded_a_minus_1",
+  "question": "For sparse small same-space motion, are sound displacement envelopes selective?",
+  "dataset": "100K x 128 synthetic benchmark vectors",
+  "config": {
+    "base": "/home/ubuntu/pz/VectorDB/data/VectorDB/datasets/synthetic_128d_100k/base.fvecs",
+    "queries": "/home/ubuntu/pz/VectorDB/data/VectorDB/datasets/synthetic_128d_100k/query.fvecs",
+    "documents": 60000,
+    "query_count": 160,
+    "move_fractions": [
+      0.01,
+      0.1,
+      0.2
+    ],
+    "radius_fractions": [
+      0.001,
+      0.005,
+      0.02
+    ],
+    "k": 10,
+    "batch": 20,
+    "seed": 41,
+    "output": "codex/work/2026-07-22/vectordb_idea_discovery_r4/results/motion_bounded_a_minus_1.json"
+  },
+  "median_exact_kth_distance": 7.546607971191406,
+  "results": {
+    "moved_0.010_radius_0.0010": {
+      "moved_fraction": 0.01,
+      "moved_count": 600,
+      "radius_fraction_of_median_kth": 0.001,
+      "absolute_radius": 0.007546607971191406,
+      "stale_recall_at_k": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "sound_minimum_candidate_count": {
+        "mean": 10.01875,
+        "p50": 10.0,
+        "p95": 10.0,
+        "p99": 11.0
+      },
+      "candidate_expansion_over_k": {
+        "mean": 1.001875,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.1
+      },
+      "active_moved_points": {
+        "mean": 0.075,
+        "p50": 0.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_10_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_50_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_100_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_500_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      }
+    },
+    "moved_0.010_radius_0.0050": {
+      "moved_fraction": 0.01,
+      "moved_count": 600,
+      "radius_fraction_of_median_kth": 0.005,
+      "absolute_radius": 0.03773303985595703,
+      "stale_recall_at_k": {
+        "mean": 0.99875,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "sound_minimum_candidate_count": {
+        "mean": 10.03125,
+        "p50": 10.0,
+        "p95": 10.0,
+        "p99": 11.0
+      },
+      "candidate_expansion_over_k": {
+        "mean": 1.003125,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.1
+      },
+      "active_moved_points": {
+        "mean": 0.1,
+        "p50": 0.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_10_coverage": {
+        "mean": 0.99875,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_50_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_100_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_500_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      }
+    },
+    "moved_0.010_radius_0.0200": {
+      "moved_fraction": 0.01,
+      "moved_count": 600,
+      "radius_fraction_of_median_kth": 0.02,
+      "absolute_radius": 0.15093215942382812,
+      "stale_recall_at_k": {
+        "mean": 0.9974999999999999,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "sound_minimum_candidate_count": {
+        "mean": 10.20625,
+        "p50": 10.0,
+        "p95": 11.0,
+        "p99": 12.0
+      },
+      "candidate_expansion_over_k": {
+        "mean": 1.0206250000000001,
+        "p50": 1.0,
+        "p95": 1.1,
+        "p99": 1.2
+      },
+      "active_moved_points": {
+        "mean": 0.275,
+        "p50": 0.0,
+        "p95": 1.049999999999983,
+        "p99": 2.0
+      },
+      "old_top_10_coverage": {
+        "mean": 0.9974999999999999,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_50_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_100_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_500_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      }
+    },
+    "moved_0.100_radius_0.0010": {
+      "moved_fraction": 0.1,
+      "moved_count": 6000,
+      "radius_fraction_of_median_kth": 0.001,
+      "absolute_radius": 0.007546607971191406,
+      "stale_recall_at_k": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "sound_minimum_candidate_count": {
+        "mean": 10.0625,
+        "p50": 10.0,
+        "p95": 11.0,
+        "p99": 11.0
+      },
+      "candidate_expansion_over_k": {
+        "mean": 1.00625,
+        "p50": 1.0,
+        "p95": 1.1,
+        "p99": 1.1
+      },
+      "active_moved_points": {
+        "mean": 0.91875,
+        "p50": 1.0,
+        "p95": 2.049999999999983,
+        "p99": 3.0
+      },
+      "old_top_10_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_50_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_100_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_500_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      }
+    },
+    "moved_0.100_radius_0.0050": {
+      "moved_fraction": 0.1,
+      "moved_count": 6000,
+      "radius_fraction_of_median_kth": 0.005,
+      "absolute_radius": 0.03773303985595703,
+      "stale_recall_at_k": {
+        "mean": 0.999375,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "sound_minimum_candidate_count": {
+        "mean": 10.4625,
+        "p50": 10.0,
+        "p95": 12.0,
+        "p99": 12.0
+      },
+      "candidate_expansion_over_k": {
+        "mean": 1.04625,
+        "p50": 1.0,
+        "p95": 1.2,
+        "p99": 1.2
+      },
+      "active_moved_points": {
+        "mean": 1.3125,
+        "p50": 1.0,
+        "p95": 3.0,
+        "p99": 4.0
+      },
+      "old_top_10_coverage": {
+        "mean": 0.999375,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_50_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_100_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_500_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      }
+    },
+    "moved_0.100_radius_0.0200": {
+      "moved_fraction": 0.1,
+      "moved_count": 6000,
+      "radius_fraction_of_median_kth": 0.02,
+      "absolute_radius": 0.15093215942382812,
+      "stale_recall_at_k": {
+        "mean": 0.9925,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "sound_minimum_candidate_count": {
+        "mean": 12.26875,
+        "p50": 12.0,
+        "p95": 15.049999999999983,
+        "p99": 17.0
+      },
+      "candidate_expansion_over_k": {
+        "mean": 1.2268750000000002,
+        "p50": 1.2,
+        "p95": 1.5049999999999983,
+        "p99": 1.7
+      },
+      "active_moved_points": {
+        "mean": 3.1375,
+        "p50": 3.0,
+        "p95": 7.0,
+        "p99": 8.0
+      },
+      "old_top_10_coverage": {
+        "mean": 0.9925,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_50_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_100_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_500_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      }
+    },
+    "moved_0.200_radius_0.0010": {
+      "moved_fraction": 0.2,
+      "moved_count": 12000,
+      "radius_fraction_of_median_kth": 0.001,
+      "absolute_radius": 0.007546607971191406,
+      "stale_recall_at_k": {
+        "mean": 0.99875,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "sound_minimum_candidate_count": {
+        "mean": 10.1375,
+        "p50": 10.0,
+        "p95": 11.0,
+        "p99": 11.0
+      },
+      "candidate_expansion_over_k": {
+        "mean": 1.01375,
+        "p50": 1.0,
+        "p95": 1.1,
+        "p99": 1.1
+      },
+      "active_moved_points": {
+        "mean": 2.1375,
+        "p50": 2.0,
+        "p95": 5.0,
+        "p99": 5.0
+      },
+      "old_top_10_coverage": {
+        "mean": 0.99875,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_50_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_100_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_500_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      }
+    },
+    "moved_0.200_radius_0.0050": {
+      "moved_fraction": 0.2,
+      "moved_count": 12000,
+      "radius_fraction_of_median_kth": 0.005,
+      "absolute_radius": 0.03773303985595703,
+      "stale_recall_at_k": {
+        "mean": 0.99375,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "sound_minimum_candidate_count": {
+        "mean": 10.70625,
+        "p50": 10.5,
+        "p95": 12.0,
+        "p99": 13.409999999999997
+      },
+      "candidate_expansion_over_k": {
+        "mean": 1.0706250000000002,
+        "p50": 1.05,
+        "p95": 1.2,
+        "p99": 1.3409999999999997
+      },
+      "active_moved_points": {
+        "mean": 2.69375,
+        "p50": 2.5,
+        "p95": 5.0,
+        "p99": 7.819999999999993
+      },
+      "old_top_10_coverage": {
+        "mean": 0.99375,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_50_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_100_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_500_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      }
+    },
+    "moved_0.200_radius_0.0200": {
+      "moved_fraction": 0.2,
+      "moved_count": 12000,
+      "radius_fraction_of_median_kth": 0.02,
+      "absolute_radius": 0.15093215942382812,
+      "stale_recall_at_k": {
+        "mean": 0.9824999999999999,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "sound_minimum_candidate_count": {
+        "mean": 14.725,
+        "p50": 15.0,
+        "p95": 19.0,
+        "p99": 21.409999999999997
+      },
+      "candidate_expansion_over_k": {
+        "mean": 1.4725,
+        "p50": 1.5,
+        "p95": 1.9,
+        "p99": 2.1409999999999996
+      },
+      "active_moved_points": {
+        "mean": 6.6875,
+        "p50": 6.0,
+        "p95": 11.0,
+        "p99": 14.409999999999997
+      },
+      "old_top_10_coverage": {
+        "mean": 0.9824999999999999,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_50_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_100_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_500_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      }
+    }
+  },
+  "elapsed_seconds": 3.8787689208984375
+}

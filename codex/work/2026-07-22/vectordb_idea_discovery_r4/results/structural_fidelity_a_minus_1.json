@@ -1,0 +1,467 @@
+{
+  "experiment": "structural_fidelity_a_minus_1",
+  "question": "At equal k-NN edge recall, does error placement materially alter graph structure?",
+  "dataset": "MovieLens semantic vectors with genre groups",
+  "config": {
+    "data": "/home/ubuntu/pz/VectorDB/data/vaq_semantic_g0/prepared/movielens_q12.npz",
+    "n": 2504,
+    "dimension": 1128,
+    "groups": 11,
+    "k": 15,
+    "candidate_k": 45,
+    "target_recalls": [
+      0.8,
+      0.9
+    ],
+    "seeds": [
+      17,
+      29,
+      43
+    ]
+  },
+  "exact_graph": {
+    "cross_label_edge_fraction": 0.537583353698984,
+    "connected_components": 1,
+    "first_nontrivial_eigenvalues": [
+      0.041490591991504094,
+      0.0496937223340728,
+      0.09258494751362491,
+      0.0988353451026145,
+      0.11318028281321042,
+      0.12765443152646216,
+      0.1322874431168741,
+      0.13708724327066873,
+      0.14834506892759058,
+      0.15878351032332189
+    ]
+  },
+  "summary": {
+    "0.8": {
+      "random": {
+        "target_recall": {
+          "mean": 0.8000000000000002,
+          "min": 0.8,
+          "max": 0.8
+        },
+        "directed_edge_recall": {
+          "mean": 0.7999999999999999,
+          "min": 0.7999999999999999,
+          "max": 0.7999999999999999
+        },
+        "laplacian_operator_error": {
+          "mean": 0.25291077835698333,
+          "min": 0.2495849669152139,
+          "max": 0.25527619843855354
+        },
+        "low_eigenspace_max_sin_theta": {
+          "mean": 0.6986301735473184,
+          "min": 0.32550647741187405,
+          "max": 0.980009608901561
+        },
+        "low_eigenvalue_l2_error": {
+          "mean": 0.07796625811355919,
+          "min": 0.0750482576706404,
+          "max": 0.08115038094885821
+        },
+        "cross_label_edge_fraction": {
+          "mean": 0.5496690030844992,
+          "min": 0.548362035478441,
+          "max": 0.550884239165641
+        },
+        "connected_components": {
+          "mean": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        }
+      },
+      "damage_bridge_like": {
+        "target_recall": {
+          "mean": 0.8000000000000002,
+          "min": 0.8,
+          "max": 0.8
+        },
+        "directed_edge_recall": {
+          "mean": 0.7999999999999999,
+          "min": 0.7999999999999999,
+          "max": 0.7999999999999999
+        },
+        "laplacian_operator_error": {
+          "mean": 0.2795660211659636,
+          "min": 0.27693067901364865,
+          "max": 0.2818361407289474
+        },
+        "low_eigenspace_max_sin_theta": {
+          "mean": 0.3374358345267326,
+          "min": 0.2283987563665354,
+          "max": 0.4553421541306028
+        },
+        "low_eigenvalue_l2_error": {
+          "mean": 0.01708142927273788,
+          "min": 0.014717727885804627,
+          "max": 0.01881026054995435
+        },
+        "cross_label_edge_fraction": {
+          "mean": 0.5429655625106554,
+          "min": 0.5418102418887107,
+          "max": 0.5438369239160077
+        },
+        "connected_components": {
+          "mean": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        }
+      },
+      "damage_redundant": {
+        "target_recall": {
+          "mean": 0.8000000000000002,
+          "min": 0.8,
+          "max": 0.8
+        },
+        "directed_edge_recall": {
+          "mean": 0.7999999999999999,
+          "min": 0.7999999999999999,
+          "max": 0.7999999999999999
+        },
+        "laplacian_operator_error": {
+          "mean": 0.2858785464082055,
+          "min": 0.2834060122181709,
+          "max": 0.2885162732774608
+        },
+        "low_eigenspace_max_sin_theta": {
+          "mean": 0.6333543140760234,
+          "min": 0.42115262394798403,
+          "max": 0.9993524003266784
+        },
+        "low_eigenvalue_l2_error": {
+          "mean": 0.11541945596337828,
+          "min": 0.11359150305834417,
+          "max": 0.117587175922924
+        },
+        "cross_label_edge_fraction": {
+          "mean": 0.5565707847385412,
+          "min": 0.555523302693114,
+          "max": 0.5574610747558105
+        },
+        "connected_components": {
+          "mean": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        }
+      }
+    },
+    "0.9": {
+      "random": {
+        "target_recall": {
+          "mean": 0.9,
+          "min": 0.9,
+          "max": 0.9
+        },
+        "directed_edge_recall": {
+          "mean": 0.9333333333333335,
+          "min": 0.9333333333333335,
+          "max": 0.9333333333333335
+        },
+        "laplacian_operator_error": {
+          "mean": 0.1581455690229363,
+          "min": 0.15750977185939627,
+          "max": 0.15888172190212793
+        },
+        "low_eigenspace_max_sin_theta": {
+          "mean": 0.2656762431672252,
+          "min": 0.22445873062738506,
+          "max": 0.29627685447400454
+        },
+        "low_eigenvalue_l2_error": {
+          "mean": 0.026400308260470046,
+          "min": 0.024788460676729195,
+          "max": 0.027964827447928088
+        },
+        "cross_label_edge_fraction": {
+          "mean": 0.5422017860286744,
+          "min": 0.5413457297003834,
+          "max": 0.5433852007882041
+        },
+        "connected_components": {
+          "mean": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        }
+      },
+      "damage_bridge_like": {
+        "target_recall": {
+          "mean": 0.9,
+          "min": 0.9,
+          "max": 0.9
+        },
+        "directed_edge_recall": {
+          "mean": 0.9333333333333335,
+          "min": 0.9333333333333335,
+          "max": 0.9333333333333335
+        },
+        "laplacian_operator_error": {
+          "mean": 0.17508238417811964,
+          "min": 0.16893853552955873,
+          "max": 0.18241983563674496
+        },
+        "low_eigenspace_max_sin_theta": {
+          "mean": 0.21140958685922187,
+          "min": 0.18043470186603036,
+          "max": 0.2455726612122209
+        },
+        "low_eigenvalue_l2_error": {
+          "mean": 0.009444142820139268,
+          "min": 0.007625769410977976,
+          "max": 0.011804155237529826
+        },
+        "cross_label_edge_fraction": {
+          "mean": 0.5389698344914859,
+          "min": 0.5381753702802309,
+          "max": 0.5399756564075813
+        },
+        "connected_components": {
+          "mean": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        }
+      },
+      "damage_redundant": {
+        "target_recall": {
+          "mean": 0.9,
+          "min": 0.9,
+          "max": 0.9
+        },
+        "directed_edge_recall": {
+          "mean": 0.9333333333333335,
+          "min": 0.9333333333333335,
+          "max": 0.9333333333333335
+        },
+        "laplacian_operator_error": {
+          "mean": 0.1623443883959376,
+          "min": 0.16159984174585623,
+          "max": 0.16286365506269593
+        },
+        "low_eigenspace_max_sin_theta": {
+          "mean": 0.22335932260661293,
+          "min": 0.18094195065123717,
+          "max": 0.2544928214913464
+        },
+        "low_eigenvalue_l2_error": {
+          "mean": 0.0422492261676127,
+          "min": 0.0400282539878286,
+          "max": 0.044213654156861806
+        },
+        "cross_label_edge_fraction": {
+          "mean": 0.5442281842823734,
+          "min": 0.5434019574755315,
+          "max": 0.5451599837991089
+        },
+        "connected_components": {
+          "mean": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        }
+      }
+    }
+  },
+  "records": [
+    {
+      "target_recall": 0.8,
+      "policy": "random",
+      "seed": 17,
+      "directed_edge_recall": 0.7999999999999999,
+      "laplacian_operator_error": 0.25387116971718254,
+      "low_eigenspace_max_sin_theta": 0.32550647741187405,
+      "low_eigenvalue_l2_error": 0.0750482576706404,
+      "cross_label_edge_fraction": 0.550884239165641,
+      "connected_components": 1
+    },
+    {
+      "target_recall": 0.8,
+      "policy": "damage_bridge_like",
+      "seed": 17,
+      "directed_edge_recall": 0.7999999999999999,
+      "laplacian_operator_error": 0.2818361407289474,
+      "low_eigenspace_max_sin_theta": 0.2283987563665354,
+      "low_eigenvalue_l2_error": 0.014717727885804627,
+      "cross_label_edge_fraction": 0.5432495217272478,
+      "connected_components": 1
+    },
+    {
+      "target_recall": 0.8,
+      "policy": "damage_redundant",
+      "seed": 17,
+      "directed_edge_recall": 0.7999999999999999,
+      "laplacian_operator_error": 0.2834060122181709,
+      "low_eigenspace_max_sin_theta": 0.42115262394798403,
+      "low_eigenvalue_l2_error": 0.11359150305834417,
+      "cross_label_edge_fraction": 0.5567279767666989,
+      "connected_components": 1
+    },
+    {
+      "target_recall": 0.8,
+      "policy": "random",
+      "seed": 29,
+      "directed_edge_recall": 0.7999999999999999,
+      "laplacian_operator_error": 0.2495849669152139,
+      "low_eigenspace_max_sin_theta": 0.980009608901561,
+      "low_eigenvalue_l2_error": 0.08115038094885821,
+      "cross_label_edge_fraction": 0.5497607346094154,
+      "connected_components": 1
+    },
+    {
+      "target_recall": 0.8,
+      "policy": "damage_bridge_like",
+      "seed": 29,
+      "directed_edge_recall": 0.7999999999999999,
+      "laplacian_operator_error": 0.27693067901364865,
+      "low_eigenspace_max_sin_theta": 0.4553421541306028,
+      "low_eigenvalue_l2_error": 0.01771629938245465,
+      "cross_label_edge_fraction": 0.5438369239160077,
+      "connected_components": 1
+    },
+    {
+      "target_recall": 0.8,
+      "policy": "damage_redundant",
+      "seed": 29,
+      "directed_edge_recall": 0.7999999999999999,
+      "laplacian_operator_error": 0.2885162732774608,
+      "low_eigenspace_max_sin_theta": 0.47955791795340774,
+      "low_eigenvalue_l2_error": 0.11507968890886669,
+      "cross_label_edge_fraction": 0.5574610747558105,
+      "connected_components": 1
+    },
+    {
+      "target_recall": 0.8,
+      "policy": "random",
+      "seed": 43,
+      "directed_edge_recall": 0.7999999999999999,
+      "laplacian_operator_error": 0.25527619843855354,
+      "low_eigenspace_max_sin_theta": 0.79037443432852,
+      "low_eigenvalue_l2_error": 0.07770013572117895,
+      "cross_label_edge_fraction": 0.548362035478441,
+      "connected_components": 1
+    },
+    {
+      "target_recall": 0.8,
+      "policy": "damage_bridge_like",
+      "seed": 43,
+      "directed_edge_recall": 0.7999999999999999,
+      "laplacian_operator_error": 0.27993124375529466,
+      "low_eigenspace_max_sin_theta": 0.3285665930830597,
+      "low_eigenvalue_l2_error": 0.01881026054995435,
+      "cross_label_edge_fraction": 0.5418102418887107,
+      "connected_components": 1
+    },
+    {
+      "target_recall": 0.8,
+      "policy": "damage_redundant",
+      "seed": 43,
+      "directed_edge_recall": 0.7999999999999999,
+      "laplacian_operator_error": 0.2857133537289847,
+      "low_eigenspace_max_sin_theta": 0.9993524003266784,
+      "low_eigenvalue_l2_error": 0.117587175922924,
+      "cross_label_edge_fraction": 0.555523302693114,
+      "connected_components": 1
+    },
+    {
+      "target_recall": 0.9,
+      "policy": "random",
+      "seed": 17,
+      "directed_edge_recall": 0.9333333333333335,
+      "laplacian_operator_error": 0.15750977185939627,
+      "low_eigenspace_max_sin_theta": 0.2762931444002859,
+      "low_eigenvalue_l2_error": 0.026447636656752854,
+      "cross_label_edge_fraction": 0.5433852007882041,
+      "connected_components": 1
+    },
+    {
+      "target_recall": 0.9,
+      "policy": "damage_bridge_like",
+      "seed": 17,
+      "directed_edge_recall": 0.9333333333333335,
+      "laplacian_operator_error": 0.18241983563674496,
+      "low_eigenspace_max_sin_theta": 0.2455726612122209,
+      "low_eigenvalue_l2_error": 0.007625769410977976,
+      "cross_label_edge_fraction": 0.5399756564075813,
+      "connected_components": 1
+    },
+    {
+      "target_recall": 0.9,
+      "policy": "damage_redundant",
+      "seed": 17,
+      "directed_edge_recall": 0.9333333333333335,
+      "laplacian_operator_error": 0.16159984174585623,
+      "low_eigenspace_max_sin_theta": 0.23464319567725522,
+      "low_eigenvalue_l2_error": 0.044213654156861806,
+      "cross_label_edge_fraction": 0.5451599837991089,
+      "connected_components": 1
+    },
+    {
+      "target_recall": 0.9,
+      "policy": "random",
+      "seed": 29,
+      "directed_edge_recall": 0.9333333333333335,
+      "laplacian_operator_error": 0.15804521330728474,
+      "low_eigenspace_max_sin_theta": 0.29627685447400454,
+      "low_eigenvalue_l2_error": 0.024788460676729195,
+      "cross_label_edge_fraction": 0.5413457297003834,
+      "connected_components": 1
+    },
+    {
+      "target_recall": 0.9,
+      "policy": "damage_bridge_like",
+      "seed": 29,
+      "directed_edge_recall": 0.9333333333333335,
+      "laplacian_operator_error": 0.16893853552955873,
+      "low_eigenspace_max_sin_theta": 0.20822139749941435,
+      "low_eigenvalue_l2_error": 0.008902503811910004,
+      "cross_label_edge_fraction": 0.5381753702802309,
+      "connected_components": 1
+    },
+    {
+      "target_recall": 0.9,
+      "policy": "damage_redundant",
+      "seed": 29,
+      "directed_edge_recall": 0.9333333333333335,
+      "laplacian_operator_error": 0.16286365506269593,
+      "low_eigenspace_max_sin_theta": 0.2544928214913464,
+      "low_eigenvalue_l2_error": 0.042505770358147704,
+      "cross_label_edge_fraction": 0.5434019574755315,
+      "connected_components": 1
+    },
+    {
+      "target_recall": 0.9,
+      "policy": "random",
+      "seed": 43,
+      "directed_edge_recall": 0.9333333333333335,
+      "laplacian_operator_error": 0.15888172190212793,
+      "low_eigenspace_max_sin_theta": 0.22445873062738506,
+      "low_eigenvalue_l2_error": 0.027964827447928088,
+      "cross_label_edge_fraction": 0.5418744275974356,
+      "connected_components": 1
+    },
+    {
+      "target_recall": 0.9,
+      "policy": "damage_bridge_like",
+      "seed": 43,
+      "directed_edge_recall": 0.9333333333333335,
+      "laplacian_operator_error": 0.17388878136805527,
+      "low_eigenspace_max_sin_theta": 0.18043470186603036,
+      "low_eigenvalue_l2_error": 0.011804155237529826,
+      "cross_label_edge_fraction": 0.5387584767866458,
+      "connected_components": 1
+    },
+    {
+      "target_recall": 0.9,
+      "policy": "damage_redundant",
+      "seed": 43,
+      "directed_edge_recall": 0.9333333333333335,
+      "laplacian_operator_error": 0.1625696683792607,
+      "low_eigenspace_max_sin_theta": 0.18094195065123717,
+      "low_eigenvalue_l2_error": 0.0400282539878286,
+      "cross_label_edge_fraction": 0.5441226115724799,
+      "connected_components": 1
+    }
+  ],
+  "elapsed_seconds": 10.72277045249939
+}

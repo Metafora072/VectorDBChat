@@ -1,0 +1,352 @@
+{
+  "experiment": "motion_bounded_a_minus_1",
+  "question": "For sparse small same-space motion, are sound displacement envelopes selective?",
+  "dataset": "100K x 128 synthetic benchmark vectors",
+  "config": {
+    "base": "/home/ubuntu/pz/VectorDB/data/VectorDB/datasets/synthetic_128d_100k/base.fvecs",
+    "queries": "/home/ubuntu/pz/VectorDB/data/VectorDB/datasets/synthetic_128d_100k/query.fvecs",
+    "documents": 60000,
+    "query_count": 160,
+    "move_fractions": [
+      0.1,
+      0.2
+    ],
+    "radius_fractions": [
+      0.05,
+      0.1,
+      0.2
+    ],
+    "k": 10,
+    "batch": 20,
+    "seed": 41,
+    "output": "codex/work/2026-07-22/vectordb_idea_discovery_r4/results/motion_bounded_stress.json"
+  },
+  "median_exact_kth_distance": 7.546607971191406,
+  "results": {
+    "moved_0.100_radius_0.0500": {
+      "moved_fraction": 0.1,
+      "moved_count": 6000,
+      "radius_fraction_of_median_kth": 0.05,
+      "absolute_radius": 0.37733039855957035,
+      "stale_recall_at_k": {
+        "mean": 0.9824999999999999,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "sound_minimum_candidate_count": {
+        "mean": 25.26875,
+        "p50": 25.0,
+        "p95": 35.04999999999998,
+        "p99": 38.81999999999999
+      },
+      "candidate_expansion_over_k": {
+        "mean": 2.526875,
+        "p50": 2.5,
+        "p95": 3.504999999999998,
+        "p99": 3.8819999999999992
+      },
+      "active_moved_points": {
+        "mean": 16.38125,
+        "p50": 16.0,
+        "p95": 27.0,
+        "p99": 30.22999999999999
+      },
+      "old_top_10_coverage": {
+        "mean": 0.9824999999999999,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_50_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_100_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_500_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      }
+    },
+    "moved_0.100_radius_0.1000": {
+      "moved_fraction": 0.1,
+      "moved_count": 6000,
+      "radius_fraction_of_median_kth": 0.1,
+      "absolute_radius": 0.7546607971191407,
+      "stale_recall_at_k": {
+        "mean": 0.9637499999999999,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "sound_minimum_candidate_count": {
+        "mean": 156.3375,
+        "p50": 155.0,
+        "p95": 202.49999999999983,
+        "p99": 228.0
+      },
+      "candidate_expansion_over_k": {
+        "mean": 15.633750000000001,
+        "p50": 15.5,
+        "p95": 20.249999999999982,
+        "p99": 22.8
+      },
+      "active_moved_points": {
+        "mean": 147.30625,
+        "p50": 146.5,
+        "p95": 193.5499999999998,
+        "p99": 218.0
+      },
+      "old_top_10_coverage": {
+        "mean": 0.9637499999999999,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_50_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_100_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_500_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      }
+    },
+    "moved_0.100_radius_0.2000": {
+      "moved_fraction": 0.1,
+      "moved_count": 6000,
+      "radius_fraction_of_median_kth": 0.2,
+      "absolute_radius": 1.5093215942382814,
+      "stale_recall_at_k": {
+        "mean": 0.9337500000000001,
+        "p50": 0.9,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "sound_minimum_candidate_count": {
+        "mean": 2273.9625,
+        "p50": 2283.5,
+        "p95": 2685.45,
+        "p99": 2786.5
+      },
+      "candidate_expansion_over_k": {
+        "mean": 227.39625,
+        "p50": 228.35000000000002,
+        "p95": 268.54499999999996,
+        "p99": 278.65
+      },
+      "active_moved_points": {
+        "mean": 2264.58125,
+        "p50": 2274.5,
+        "p95": 2675.45,
+        "p99": 2778.0899999999997
+      },
+      "old_top_10_coverage": {
+        "mean": 0.9337500000000001,
+        "p50": 0.9,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_50_coverage": {
+        "mean": 0.999375,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_100_coverage": {
+        "mean": 0.999375,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_500_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      }
+    },
+    "moved_0.200_radius_0.0500": {
+      "moved_fraction": 0.2,
+      "moved_count": 12000,
+      "radius_fraction_of_median_kth": 0.05,
+      "absolute_radius": 0.37733039855957035,
+      "stale_recall_at_k": {
+        "mean": 0.9637500000000001,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "sound_minimum_candidate_count": {
+        "mean": 40.125,
+        "p50": 39.0,
+        "p95": 56.04999999999998,
+        "p99": 60.0
+      },
+      "candidate_expansion_over_k": {
+        "mean": 4.012500000000001,
+        "p50": 3.9,
+        "p95": 5.604999999999998,
+        "p99": 6.0
+      },
+      "active_moved_points": {
+        "mean": 32.16875,
+        "p50": 31.0,
+        "p95": 50.0,
+        "p99": 51.81999999999999
+      },
+      "old_top_10_coverage": {
+        "mean": 0.9637500000000001,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_50_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_100_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_500_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      }
+    },
+    "moved_0.200_radius_0.1000": {
+      "moved_fraction": 0.2,
+      "moved_count": 12000,
+      "radius_fraction_of_median_kth": 0.1,
+      "absolute_radius": 0.7546607971191407,
+      "stale_recall_at_k": {
+        "mean": 0.9287500000000002,
+        "p50": 0.9,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "sound_minimum_candidate_count": {
+        "mean": 298.11875,
+        "p50": 292.5,
+        "p95": 391.3499999999999,
+        "p99": 454.6599999999999
+      },
+      "candidate_expansion_over_k": {
+        "mean": 29.811874999999997,
+        "p50": 29.25,
+        "p95": 39.13499999999999,
+        "p99": 45.46599999999999
+      },
+      "active_moved_points": {
+        "mean": 289.98125,
+        "p50": 284.5,
+        "p95": 383.2999999999999,
+        "p99": 447.0199999999999
+      },
+      "old_top_10_coverage": {
+        "mean": 0.9287500000000002,
+        "p50": 0.9,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_50_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_100_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_500_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      }
+    },
+    "moved_0.200_radius_0.2000": {
+      "moved_fraction": 0.2,
+      "moved_count": 12000,
+      "radius_fraction_of_median_kth": 0.2,
+      "absolute_radius": 1.5093215942382814,
+      "stale_recall_at_k": {
+        "mean": 0.868125,
+        "p50": 0.9,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "sound_minimum_candidate_count": {
+        "mean": 4562.425,
+        "p50": 4524.5,
+        "p95": 5223.25,
+        "p99": 5706.46
+      },
+      "candidate_expansion_over_k": {
+        "mean": 456.24249999999995,
+        "p50": 452.45,
+        "p95": 522.325,
+        "p99": 570.646
+      },
+      "active_moved_points": {
+        "mean": 4553.61875,
+        "p50": 4515.0,
+        "p95": 5213.299999999999,
+        "p99": 5697.28
+      },
+      "old_top_10_coverage": {
+        "mean": 0.868125,
+        "p50": 0.9,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_50_coverage": {
+        "mean": 0.996875,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_100_coverage": {
+        "mean": 0.999375,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "old_top_500_coverage": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      }
+    }
+  },
+  "elapsed_seconds": 3.3191072940826416
+}

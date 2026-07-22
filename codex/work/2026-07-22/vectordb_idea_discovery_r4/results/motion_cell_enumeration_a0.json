@@ -1,0 +1,96 @@
+{
+  "experiment": "motion_cell_enumeration_corrective_a0",
+  "claim": "Fixed old-space cells can soundly and sublinearly enumerate fresh top-k under bounded motion without full old-distance access.",
+  "config": {
+    "docs": "/home/ubuntu/pz/VectorDB/data/VectorDB/a0_topology_reuse/embeddings/formal_100k/minilm_l6_v1_v2/old_corpus.fbin",
+    "queries": "/home/ubuntu/pz/VectorDB/data/VectorDB/a0_topology_reuse/embeddings/formal_100k/minilm_l6_v1_v2/old_queries.fbin",
+    "documents": 60000,
+    "query_count": 160,
+    "cells": 4096,
+    "lloyd_iterations": 4,
+    "moved_fraction": 0.2,
+    "radius_fraction": 0.1,
+    "k": 10,
+    "seed": 83,
+    "output": "codex/work/2026-07-22/vectordb_idea_discovery_r4/results/motion_cell_enumeration_a0.json"
+  },
+  "dataset": "60K MiniLM Quora corpus and 160 held-out queries",
+  "median_old_kth_distance": 0.9554905891418457,
+  "absolute_motion_radius": 0.09554905891418458,
+  "build": {
+    "seconds": 549.8271868228912,
+    "lloyd_mean_squared_objective": [
+      0.8889403238932292,
+      0.563039888381958,
+      0.5439750301361084,
+      0.5357467714945475
+    ],
+    "nonempty_cells": 4096,
+    "cell_size": {
+      "mean": 14.6484375,
+      "p50": 13.0,
+      "p95": 32.0,
+      "p99": 44.05000000000018,
+      "max": 86.0
+    },
+    "cell_radius": {
+      "mean": 0.836358860469602,
+      "p50": 0.8606527745723724,
+      "p95": 0.9452241063117981,
+      "p99": 0.9821880042552948,
+      "max": 1.0403332710266113
+    }
+  },
+  "search": {
+    "recall_at_10": {
+      "mean": 1.0,
+      "p50": 1.0,
+      "p95": 1.0,
+      "p99": 1.0,
+      "max": 1.0
+    },
+    "centroid_plus_point_distances": {
+      "mean": 64029.84375,
+      "p50": 64043.0,
+      "p95": 64047.0,
+      "p99": 64047.0,
+      "max": 64047.0
+    },
+    "fresh_point_distances": {
+      "mean": 59933.84375,
+      "p50": 59947.0,
+      "p95": 59951.0,
+      "p99": 59951.0,
+      "max": 59951.0
+    },
+    "visited_cells": {
+      "mean": 4040.60625,
+      "p50": 4045.0,
+      "p95": 4047.0,
+      "p99": 4047.0,
+      "max": 4047.0
+    },
+    "search_seconds": {
+      "mean": 0.11434060971951113,
+      "p50": 0.11431314214132726,
+      "p95": 0.1152672810247168,
+      "p99": 0.11553069061599672,
+      "max": 0.11584414402022958
+    },
+    "flat_scan_seconds": {
+      "mean": 0.02762778443575371,
+      "p50": 0.027576702646911144,
+      "p95": 0.028141639358364046,
+      "p99": 0.028386686122976245,
+      "max": 0.02845032513141632
+    },
+    "median_time_ratio_to_flat": 4.145279571853796
+  },
+  "gate": {
+    "all_160_exact": true,
+    "p95_centroid_plus_point_distances_le_6000": false,
+    "median_wall_time_le_half_flat": false,
+    "pass": false
+  },
+  "elapsed_seconds": 577.8741779327393
+}

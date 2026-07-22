@@ -1,0 +1,89 @@
+{
+  "experiment": "cross_build_stability_a_minus_1",
+  "question": "At matched parameters/recall, is cross-build result churn large and mostly caused by near ties?",
+  "dataset": "100K MiniLM corpus (prefix subset) + held-out query embeddings",
+  "config": {
+    "docs": "/home/ubuntu/pz/VectorDB/data/VectorDB/a0_topology_reuse/embeddings/formal_100k/minilm_l6_v1_v2/old_corpus.fbin",
+    "queries": "/home/ubuntu/pz/VectorDB/data/VectorDB/a0_topology_reuse/embeddings/formal_100k/minilm_l6_v1_v2/old_queries.fbin",
+    "documents": 60000,
+    "query_count": 240,
+    "builds": 4,
+    "m": 16,
+    "ef_construction": 100,
+    "ef_values": [
+      10,
+      20,
+      40,
+      80
+    ],
+    "k": 10,
+    "threads": 8,
+    "seed": 31,
+    "output": "codex/work/2026-07-22/vectordb_idea_discovery_r4/results/cross_build_stability_a_minus_1.json"
+  },
+  "build_seconds": [
+    2.0667994022369385,
+    2.044282913208008,
+    2.0057435035705566,
+    1.9743731021881104
+  ],
+  "summary": {
+    "10": {
+      "recall_mean": 0.8760416666666666,
+      "recall_min_build": 0.8666666666666667,
+      "recall_max_build": 0.8895833333333333,
+      "pairwise_jaccard_mean": 0.8216220095622184,
+      "pairwise_jaccard_p10": 0.42857142857142855,
+      "pairwise_jaccard_p01": 0.0,
+      "mean_swaps_out_of_k": 1.2965277777777777,
+      "queries_with_any_swap_fraction": 0.4736111111111111,
+      "fraction_churn_within_0.0001_of_exact_kth": 0.4654525977504017,
+      "fraction_churn_within_0.001_of_exact_kth": 0.48419925013390464,
+      "fraction_churn_within_0.005_of_exact_kth": 0.5589180503481521,
+      "fraction_churn_within_0.01_of_exact_kth": 0.6205141938939475
+    },
+    "20": {
+      "recall_mean": 0.94375,
+      "recall_min_build": 0.9304166666666667,
+      "recall_max_build": 0.95,
+      "pairwise_jaccard_mean": 0.9261869813646775,
+      "pairwise_jaccard_p10": 0.8181818181818182,
+      "pairwise_jaccard_p01": 0.17647058823529413,
+      "mean_swaps_out_of_k": 0.49930555555555556,
+      "queries_with_any_swap_fraction": 0.23472222222222222,
+      "fraction_churn_within_0.0001_of_exact_kth": 0.4937413073713491,
+      "fraction_churn_within_0.001_of_exact_kth": 0.5201668984700973,
+      "fraction_churn_within_0.005_of_exact_kth": 0.6411682892906815,
+      "fraction_churn_within_0.01_of_exact_kth": 0.7016689847009736
+    },
+    "40": {
+      "recall_mean": 0.9735416666666666,
+      "recall_min_build": 0.9683333333333334,
+      "recall_max_build": 0.9791666666666666,
+      "pairwise_jaccard_mean": 0.9643903142064908,
+      "pairwise_jaccard_p10": 0.8181818181818182,
+      "pairwise_jaccard_p01": 0.25,
+      "mean_swaps_out_of_k": 0.25069444444444444,
+      "queries_with_any_swap_fraction": 0.1076388888888889,
+      "fraction_churn_within_0.0001_of_exact_kth": 0.5013850415512465,
+      "fraction_churn_within_0.001_of_exact_kth": 0.5096952908587258,
+      "fraction_churn_within_0.005_of_exact_kth": 0.6343490304709142,
+      "fraction_churn_within_0.01_of_exact_kth": 0.6772853185595568
+    },
+    "80": {
+      "recall_mean": 0.9886458333333334,
+      "recall_min_build": 0.9862500000000001,
+      "recall_max_build": 0.9895833333333334,
+      "pairwise_jaccard_mean": 0.9811442608317609,
+      "pairwise_jaccard_p10": 1.0,
+      "pairwise_jaccard_p01": 0.5384615384615384,
+      "mean_swaps_out_of_k": 0.11805555555555555,
+      "queries_with_any_swap_fraction": 0.06666666666666667,
+      "fraction_churn_within_0.0001_of_exact_kth": 0.49117647058823527,
+      "fraction_churn_within_0.001_of_exact_kth": 0.5117647058823529,
+      "fraction_churn_within_0.005_of_exact_kth": 0.65,
+      "fraction_churn_within_0.01_of_exact_kth": 0.7147058823529412
+    }
+  },
+  "elapsed_seconds": 15.226304769515991
+}

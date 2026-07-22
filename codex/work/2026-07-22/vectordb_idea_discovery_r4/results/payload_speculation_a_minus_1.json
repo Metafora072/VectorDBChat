@@ -1,0 +1,632 @@
+{
+  "experiment": "payload_speculation_a_minus_1",
+  "question": "Do final ANN winners appear early enough to hide payload I/O under a low wasted-read budget?",
+  "dataset": "60/100K graph over 128-D benchmark vectors",
+  "config": {
+    "base": "/home/ubuntu/pz/VectorDB/data/VectorDB/datasets/synthetic_128d_100k/base.fvecs",
+    "queries": "/home/ubuntu/pz/VectorDB/data/VectorDB/datasets/synthetic_128d_100k/query.fvecs",
+    "adjacency": "/home/ubuntu/pz/VectorDB/experiment/exp_m08/results/exp0_indices/diskann_R64/adjacency.txt",
+    "documents": 100000,
+    "query_count": 100,
+    "expansions": 300,
+    "k": 10,
+    "seed": 53,
+    "output": "codex/work/2026-07-22/vectordb_idea_discovery_r4/results/payload_speculation_a_minus_1.json"
+  },
+  "entry_node": 28910,
+  "ann_recall_at_k": {
+    "mean": 0.151,
+    "p10": 0.0,
+    "p50": 0.1,
+    "p90": 0.3
+  },
+  "winner_first_seen_fraction_of_search": {
+    "mean": 0.4534033333333333,
+    "p10": 0.08,
+    "p50": 0.43166666666666664,
+    "p90": 0.8633333333333333
+  },
+  "policies": {
+    "step_5_width_1k": {
+      "all_final_prefetched_before_end": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "final_coverage": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "payload_complete_saving_at_io_10": {
+        "mean": 35.55,
+        "p10": 5.0,
+        "p50": 30.0,
+        "p90": 75.50000000000004
+      },
+      "payload_complete_saving_at_io_100": {
+        "mean": 35.55,
+        "p10": 5.0,
+        "p50": 30.0,
+        "p90": 75.50000000000004
+      },
+      "payload_complete_saving_at_io_25": {
+        "mean": 35.55,
+        "p10": 5.0,
+        "p50": 30.0,
+        "p90": 75.50000000000004
+      },
+      "payload_complete_saving_at_io_50": {
+        "mean": 35.55,
+        "p10": 5.0,
+        "p50": 30.0,
+        "p90": 75.50000000000004
+      },
+      "prefetch_count": {
+        "mean": 43.85,
+        "p10": 38.0,
+        "p50": 43.0,
+        "p90": 50.0
+      },
+      "wasted_fraction": {
+        "mean": 0.7692527787063754,
+        "p10": 0.7368421052631579,
+        "p50": 0.7674418604651163,
+        "p90": 0.8
+      }
+    },
+    "step_5_width_2k": {
+      "all_final_prefetched_before_end": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "final_coverage": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "payload_complete_saving_at_io_10": {
+        "mean": 35.55,
+        "p10": 5.0,
+        "p50": 30.0,
+        "p90": 75.50000000000004
+      },
+      "payload_complete_saving_at_io_100": {
+        "mean": 35.55,
+        "p10": 5.0,
+        "p50": 30.0,
+        "p90": 75.50000000000004
+      },
+      "payload_complete_saving_at_io_25": {
+        "mean": 35.55,
+        "p10": 5.0,
+        "p50": 30.0,
+        "p90": 75.50000000000004
+      },
+      "payload_complete_saving_at_io_50": {
+        "mean": 35.55,
+        "p10": 5.0,
+        "p50": 30.0,
+        "p90": 75.50000000000004
+      },
+      "prefetch_count": {
+        "mean": 88.73,
+        "p10": 80.0,
+        "p50": 89.0,
+        "p90": 97.10000000000001
+      },
+      "wasted_fraction": {
+        "mean": 0.8866166083415458,
+        "p10": 0.875,
+        "p50": 0.8876404494382022,
+        "p90": 0.8970124132127077
+      }
+    },
+    "step_5_width_5k": {
+      "all_final_prefetched_before_end": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "final_coverage": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "payload_complete_saving_at_io_10": {
+        "mean": 35.55,
+        "p10": 5.0,
+        "p50": 30.0,
+        "p90": 75.50000000000004
+      },
+      "payload_complete_saving_at_io_100": {
+        "mean": 35.55,
+        "p10": 5.0,
+        "p50": 30.0,
+        "p90": 75.50000000000004
+      },
+      "payload_complete_saving_at_io_25": {
+        "mean": 35.55,
+        "p10": 5.0,
+        "p50": 30.0,
+        "p90": 75.50000000000004
+      },
+      "payload_complete_saving_at_io_50": {
+        "mean": 35.55,
+        "p10": 5.0,
+        "p50": 30.0,
+        "p90": 75.50000000000004
+      },
+      "prefetch_count": {
+        "mean": 222.08,
+        "p10": 206.0,
+        "p50": 223.0,
+        "p90": 235.10000000000002
+      },
+      "wasted_fraction": {
+        "mean": 0.9548315203185739,
+        "p10": 0.9514563106796117,
+        "p50": 0.9551569506726457,
+        "p90": 0.9574648395239813
+      }
+    },
+    "step_10_width_1k": {
+      "all_final_prefetched_before_end": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "final_coverage": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "payload_complete_saving_at_io_10": {
+        "mean": 33.0,
+        "p10": 0.0,
+        "p50": 30.0,
+        "p90": 71.00000000000009
+      },
+      "payload_complete_saving_at_io_100": {
+        "mean": 33.0,
+        "p10": 0.0,
+        "p50": 30.0,
+        "p90": 71.00000000000009
+      },
+      "payload_complete_saving_at_io_25": {
+        "mean": 33.0,
+        "p10": 0.0,
+        "p50": 30.0,
+        "p90": 71.00000000000009
+      },
+      "payload_complete_saving_at_io_50": {
+        "mean": 33.0,
+        "p10": 0.0,
+        "p50": 30.0,
+        "p90": 71.00000000000009
+      },
+      "prefetch_count": {
+        "mean": 37.27,
+        "p10": 32.0,
+        "p50": 37.0,
+        "p90": 42.0
+      },
+      "wasted_fraction": {
+        "mean": 0.7287535630750965,
+        "p10": 0.6875,
+        "p50": 0.7297297297297297,
+        "p90": 0.7619047619047619
+      }
+    },
+    "step_10_width_2k": {
+      "all_final_prefetched_before_end": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "final_coverage": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "payload_complete_saving_at_io_10": {
+        "mean": 33.0,
+        "p10": 0.0,
+        "p50": 30.0,
+        "p90": 71.00000000000009
+      },
+      "payload_complete_saving_at_io_100": {
+        "mean": 33.0,
+        "p10": 0.0,
+        "p50": 30.0,
+        "p90": 71.00000000000009
+      },
+      "payload_complete_saving_at_io_25": {
+        "mean": 33.0,
+        "p10": 0.0,
+        "p50": 30.0,
+        "p90": 71.00000000000009
+      },
+      "payload_complete_saving_at_io_50": {
+        "mean": 33.0,
+        "p10": 0.0,
+        "p50": 30.0,
+        "p90": 71.00000000000009
+      },
+      "prefetch_count": {
+        "mean": 75.24,
+        "p10": 67.0,
+        "p50": 76.0,
+        "p90": 83.10000000000001
+      },
+      "wasted_fraction": {
+        "mean": 0.8661773856719015,
+        "p10": 0.8507462686567164,
+        "p50": 0.868421052631579,
+        "p90": 0.879661503155479
+      }
+    },
+    "step_10_width_5k": {
+      "all_final_prefetched_before_end": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "final_coverage": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "payload_complete_saving_at_io_10": {
+        "mean": 33.0,
+        "p10": 0.0,
+        "p50": 30.0,
+        "p90": 71.00000000000009
+      },
+      "payload_complete_saving_at_io_100": {
+        "mean": 33.0,
+        "p10": 0.0,
+        "p50": 30.0,
+        "p90": 71.00000000000009
+      },
+      "payload_complete_saving_at_io_25": {
+        "mean": 33.0,
+        "p10": 0.0,
+        "p50": 30.0,
+        "p90": 71.00000000000009
+      },
+      "payload_complete_saving_at_io_50": {
+        "mean": 33.0,
+        "p10": 0.0,
+        "p50": 30.0,
+        "p90": 71.00000000000009
+      },
+      "prefetch_count": {
+        "mean": 188.71,
+        "p10": 175.9,
+        "p50": 189.5,
+        "p90": 201.10000000000002
+      },
+      "wasted_fraction": {
+        "mean": 0.9468266037608918,
+        "p10": 0.9431493506493507,
+        "p50": 0.9472291840712893,
+        "p90": 0.95027338554751
+      }
+    },
+    "step_20_width_1k": {
+      "all_final_prefetched_before_end": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "final_coverage": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "payload_complete_saving_at_io_10": {
+        "mean": 28.2,
+        "p10": 0.0,
+        "p50": 20.0,
+        "p90": 62.00000000000017
+      },
+      "payload_complete_saving_at_io_100": {
+        "mean": 28.2,
+        "p10": 0.0,
+        "p50": 20.0,
+        "p90": 62.00000000000017
+      },
+      "payload_complete_saving_at_io_25": {
+        "mean": 28.2,
+        "p10": 0.0,
+        "p50": 20.0,
+        "p90": 62.00000000000017
+      },
+      "payload_complete_saving_at_io_50": {
+        "mean": 28.2,
+        "p10": 0.0,
+        "p50": 20.0,
+        "p90": 62.00000000000017
+      },
+      "prefetch_count": {
+        "mean": 30.87,
+        "p10": 27.0,
+        "p50": 31.0,
+        "p90": 35.0
+      },
+      "wasted_fraction": {
+        "mean": 0.671499716324589,
+        "p10": 0.6296296296296297,
+        "p50": 0.6774193548387096,
+        "p90": 0.7142857142857143
+      }
+    },
+    "step_20_width_2k": {
+      "all_final_prefetched_before_end": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "final_coverage": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "payload_complete_saving_at_io_10": {
+        "mean": 28.2,
+        "p10": 0.0,
+        "p50": 20.0,
+        "p90": 62.00000000000017
+      },
+      "payload_complete_saving_at_io_100": {
+        "mean": 28.2,
+        "p10": 0.0,
+        "p50": 20.0,
+        "p90": 62.00000000000017
+      },
+      "payload_complete_saving_at_io_25": {
+        "mean": 28.2,
+        "p10": 0.0,
+        "p50": 20.0,
+        "p90": 62.00000000000017
+      },
+      "payload_complete_saving_at_io_50": {
+        "mean": 28.2,
+        "p10": 0.0,
+        "p50": 20.0,
+        "p90": 62.00000000000017
+      },
+      "prefetch_count": {
+        "mean": 62.14,
+        "p10": 55.0,
+        "p50": 63.0,
+        "p90": 68.10000000000001
+      },
+      "wasted_fraction": {
+        "mean": 0.8379019911263215,
+        "p10": 0.8181818181818182,
+        "p50": 0.8412698412698413,
+        "p90": 0.853154305200341
+      }
+    },
+    "step_20_width_5k": {
+      "all_final_prefetched_before_end": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "final_coverage": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "payload_complete_saving_at_io_10": {
+        "mean": 28.2,
+        "p10": 0.0,
+        "p50": 20.0,
+        "p90": 62.00000000000017
+      },
+      "payload_complete_saving_at_io_100": {
+        "mean": 28.2,
+        "p10": 0.0,
+        "p50": 20.0,
+        "p90": 62.00000000000017
+      },
+      "payload_complete_saving_at_io_25": {
+        "mean": 28.2,
+        "p10": 0.0,
+        "p50": 20.0,
+        "p90": 62.00000000000017
+      },
+      "payload_complete_saving_at_io_50": {
+        "mean": 28.2,
+        "p10": 0.0,
+        "p50": 20.0,
+        "p90": 62.00000000000017
+      },
+      "prefetch_count": {
+        "mean": 157.17,
+        "p10": 146.0,
+        "p50": 157.0,
+        "p90": 170.10000000000002
+      },
+      "wasted_fraction": {
+        "mean": 0.9361554664350339,
+        "p10": 0.9315068493150684,
+        "p50": 0.9363057324840764,
+        "p90": 0.9412108703130375
+      }
+    },
+    "step_50_width_1k": {
+      "all_final_prefetched_before_end": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "final_coverage": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "payload_complete_saving_at_io_10": {
+        "mean": 15.0,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 50.0
+      },
+      "payload_complete_saving_at_io_100": {
+        "mean": 15.0,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 50.0
+      },
+      "payload_complete_saving_at_io_25": {
+        "mean": 15.0,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 50.0
+      },
+      "payload_complete_saving_at_io_50": {
+        "mean": 15.0,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 50.0
+      },
+      "prefetch_count": {
+        "mean": 22.6,
+        "p10": 19.0,
+        "p50": 23.0,
+        "p90": 26.0
+      },
+      "wasted_fraction": {
+        "mean": 0.5500441997266419,
+        "p10": 0.47368421052631576,
+        "p50": 0.5652173913043478,
+        "p90": 0.6153846153846154
+      }
+    },
+    "step_50_width_2k": {
+      "all_final_prefetched_before_end": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "final_coverage": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "payload_complete_saving_at_io_10": {
+        "mean": 15.0,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 50.0
+      },
+      "payload_complete_saving_at_io_100": {
+        "mean": 15.0,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 50.0
+      },
+      "payload_complete_saving_at_io_25": {
+        "mean": 15.0,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 50.0
+      },
+      "payload_complete_saving_at_io_50": {
+        "mean": 15.0,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 50.0
+      },
+      "prefetch_count": {
+        "mean": 45.56,
+        "p10": 40.0,
+        "p50": 46.0,
+        "p90": 50.0
+      },
+      "wasted_fraction": {
+        "mean": 0.7786730372438531,
+        "p10": 0.75,
+        "p50": 0.782608695652174,
+        "p90": 0.8
+      }
+    },
+    "step_50_width_5k": {
+      "all_final_prefetched_before_end": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "final_coverage": {
+        "mean": 1.0,
+        "p10": 1.0,
+        "p50": 1.0,
+        "p90": 1.0
+      },
+      "payload_complete_saving_at_io_10": {
+        "mean": 15.0,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 50.0
+      },
+      "payload_complete_saving_at_io_100": {
+        "mean": 15.0,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 50.0
+      },
+      "payload_complete_saving_at_io_25": {
+        "mean": 15.0,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 50.0
+      },
+      "payload_complete_saving_at_io_50": {
+        "mean": 15.0,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 50.0
+      },
+      "prefetch_count": {
+        "mean": 115.42,
+        "p10": 106.9,
+        "p50": 115.5,
+        "p90": 123.10000000000001
+      },
+      "wasted_fraction": {
+        "mean": 0.9130714763419668,
+        "p10": 0.9064538882031388,
+        "p50": 0.9134182908545727,
+        "p90": 0.9187647521636507
+      }
+    }
+  },
+  "elapsed_seconds": 45.669652700424194
+}

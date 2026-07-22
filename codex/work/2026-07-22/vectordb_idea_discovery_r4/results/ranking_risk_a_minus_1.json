@@ -1,0 +1,99 @@
+{
+  "experiment": "ranking_risk_precision_a_minus_1",
+  "question": "Does matched-byte variable precision have oracle top-k headroom over uniform precision?",
+  "dataset": {
+    "docs": "/home/ubuntu/pz/VectorDB/data/VectorDB/a0_topology_reuse/embeddings/formal_100k/minilm_l6_v1_v2/old_corpus.fbin",
+    "queries": "/home/ubuntu/pz/VectorDB/data/VectorDB/a0_topology_reuse/embeddings/formal_100k/minilm_l6_v1_v2/old_queries.fbin"
+  },
+  "shape": {
+    "documents": [
+      100000,
+      384
+    ],
+    "queries": [
+      2000,
+      384
+    ]
+  },
+  "config": {
+    "train_queries": 150,
+    "test_queries": 150,
+    "k": 10,
+    "candidate_k": 64,
+    "low_bits": 2,
+    "uniform_bits": 4,
+    "high_bits": 8,
+    "matched_high_fraction": 0.3333333333333333,
+    "allocation_metadata_excluded": true,
+    "seed": 17
+  },
+  "results": {
+    "uniform_4bit": {
+      "mean_recall_at_k": 0.9473333333333335,
+      "p10_recall_at_k": 0.9,
+      "perfect_query_fraction": 0.52,
+      "mean_true_score_regret": 0.0003564393520355225,
+      "p95_true_score_regret": 0.0013417780399322498
+    },
+    "uniform_low_bit": {
+      "mean_recall_at_k": 0.7853333333333334,
+      "p10_recall_at_k": 0.6,
+      "perfect_query_fraction": 0.06,
+      "mean_true_score_regret": 0.0076965224742889405,
+      "p95_true_score_regret": 0.01827408671379085
+    },
+    "uniform_high_bit": {
+      "mean_recall_at_k": 0.9893333333333334,
+      "p10_recall_at_k": 0.9,
+      "perfect_query_fraction": 0.8933333333333333,
+      "mean_true_score_regret": 1.110076904296875e-05,
+      "p95_true_score_regret": 8.816123008727932e-05
+    },
+    "train_ranking_risk": {
+      "mean_recall_at_k": 0.824,
+      "p10_recall_at_k": 0.7,
+      "perfect_query_fraction": 0.12,
+      "mean_true_score_regret": 0.0060658117135365805,
+      "p95_true_score_regret": 0.014888411760330183,
+      "high_precision_fraction": 0.33333,
+      "train_test_risk_jaccard": 0.7075019849909074
+    },
+    "train_top_frequency": {
+      "mean_recall_at_k": 0.824,
+      "p10_recall_at_k": 0.7,
+      "perfect_query_fraction": 0.12,
+      "mean_true_score_regret": 0.0060658117135365805,
+      "p95_true_score_regret": 0.014888411760330183,
+      "high_precision_fraction": 0.33333,
+      "train_test_risk_jaccard": 0.7075019849909074
+    },
+    "mse_oracle": {
+      "mean_recall_at_k": 0.8133333333333334,
+      "p10_recall_at_k": 0.7,
+      "perfect_query_fraction": 0.06666666666666667,
+      "mean_true_score_regret": 0.006155839363733927,
+      "p95_true_score_regret": 0.01637092977762221,
+      "high_precision_fraction": 0.33333,
+      "train_test_risk_jaccard": 0.20099443333513484
+    },
+    "test_risk_oracle_upper_bound": {
+      "mean_recall_at_k": 0.9833333333333333,
+      "p10_recall_at_k": 0.9,
+      "perfect_query_fraction": 0.8533333333333334,
+      "mean_true_score_regret": 0.0004990585645039876,
+      "p95_true_score_regret": 0.0002896785736083969,
+      "high_precision_fraction": 0.33333,
+      "train_test_risk_jaccard": 1.0
+    },
+    "random_mixed": {
+      "mean_recall_at_k": 0.81,
+      "p10_recall_at_k": 0.7,
+      "perfect_query_fraction": 0.10666666666666667,
+      "mean_true_score_regret": 0.006225833694140116,
+      "p95_true_score_regret": 0.01626193970441816,
+      "high_precision_fraction": 0.33333,
+      "train_test_risk_jaccard": 0.19853298096111321
+    }
+  },
+  "elapsed_seconds": 128.15594172477722
+}
