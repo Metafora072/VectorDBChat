@@ -1,0 +1,97 @@
+{
+  "configuration": {
+    "batch": 128,
+    "capacities": [
+      1,
+      2
+    ],
+    "items": 2500,
+    "max_l": 64,
+    "output": "codex/work/2026-07-22/vectordb_idea_discovery_r3/capacity_ann_a0_smoke.json",
+    "rank": 24,
+    "ratings": "/home/ubuntu/pz/VectorDB/data/vaq_semantic_g0/raw/ml-20m/ratings.csv",
+    "seed": 23,
+    "users": 4000
+  },
+  "dataset": "/home/ubuntu/pz/VectorDB/data/vaq_semantic_g0/raw/ml-20m/ratings.csv",
+  "experiment": "capacity_constrained_collective_ann_a0",
+  "gate": {
+    "global_failure_phenomenon": true,
+    "hall_expansion_mechanism": true
+  },
+  "interactions": 3192267,
+  "metrics": {
+    "correlated": {
+      "capacities": {
+        "1": {
+          "adaptive_call_saving_vs_uniform": 0.361328125,
+          "adaptive_candidate_calls": 327,
+          "adaptive_cost_regret_fraction": 0.01101900754700802,
+          "adaptive_feasible": true,
+          "adaptive_limit_mean": 2.5546875,
+          "adaptive_limit_p95": 4.0,
+          "adaptive_rounds": 2,
+          "exact_assignment_cost": 31.655838012695312,
+          "uniform_candidate_calls": 512,
+          "uniform_cost_regret_fraction": 0.0014828181087700454,
+          "uniform_feasible": true,
+          "uniform_min_l": 4
+        },
+        "2": {
+          "adaptive_call_saving_vs_uniform": 0.296875,
+          "adaptive_candidate_calls": 180,
+          "adaptive_cost_regret_fraction": 0.006770918420071048,
+          "adaptive_feasible": true,
+          "adaptive_limit_mean": 1.40625,
+          "adaptive_limit_p95": 2.0,
+          "adaptive_rounds": 1,
+          "exact_assignment_cost": 30.69428825378418,
+          "uniform_candidate_calls": 256,
+          "uniform_cost_regret_fraction": 0.003884444864788339,
+          "uniform_feasible": true,
+          "uniform_min_l": 2
+        }
+      },
+      "mean_pairwise_query_cosine": 0.5597645917276698,
+      "top1_collision_fraction": 0.4140625
+    },
+    "random": {
+      "capacities": {
+        "1": {
+          "adaptive_call_saving_vs_uniform": 0.4296875,
+          "adaptive_candidate_calls": 146,
+          "adaptive_cost_regret_fraction": 0.0,
+          "adaptive_feasible": true,
+          "adaptive_limit_mean": 1.140625,
+          "adaptive_limit_p95": 2.0,
+          "adaptive_rounds": 1,
+          "exact_assignment_cost": 31.987314224243164,
+          "uniform_candidate_calls": 256,
+          "uniform_cost_regret_fraction": 0.0,
+          "uniform_feasible": true,
+          "uniform_min_l": 2
+        },
+        "2": {
+          "adaptive_call_saving_vs_uniform": 0.0,
+          "adaptive_candidate_calls": 128,
+          "adaptive_cost_regret_fraction": 0.0,
+          "adaptive_feasible": true,
+          "adaptive_limit_mean": 1.0,
+          "adaptive_limit_p95": 1.0,
+          "adaptive_rounds": 0,
+          "exact_assignment_cost": 31.933504104614258,
+          "uniform_candidate_calls": 128,
+          "uniform_cost_regret_fraction": 0.0,
+          "uniform_feasible": true,
+          "uniform_min_l": 1
+        }
+      },
+      "mean_pairwise_query_cosine": 0.2666146586260458,
+      "top1_collision_fraction": 0.0703125
+    }
+  },
+  "selected_items": 2500,
+  "selected_users": 4000,
+  "verdict": "GO_DEEPER",
+  "wall_seconds": 4.5076563358306885
+}

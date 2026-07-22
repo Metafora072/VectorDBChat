@@ -259,3 +259,27 @@ Corrective canary 已在 PipeANN `DynamicSSDIndex` 的真实 NVMe `O_DIRECT` 路
 只允许下一步先做一个 3 日、CPU-only 的 Route A pre-gate：在固定 expansion blocks 后测 realized feedback-summary displacement，验证其能否在匹配 top-k patience、margin、visited nodes、local recall 和 DARTH-style hardness 后，仍预测 residual/terminal error，并在 equal wall-clock 下至少降低 25% terminal divergence。失败即 `KILL-DYNAMIC-EF`，不得添加 learned predictor、cache、entry reuse、新图或 agent planner 救场。
 
 当前裁决是：**问题 HOLD，certificate KILL，Route A 仅获准 pre-gate；不把弱机制包装成系统论文。**
+
+**Gpt(12:20:00)**:
+Trajectory-Stable 当前最多是 HOLD / GO A0，不应成为主线：现实短轨迹和高 Recall 下误差可能不会放大；PSB 只是“当前误差×未来敏感度”的通用动态系统预算分配；真实 Agent 的在线敏感度需要昂贵反事实 rollout；最终贡献可能只剩“关键轮次提高精度”的经验。
+
+**User(12:24:00)**:
+所以是不是应该把视野放宽重新 idea-discovery？你怎么把视野放宽？
+
+**Codex(12:31:00)**:
+支持。Trajectory-Stable 的问题表述可以保留为历史负结果，但不再作为默认主线。下一轮把检索空间从“图索引内部机制”扩成六条正交轴：query primitive、data semantics、global coupling、quality objective、physical execution、interaction model；先找典型 workload 中现有 top-k/Recall 目标无法表达的 observable failure，再要求新目标对应一个可实现、可证和一周可杀的算法 primitive。不会靠延长轨迹、加 RL/bandit/cache 或换 beam 来制造信号。
+
+**User(12:38:00)**:
+可以，可以放宽把视野放到整个向量数据库或 ANNS，不一定要局限在驻盘图索引或是 HNSW 图索引等，只要确保这个问题场景实际存在且典型，当前未得到很好解决或是解决方案仍有缺陷或产生其它问题，有充足的动机和可打动审稿人的故事即可，开始吧。
+
+**Codex(16:42:00)**:
+已按 ARIS `idea-discovery` 完成整个 VectorDB/ANNS 的 R3 宽域检索、机制级查新、独立审阅与四组 CPU/NVMe A0。canonical report 见 [`codex/share/2026-07-22/vectordb_idea_discovery_r3_0722.md`](../codex/share/2026-07-22/vectordb_idea_discovery_r3_0722.md)，工作目录为 [`codex/work/2026-07-22/vectordb_idea_discovery_r3/`](../codex/work/2026-07-22/vectordb_idea_discovery_r3/)。
+
+这次明确扩大到 capacity/global assignment、uncertain/distribution-valued objects、similarity sampling、join/range/reverse/multi-k、semantic objective、mixed fidelity 与 grouped retrieval，并严格回查 2024–2026 及更早直接先例。结论是 **paper-level PASS=0，最终保留=0**：
+
+1. Capacity-Constrained Collective ANN 的 MovieLens A0 为正：top-1 collision 49%，Hall-guided expansion 相对 uniform 节省 12.2%–44.0% candidate edges，regret <0.18%。但 SIGMOD 2008 已给出同一 capacity-constrained assignment 目标及 incremental-NN NIA/IDA，STOC 2014 已有 ANN-assisted high-dimensional matching，因此 `KILL-NOVELTY`。
+2. Compact Fresh-World Distributional ANN 有最干净的新 primitive：Gaussian compact posterior、lazy inverse-CDF sample 与 `(d+1)`-MIPS simultaneous UCB；exact ordered oracle 下可给 `1-Σδ_i` guarantee。但真实 HNSW A0 揭示不可兼得：`α=0.1` 时 HNSW-UCB Recall 0.9922，而 matched mean-overfetch 已有 0.9879；`α=0.2` 时 exact UCB p50 需 2,239.5/20K candidates，HNSW-UCB Recall 只有 0.8156，mean baseline 反而为 0.9859；`α=0.4` 时 exact p50 已需 7,365/20K。sound bound 退化为扫描，approximate frontier 又破坏 guarantee，故 `KILL-MECHANISM`。
+3. Similarity-Proportional Vector Sampling 被 Gumbel-MIPS、Fast Sampling for MIPS、RF-softmax、LSH/MIDX sampler 直接覆盖，`KILL-NOVELTY`。
+4. 两个辅助 A0 也为负：MOVE 的 sound migration envelope p50 膨胀 17.25–47× 且简单 certificate 为 0；region certificate 在 100K×128D 上 p50 需扫描约 100%。
+
+因此本轮没有把多个弱机制拼成系统，也没有从 HOLD 中硬挑一个“主线”。请 Gpt 重点独立审阅三点：经典 capacity-assignment 边界是否足以直接 KILL；fresh-world 语义是否真实典型；以及 HNSW A0 是否已经充分证明“可靠 unseen UCB 与亚线性搜索冲突”，从而确认零保留是否合理。

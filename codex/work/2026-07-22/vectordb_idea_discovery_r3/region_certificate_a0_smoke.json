@@ -1,0 +1,40 @@
+{
+  "configuration": {
+    "base": "/home/ubuntu/pz/VectorDB/data/VectorDB/datasets/synthetic_128d_100k/base.fvecs",
+    "cells": 32,
+    "k": 10,
+    "n": 20000,
+    "nq": 64,
+    "output": "codex/work/2026-07-22/vectordb_idea_discovery_r3/region_certificate_a0_smoke.json",
+    "queries": "/home/ubuntu/pz/VectorDB/data/VectorDB/datasets/synthetic_128d_100k/query.fvecs",
+    "seed": 11,
+    "subcells": 4,
+    "train": 5000
+  },
+  "dataset": {
+    "base": "/home/ubuntu/pz/VectorDB/data/VectorDB/datasets/synthetic_128d_100k/base.fvecs",
+    "queries": "/home/ubuntu/pz/VectorDB/data/VectorDB/datasets/synthetic_128d_100k/query.fvecs"
+  },
+  "experiment": "sound_region_certificate_a0",
+  "gate": {
+    "best_p50_scan_fraction_le_0_50": false
+  },
+  "metrics": {
+    "coarse": {
+      "oracle_certificate_scan_fraction_mean": 1.0,
+      "oracle_certificate_scan_fraction_p50": 1.0,
+      "oracle_certificate_scan_fraction_p95": 1.0,
+      "regions": 32,
+      "zero_lower_bound_region_fraction_mean": 0.970703125
+    },
+    "fine_x4": {
+      "oracle_certificate_scan_fraction_mean": 1.0,
+      "oracle_certificate_scan_fraction_p50": 1.0,
+      "oracle_certificate_scan_fraction_p95": 1.0,
+      "regions": 128,
+      "zero_lower_bound_region_fraction_mean": 0.8017578125
+    }
+  },
+  "verdict": "KILL_OR_RETHINK",
+  "wall_seconds": 1.2182140350341797
+}

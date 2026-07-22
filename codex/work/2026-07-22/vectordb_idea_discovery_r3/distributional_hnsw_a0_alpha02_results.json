@@ -1,0 +1,76 @@
+{
+  "configuration": {
+    "alpha": 0.2,
+    "delta": 0.01,
+    "ef_construction": 200,
+    "ef_search": 512,
+    "gamma": 0.25,
+    "items": 20000,
+    "k": 10,
+    "m": 16,
+    "max_candidates": 2048,
+    "output": "codex/work/2026-07-22/vectordb_idea_discovery_r3/distributional_hnsw_a0_alpha02_results.json",
+    "queries": 64,
+    "rank": 32,
+    "ratings": "/home/ubuntu/pz/VectorDB/data/vaq_semantic_g0/raw/ml-20m/ratings.csv",
+    "samples": 5,
+    "seed": 37,
+    "users": 20000
+  },
+  "dataset": "/home/ubuntu/pz/VectorDB/data/vaq_semantic_g0/raw/ml-20m/ratings.csv",
+  "experiment": "replica_free_distributional_ann_hnsw_a0",
+  "gate": {
+    "hnsw_world_recall_ge_0_99": false,
+    "p95_candidates_le_50k": false,
+    "ucb_gain_over_mean_ge_0_10": false
+  },
+  "index": {
+    "mean_build_seconds": 0.09309970494359732,
+    "ucb_build_seconds": 0.1265677479095757,
+    "ucb_dimensions": 33,
+    "ucb_vectors": 20000
+  },
+  "interactions": 10934015,
+  "metrics": {
+    "exact_ucb_candidates": {
+      "mean": 2301.484375,
+      "p50": 2239.5,
+      "p95": 3751.7
+    },
+    "hnsw_mean_query_latency_ms_for_matched_candidates": {
+      "mean": 0.9174101214739494,
+      "p50": 0.8833189494907856,
+      "p95": 1.1812361422926183
+    },
+    "hnsw_ucb_candidates": {
+      "mean": 1814.21875,
+      "p50": 2048.0,
+      "p95": 2048.0
+    },
+    "hnsw_ucb_prefix_recall_at_exact_stop": {
+      "mean": 0.9894335466662287,
+      "p50": 0.9933093646927116,
+      "p95": 0.9999267578125
+    },
+    "hnsw_ucb_query_latency_ms_for_max_candidates": {
+      "mean": 1.008412589726504,
+      "p50": 0.9618829935789108,
+      "p95": 1.2029481353238225
+    },
+    "hnsw_world_recall": {
+      "mean": 0.815625,
+      "p50": 1.0,
+      "p95": 1.0
+    },
+    "mean_overfetch_world_recall_at_matched_candidates": {
+      "mean": 0.9859375,
+      "p50": 1.0,
+      "p95": 1.0
+    }
+  },
+  "selected_items": 20000,
+  "selected_users": 20000,
+  "simultaneous_beta": 5.199337544936049,
+  "verdict": "KILL_OR_RETHINK",
+  "wall_seconds": 7.340646028518677
+}

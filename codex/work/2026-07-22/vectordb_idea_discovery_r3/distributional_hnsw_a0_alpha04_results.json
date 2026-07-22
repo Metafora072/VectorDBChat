@@ -1,0 +1,76 @@
+{
+  "configuration": {
+    "alpha": 0.4,
+    "delta": 0.01,
+    "ef_construction": 200,
+    "ef_search": 512,
+    "gamma": 0.25,
+    "items": 20000,
+    "k": 10,
+    "m": 16,
+    "max_candidates": 2048,
+    "output": "codex/work/2026-07-22/vectordb_idea_discovery_r3/distributional_hnsw_a0_alpha04_results.json",
+    "queries": 64,
+    "rank": 32,
+    "ratings": "/home/ubuntu/pz/VectorDB/data/vaq_semantic_g0/raw/ml-20m/ratings.csv",
+    "samples": 5,
+    "seed": 37,
+    "users": 20000
+  },
+  "dataset": "/home/ubuntu/pz/VectorDB/data/vaq_semantic_g0/raw/ml-20m/ratings.csv",
+  "experiment": "replica_free_distributional_ann_hnsw_a0",
+  "gate": {
+    "hnsw_world_recall_ge_0_99": false,
+    "p95_candidates_le_50k": false,
+    "ucb_gain_over_mean_ge_0_10": true
+  },
+  "index": {
+    "mean_build_seconds": 0.10410619899630547,
+    "ucb_build_seconds": 0.2631059749983251,
+    "ucb_dimensions": 33,
+    "ucb_vectors": 20000
+  },
+  "interactions": 10934015,
+  "metrics": {
+    "exact_ucb_candidates": {
+      "mean": 7361.90625,
+      "p50": 7365.0,
+      "p95": 8552.949999999999
+    },
+    "hnsw_mean_query_latency_ms_for_matched_candidates": {
+      "mean": 1.2162788189016283,
+      "p50": 1.2120064347982407,
+      "p95": 1.4028198085725307
+    },
+    "hnsw_ucb_candidates": {
+      "mean": 2048.0,
+      "p50": 2048.0,
+      "p95": 2048.0
+    },
+    "hnsw_ucb_prefix_recall_at_exact_stop": {
+      "mean": 0.5980987548828125,
+      "p50": 0.60009765625,
+      "p95": 0.6419921875
+    },
+    "hnsw_ucb_query_latency_ms_for_max_candidates": {
+      "mean": 1.0263317308272235,
+      "p50": 1.0069564450532198,
+      "p95": 1.120920293033123
+    },
+    "hnsw_world_recall": {
+      "mean": 0.6953125,
+      "p50": 0.7,
+      "p95": 1.0
+    },
+    "mean_overfetch_world_recall_at_matched_candidates": {
+      "mean": 0.45,
+      "p50": 0.4,
+      "p95": 0.9
+    }
+  },
+  "selected_items": 20000,
+  "selected_users": 20000,
+  "simultaneous_beta": 5.199337544936049,
+  "verdict": "KILL_OR_RETHINK",
+  "wall_seconds": 7.839207172393799
+}

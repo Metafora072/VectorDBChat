@@ -1,0 +1,92 @@
+{
+  "configuration": {
+    "items": 2500,
+    "ivf_cells": 32,
+    "k": 10,
+    "output": "codex/work/2026-07-22/vectordb_idea_discovery_r3/move_a0_smoke.json",
+    "pq_blocks": 4,
+    "pq_centroids": 16,
+    "queries": 256,
+    "rank": 24,
+    "ratings": "/home/ubuntu/pz/VectorDB/data/vaq_semantic_g0/raw/ml-20m/ratings.csv",
+    "seed": 7,
+    "users": 4000
+  },
+  "cutoffs": [
+    1276672567,
+    1313312713,
+    1361905764,
+    1427781797
+  ],
+  "dataset": "/home/ubuntu/pz/VectorDB/data/vaq_semantic_g0/raw/ml-20m/ratings.csv",
+  "experiment": "drift_native_move_a0",
+  "gate": {
+    "envelope_selectivity": false,
+    "neighborhood_stability": true,
+    "partition_stability": true
+  },
+  "selected_items": 2500,
+  "selected_ratings": 3192267,
+  "selected_users": 4000,
+  "transitions": [
+    {
+      "candidate_expansion_mean": 36.99296875,
+      "candidate_expansion_p50": 34.95,
+      "candidate_expansion_p95": 59.325,
+      "exact_topk_unchanged_fraction": 0.204,
+      "from_fraction": 0.85,
+      "from_interactions": 2713427,
+      "item_displacement_mean": 0.15895651280879974,
+      "item_displacement_p95": 0.3117514550685882,
+      "ivf_cell_stay_fraction": 0.948,
+      "knn_overlap_mean": 0.84816,
+      "knn_overlap_p10": 0.7,
+      "pq_full_code_stay_fraction": 0.6376,
+      "simple_margin_certificate_fraction": 0.0,
+      "stale_top_2k_recall_mean": 0.95703125,
+      "stale_top_5k_recall_mean": 0.9890625000000001,
+      "to_fraction": 0.9,
+      "to_interactions": 2873040
+    },
+    {
+      "candidate_expansion_mean": 34.960156250000004,
+      "candidate_expansion_p50": 32.05,
+      "candidate_expansion_p95": 58.8,
+      "exact_topk_unchanged_fraction": 0.21,
+      "from_fraction": 0.9,
+      "from_interactions": 2873040,
+      "item_displacement_mean": 0.1438330113887787,
+      "item_displacement_p95": 0.29024115204811074,
+      "ivf_cell_stay_fraction": 0.9584,
+      "knn_overlap_mean": 0.8574,
+      "knn_overlap_p10": 0.7,
+      "pq_full_code_stay_fraction": 0.6452,
+      "simple_margin_certificate_fraction": 0.0,
+      "stale_top_2k_recall_mean": 0.966796875,
+      "stale_top_5k_recall_mean": 0.998046875,
+      "to_fraction": 0.95,
+      "to_interactions": 3032653
+    },
+    {
+      "candidate_expansion_mean": 9.066015624999999,
+      "candidate_expansion_p50": 8.2,
+      "candidate_expansion_p95": 15.25,
+      "exact_topk_unchanged_fraction": 0.3884,
+      "from_fraction": 0.95,
+      "from_interactions": 3032653,
+      "item_displacement_mean": 0.06201627850532532,
+      "item_displacement_p95": 0.10167436897754668,
+      "ivf_cell_stay_fraction": 0.9856,
+      "knn_overlap_mean": 0.9186,
+      "knn_overlap_p10": 0.8,
+      "pq_full_code_stay_fraction": 0.8396,
+      "simple_margin_certificate_fraction": 0.0,
+      "stale_top_2k_recall_mean": 0.9957031249999999,
+      "stale_top_5k_recall_mean": 0.99921875,
+      "to_fraction": 1.0,
+      "to_interactions": 3192267
+    }
+  ],
+  "verdict": "KILL_OR_RETHINK",
+  "wall_seconds": 7.62792444229126
+}

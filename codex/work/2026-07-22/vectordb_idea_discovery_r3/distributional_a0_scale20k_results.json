@@ -1,0 +1,77 @@
+{
+  "configuration": {
+    "alpha": 0.1,
+    "deltas": [
+      0.1,
+      0.01
+    ],
+    "gamma": 0.25,
+    "items": 20000,
+    "ks": [
+      10,
+      100
+    ],
+    "output": "codex/work/2026-07-22/vectordb_idea_discovery_r3/distributional_a0_scale20k_results.json",
+    "queries": 128,
+    "rank": 32,
+    "ratings": "/home/ubuntu/pz/VectorDB/data/vaq_semantic_g0/raw/ml-20m/ratings.csv",
+    "samples": [
+      5
+    ],
+    "seed": 31,
+    "users": 20000
+  },
+  "dataset": "/home/ubuntu/pz/VectorDB/data/vaq_semantic_g0/raw/ml-20m/ratings.csv",
+  "experiment": "replica_free_distributional_ann_a0",
+  "gate": {
+    "some_simultaneous_bound_p50_scan_le_0_20": true
+  },
+  "interactions": 10934015,
+  "metrics": {
+    "S=5,k=10,delta=0.01": {
+      "candidate_expansion_p50": 6.3,
+      "candidate_expansion_p95": 37.099999999999966,
+      "sampled_world_recall_mean": 1.0,
+      "scan_fraction_mean": 0.005798046874999999,
+      "scan_fraction_p50": 0.00315,
+      "scan_fraction_p95": 0.018549999999999983,
+      "simultaneous_beta": 5.199337544936049
+    },
+    "S=5,k=10,delta=0.1": {
+      "candidate_expansion_p50": 4.4,
+      "candidate_expansion_p95": 27.879999999999992,
+      "sampled_world_recall_mean": 1.0,
+      "scan_fraction_mean": 0.004195703125,
+      "scan_fraction_p50": 0.0022,
+      "scan_fraction_p95": 0.013939999999999994,
+      "simultaneous_beta": 4.7534239046498765
+    },
+    "S=5,k=100,delta=0.01": {
+      "candidate_expansion_p50": 4.824999999999999,
+      "candidate_expansion_p95": 16.0785,
+      "sampled_world_recall_mean": 1.0,
+      "scan_fraction_mean": 0.030985546875,
+      "scan_fraction_p50": 0.024125,
+      "scan_fraction_p95": 0.08039249999999999,
+      "simultaneous_beta": 5.199337544936049
+    },
+    "S=5,k=100,delta=0.1": {
+      "candidate_expansion_p50": 3.605,
+      "candidate_expansion_p95": 12.6645,
+      "sampled_world_recall_mean": 1.0,
+      "scan_fraction_mean": 0.023540234375,
+      "scan_fraction_p50": 0.018025,
+      "scan_fraction_p95": 0.06332249999999999,
+      "simultaneous_beta": 4.7534239046498765
+    }
+  },
+  "selected_items": 20000,
+  "selected_users": 20000,
+  "sigma": {
+    "mean": 0.03974585130470123,
+    "p50": 0.03760603093086394,
+    "p95": 0.07071067811865475
+  },
+  "verdict": "GO_DEEPER",
+  "wall_seconds": 11.062860012054443
+}

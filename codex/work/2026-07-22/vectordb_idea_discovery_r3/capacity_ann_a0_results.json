@@ -1,0 +1,126 @@
+{
+  "configuration": {
+    "batch": 512,
+    "capacities": [
+      1,
+      2,
+      4
+    ],
+    "items": 5000,
+    "max_l": 128,
+    "output": "codex/work/2026-07-22/vectordb_idea_discovery_r3/capacity_ann_a0_results.json",
+    "rank": 32,
+    "ratings": "/home/ubuntu/pz/VectorDB/data/vaq_semantic_g0/raw/ml-20m/ratings.csv",
+    "seed": 23,
+    "users": 10000
+  },
+  "dataset": "/home/ubuntu/pz/VectorDB/data/vaq_semantic_g0/raw/ml-20m/ratings.csv",
+  "experiment": "capacity_constrained_collective_ann_a0",
+  "gate": {
+    "global_failure_phenomenon": true,
+    "hall_expansion_mechanism": true
+  },
+  "interactions": 6992376,
+  "metrics": {
+    "correlated": {
+      "capacities": {
+        "1": {
+          "adaptive_call_saving_vs_uniform": 0.12158203125,
+          "adaptive_candidate_calls": 3598,
+          "adaptive_cost_regret_fraction": 0.001574214235001703,
+          "adaptive_feasible": true,
+          "adaptive_limit_mean": 7.02734375,
+          "adaptive_limit_p95": 16.0,
+          "adaptive_rounds": 4,
+          "exact_assignment_cost": 141.54623413085938,
+          "uniform_candidate_calls": 4096,
+          "uniform_cost_regret_fraction": 0.0025094934723417506,
+          "uniform_feasible": true,
+          "uniform_min_l": 8
+        },
+        "2": {
+          "adaptive_call_saving_vs_uniform": 0.4404296875,
+          "adaptive_candidate_calls": 1146,
+          "adaptive_cost_regret_fraction": 0.001528698442731402,
+          "adaptive_feasible": true,
+          "adaptive_limit_mean": 2.23828125,
+          "adaptive_limit_p95": 4.0,
+          "adaptive_rounds": 2,
+          "exact_assignment_cost": 135.54953002929688,
+          "uniform_candidate_calls": 2048,
+          "uniform_cost_regret_fraction": 0.0004422869058535728,
+          "uniform_feasible": true,
+          "uniform_min_l": 4
+        },
+        "4": {
+          "adaptive_call_saving_vs_uniform": 0.3564453125,
+          "adaptive_candidate_calls": 659,
+          "adaptive_cost_regret_fraction": 0.001775474687713663,
+          "adaptive_feasible": true,
+          "adaptive_limit_mean": 1.287109375,
+          "adaptive_limit_p95": 2.0,
+          "adaptive_rounds": 1,
+          "exact_assignment_cost": 133.18435668945312,
+          "uniform_candidate_calls": 1024,
+          "uniform_cost_regret_fraction": 0.0006459396198832401,
+          "uniform_feasible": true,
+          "uniform_min_l": 2
+        }
+      },
+      "mean_pairwise_query_cosine": 0.43639303606783575,
+      "top1_collision_fraction": 0.490234375
+    },
+    "random": {
+      "capacities": {
+        "1": {
+          "adaptive_call_saving_vs_uniform": 0.287109375,
+          "adaptive_candidate_calls": 730,
+          "adaptive_cost_regret_fraction": 0.0010792592045267835,
+          "adaptive_feasible": true,
+          "adaptive_limit_mean": 1.42578125,
+          "adaptive_limit_p95": 4.0,
+          "adaptive_rounds": 2,
+          "exact_assignment_cost": 139.60064697265625,
+          "uniform_candidate_calls": 1024,
+          "uniform_cost_regret_fraction": 0.001751801425050603,
+          "uniform_feasible": true,
+          "uniform_min_l": 2
+        },
+        "2": {
+          "adaptive_call_saving_vs_uniform": 0.466796875,
+          "adaptive_candidate_calls": 546,
+          "adaptive_cost_regret_fraction": 0.0001978935623363487,
+          "adaptive_feasible": true,
+          "adaptive_limit_mean": 1.06640625,
+          "adaptive_limit_p95": 2.0,
+          "adaptive_rounds": 1,
+          "exact_assignment_cost": 138.55955505371094,
+          "uniform_candidate_calls": 1024,
+          "uniform_cost_regret_fraction": 0.0,
+          "uniform_feasible": true,
+          "uniform_min_l": 2
+        },
+        "4": {
+          "adaptive_call_saving_vs_uniform": 0.0,
+          "adaptive_candidate_calls": 512,
+          "adaptive_cost_regret_fraction": 0.0,
+          "adaptive_feasible": true,
+          "adaptive_limit_mean": 1.0,
+          "adaptive_limit_p95": 1.0,
+          "adaptive_rounds": 0,
+          "exact_assignment_cost": 138.47300720214844,
+          "uniform_candidate_calls": 512,
+          "uniform_cost_regret_fraction": 0.0,
+          "uniform_feasible": true,
+          "uniform_min_l": 1
+        }
+      },
+      "mean_pairwise_query_cosine": 0.2104948607442897,
+      "top1_collision_fraction": 0.142578125
+    }
+  },
+  "selected_items": 5000,
+  "selected_users": 10000,
+  "verdict": "GO_DEEPER",
+  "wall_seconds": 6.904309988021851
+}
