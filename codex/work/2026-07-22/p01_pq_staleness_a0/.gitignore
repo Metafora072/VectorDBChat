@@ -1,0 +1,6 @@
+# Reproducible SIFT partitions and generated DiskANN indexes.
+/build_700k.bin
+/insert_300k.bin
+/insert_pq_compressed.bin
+/index/
+/index32/

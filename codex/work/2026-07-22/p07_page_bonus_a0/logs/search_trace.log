@@ -1,0 +1,72 @@
+Search parameters: #threads: 1,  beamwidth: 2.
+Reading (with alignment) bin file /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/queries_1000.bin ...Metadata: #pts = 1000, #dims = 128, aligned_dim = 128... allocating aligned memory of 512000 bytes... done. Copying data to mem_aligned buffer... done.
+L2: Using AVX2 distance computation DistanceL2Float
+L2: Using AVX2 distance computation DistanceL2Float
+Reading bin file /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/index/sift1m_pq_compressed.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/index/sift1m_pq_compressed.bin... 
+Metadata: #pts = 1000000, #dims = 128...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/index/sift1m_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/index/sift1m_pq_pivots.bin... 
+Metadata: #pts = 4, #dims = 1...
+done.
+Offsets: 4096 135176 135696 136220
+Reading bin file /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/index/sift1m_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/index/sift1m_pq_pivots.bin... 
+Metadata: #pts = 256, #dims = 128...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/index/sift1m_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/index/sift1m_pq_pivots.bin... 
+Metadata: #pts = 128, #dims = 1...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/index/sift1m_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/index/sift1m_pq_pivots.bin... 
+Metadata: #pts = 129, #dims = 1...
+done.
+Loaded PQ Pivots: #ctrs: 256, #dims: 128, #chunks: 128
+Loaded PQ centroids and in-memory compressed vectors. #points: 1000000 #dim: 128 #aligned_dim: 128 #chunks: 128
+Disk-Index File Meta-data: # nodes per sector: 5, max node len (bytes): 772, max node degree: 64
+Opened file : /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/index/sift1m_disk.index
+Setting up thread-specific contexts for nthreads: 1
+allocating ctx: 0x720f610fa000 to thread-id:125410378571072
+Loading centroid data from medoids vector data of 1 medoid(s)
+done..
+Caching 0 nodes around medoid(s)
+Caching 0...
+Level: 1. #nodes: 0, #nodes thus far: 0
+done
+Loading the cache list into memory....done.
+     L   Beamwidth             QPS    Mean Latency    99.9 Latency        Mean IOs    Mean IO (us)         CPU (s)
+===================================================================================================================================
+   100           2           76.11        12849.98       273211.00          106.36         9998.31         2631.12
+Done searching. Now saving results 
+Writing bin: /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/results/search_q1000_k10_100_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/results/search_q1000_k10_100_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Clearing scratch
+	Command being timed: "/home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/trace_build/apps/search_disk_index --data_type float --dist_fn l2 --index_path_prefix /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/index/sift1m --result_path /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/results/search_q1000_k10 --query_file /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/queries_1000.bin -K 10 -L 100 -W 2 --num_nodes_to_cache 0 --num_threads 1"
+	User time (seconds): 3.34
+	System time (seconds): 1.71
+	Percent of CPU this job got: 38%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:13.24
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 132608
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 31884
+	Voluntary context switches: 54573
+	Involuntary context switches: 4
+	Swaps: 0
+	File system inputs: 850864
+	File system outputs: 1600
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

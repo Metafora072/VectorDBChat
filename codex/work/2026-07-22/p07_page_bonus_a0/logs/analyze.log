@@ -1,0 +1,172 @@
+{
+  "aggregate": {
+    "baseline_same_sector_reread_fraction": 0.0032062432419726387,
+    "bonus_in_final_topk": 11,
+    "bonus_in_final_topk_fraction": 2.593997019261607e-05,
+    "bonus_in_gt100": 313,
+    "bonus_in_gt100_fraction": 0.0007381100609353482,
+    "bonus_visited_later": 341,
+    "bonus_visited_later_fraction": 0.0008041390759710982,
+    "estimated_avoidable_reads": 341,
+    "estimated_io_savings_fraction": 0.0032062432419726387,
+    "final_k": 10,
+    "gt_k": 100,
+    "query_count": 1000,
+    "search_final_topk_fraction_in_gt100": 1.0,
+    "search_recall_at_final_k": 0.9975,
+    "total_bonus_exposures": 425074,
+    "total_expanded_reads": 106355,
+    "total_unique_bonus_nodes_per_query_sum": 424056,
+    "total_unique_sectors": 106014
+  },
+  "disk_layout": {
+    "actual_file_size": 819204096,
+    "data_sectors": 200000,
+    "declared_file_size": 819204096,
+    "dim": 128,
+    "frozen_count": 0,
+    "frozen_location": 0,
+    "has_reorder_data": 0,
+    "max_node_len": 772,
+    "medoid": 123742,
+    "metadata_cols": 1,
+    "metadata_rows": 9,
+    "metadata_values": [
+      1000000,
+      128,
+      123742,
+      772,
+      5,
+      0,
+      0,
+      0,
+      819204096
+    ],
+    "n_nodes": 1000000,
+    "nodes_per_sector": 5,
+    "nodes_per_sector_distribution": {
+      "5": 200000
+    },
+    "slack_bytes_per_full_sector": 236,
+    "total_sectors_including_metadata": 200001,
+    "used_bytes_per_full_sector": 3860
+  },
+  "per_query_summary": {
+    "baseline_sector_rereads": {
+      "max": 10,
+      "mean": 0.341,
+      "median": 0.0,
+      "min": 0,
+      "p95": 2.0
+    },
+    "bonus_exposures": {
+      "max": 451,
+      "mean": 425.074,
+      "median": 424.0,
+      "min": 403,
+      "p95": 436.0
+    },
+    "bonus_final_fraction": {
+      "max": 0.0025252525252525255,
+      "mean": 2.6320170542834197e-05,
+      "median": 0.0,
+      "min": 0.0,
+      "p95": 0.0
+    },
+    "bonus_gt100_fraction": {
+      "max": 0.025252525252525252,
+      "mean": 0.0007505407076833346,
+      "median": 0.0,
+      "min": 0.0,
+      "p95": 0.00463179300796123
+    },
+    "bonus_in_final_topk": {
+      "max": 1,
+      "mean": 0.011,
+      "median": 0.0,
+      "min": 0,
+      "p95": 0.0
+    },
+    "bonus_in_gt100": {
+      "max": 10,
+      "mean": 0.313,
+      "median": 0.0,
+      "min": 0,
+      "p95": 2.0
+    },
+    "bonus_later_fraction": {
+      "max": 0.025252525252525252,
+      "mean": 0.0008169307721397666,
+      "median": 0.0,
+      "min": 0.0,
+      "p95": 0.004675101393052369
+    },
+    "bonus_visited_later": {
+      "max": 10,
+      "mean": 0.341,
+      "median": 0.0,
+      "min": 0,
+      "p95": 2.0
+    },
+    "estimated_avoidable_reads": {
+      "max": 10,
+      "mean": 0.341,
+      "median": 0.0,
+      "min": 0,
+      "p95": 2.0
+    },
+    "estimated_io_savings_fraction": {
+      "max": 0.09174311926605505,
+      "mean": 0.003189553362905351,
+      "median": 0.0,
+      "min": 0.0,
+      "p95": 0.018357118586476377
+    },
+    "expanded_reads": {
+      "max": 113,
+      "mean": 106.355,
+      "median": 106.0,
+      "min": 101,
+      "p95": 109.0
+    },
+    "unique_bonus_nodes": {
+      "max": 448,
+      "mean": 424.056,
+      "median": 424.0,
+      "min": 396,
+      "p95": 436.0
+    },
+    "unique_sectors": {
+      "max": 112,
+      "mean": 106.014,
+      "median": 106.0,
+      "min": 99,
+      "p95": 109.0
+    }
+  },
+  "slot_validation": {
+    "derived_max_degree": 64,
+    "max_degree": 64,
+    "mean_degree": 64.0,
+    "min_degree": 64,
+    "sampled_slots": 1000
+  },
+  "utility_concentration": {
+    "queries_with_zero_gt100_bonus": 797,
+    "queries_with_zero_later_bonus": 770,
+    "top_10pct_query_share_of_gt100_hits": 0.670926517571885,
+    "top_10pct_query_share_of_later_hits": 0.6187683284457478
+  },
+  "verification": {
+    "disk_dim_equal_base_dim": true,
+    "disk_file_sector_count_matches": true,
+    "disk_file_size_matches_declared": true,
+    "disk_nodes_equal_base_rows": true,
+    "gt_has_at_least_100": true,
+    "gt_rows_equal_queries": true,
+    "query_dim_equal_base_dim": true,
+    "results_rows_equal_queries": true,
+    "trace_all_nonempty": true,
+    "trace_qids_exact_query_order": true
+  }
+}

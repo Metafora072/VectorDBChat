@@ -1,0 +1,91 @@
+{
+  "build": {
+    "mean": 0.00919857142857143,
+    "median": 0.0,
+    "p95": 0.0,
+    "p99": 0.0,
+    "p99_9": 1.0,
+    "min": 0.0,
+    "max": 477.0,
+    "nonzero_count": 734,
+    "nonzero_fraction": 0.0010485714285714287
+  },
+  "insert": {
+    "mean": 0.018743333333333334,
+    "median": 0.0,
+    "p95": 0.0,
+    "p99": 0.0,
+    "p99_9": 1.0,
+    "min": 0.0,
+    "max": 901.0,
+    "nonzero_count": 582,
+    "nonzero_fraction": 0.00194
+  },
+  "ratio": 2.0376352435678418,
+  "verification": {
+    "build": [
+      {
+        "point_id": 0,
+        "pq_error": 0.0,
+        "code_mismatches_vs_bruteforce": 0,
+        "vector_squared_norm": 258727.0
+      },
+      {
+        "point_id": 1,
+        "pq_error": 0.0,
+        "code_mismatches_vs_bruteforce": 0,
+        "vector_squared_norm": 258638.0
+      },
+      {
+        "point_id": 12345,
+        "pq_error": 0.0,
+        "code_mismatches_vs_bruteforce": 0,
+        "vector_squared_norm": 258398.0
+      },
+      {
+        "point_id": 699999,
+        "pq_error": 0.0,
+        "code_mismatches_vs_bruteforce": 0,
+        "vector_squared_norm": 258933.0
+      },
+      {
+        "point_id": 197930,
+        "pq_error": 477.0,
+        "code_mismatches_vs_bruteforce": 0,
+        "vector_squared_norm": 259462.0
+      }
+    ],
+    "insert": [
+      {
+        "point_id": 0,
+        "pq_error": 0.0,
+        "code_mismatches_vs_bruteforce": 0,
+        "vector_squared_norm": 257632.0
+      },
+      {
+        "point_id": 1,
+        "pq_error": 0.0,
+        "code_mismatches_vs_bruteforce": 0,
+        "vector_squared_norm": 258503.0
+      },
+      {
+        "point_id": 12345,
+        "pq_error": 0.0,
+        "code_mismatches_vs_bruteforce": 0,
+        "vector_squared_norm": 257576.0
+      },
+      {
+        "point_id": 299999,
+        "pq_error": 0.0,
+        "code_mismatches_vs_bruteforce": 0,
+        "vector_squared_norm": 258005.0
+      },
+      {
+        "point_id": 244826,
+        "pq_error": 901.0,
+        "code_mismatches_vs_bruteforce": 0,
+        "vector_squared_norm": 259442.0
+      }
+    ]
+  }
+}

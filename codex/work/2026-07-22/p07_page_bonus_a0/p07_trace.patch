@@ -1,0 +1,92 @@
+--- a/include/pq_flash_index.h
++++ b/include/pq_flash_index.h
+@@ -21,6 +21,10 @@
+ namespace diskann
+ {
+ 
++// P07 A0 experiment hook: associates the calling thread's next search with a
++// stable query id. It is inert unless P07_TRACE_PATH is set.
++DISKANN_DLLEXPORT void p07_set_trace_query_id(uint64_t query_id);
++
+ template <typename T, typename LabelT = uint32_t> class PQFlashIndex
+ {
+   public:
+--- a/src/pq_flash_index.cpp
++++ b/src/pq_flash_index.cpp
+@@ -9,6 +9,9 @@
+ #include "pq_flash_index.h"
+ #include "cosine_similarity.h"
+ 
++#include <cstdlib>
++#include <mutex>
++
+ #ifdef _WINDOWS
+ #include "windows_aligned_file_reader.h"
+ #else
+@@ -28,6 +31,17 @@
+ namespace diskann
+ {
+ 
++namespace
++{
++thread_local uint64_t p07_trace_query_id = std::numeric_limits<uint64_t>::max();
++std::mutex p07_trace_mutex;
++} // namespace
++
++void p07_set_trace_query_id(uint64_t query_id)
++{
++    p07_trace_query_id = query_id;
++}
++
+ template <typename T, typename LabelT>
+ PQFlashIndex<T, LabelT>::PQFlashIndex(std::shared_ptr<AlignedFileReader> &fileReader, diskann::Metric m)
+     : reader(fileReader), metric(m), _thread_data(nullptr)
+@@ -1272,6 +1286,11 @@
+                                                  QueryStats *stats)
+ {
+ 
++    // P07 A0: capture expanded (and therefore explicitly requested) node ids.
++    // The vector stays empty and no file is opened in normal builds/runs.
++    const char *p07_trace_path = std::getenv("P07_TRACE_PATH");
++    std::vector<uint32_t> p07_expanded_nodes;
++
+     uint64_t num_sector_per_nodes = DIV_ROUND_UP(_max_node_len, defaults::SECTOR_LEN);
+     if (beam_width > num_sector_per_nodes * defaults::MAX_N_SECTOR_READS)
+         throw ANNException("Beamwidth can not be higher than defaults::MAX_N_SECTOR_READS", -1, __FUNCSIG__, __FILE__,
+@@ -1428,6 +1447,8 @@
+         {
+             auto nbr = retset.closest_unexpanded();
+             num_seen++;
++            if (p07_trace_path != nullptr && p07_trace_path[0] != '\0')
++                p07_expanded_nodes.push_back(nbr.id);
+             auto iter = _nhood_cache.find(nbr.id);
+             if (iter != _nhood_cache.end())
+             {
+@@ -1696,6 +1717,16 @@
+     {
+         stats->total_us = (float)query_timer.elapsed();
+     }
++
++    if (p07_trace_path != nullptr && p07_trace_path[0] != '\0')
++    {
++        std::lock_guard<std::mutex> lock(p07_trace_mutex);
++        std::ofstream trace(p07_trace_path, std::ios::app);
++        trace << p07_trace_query_id;
++        for (uint32_t id : p07_expanded_nodes)
++            trace << ',' << id;
++        trace << '\n';
++    }
+ }
+ 
+ // range search returns results of all neighbors within distance of range.
+--- a/apps/search_disk_index.cpp
++++ b/apps/search_disk_index.cpp
+@@ -227,6 +227,8 @@
+ #pragma omp parallel for schedule(dynamic, 1)
+         for (int64_t i = 0; i < (int64_t)query_num; i++)
+         {
++            // P07 A0 experiment hook; inert unless P07_TRACE_PATH is set.
++            diskann::p07_set_trace_query_id(static_cast<uint64_t>(i));
+             if (!filtered_search)
+             {
+                 _pFlashIndex->cached_beam_search(query + (i * query_aligned_dim), recall_at, L,

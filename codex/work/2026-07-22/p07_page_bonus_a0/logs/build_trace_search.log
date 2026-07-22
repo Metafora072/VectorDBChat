@@ -1,0 +1,29 @@
+[ 12%] Building CXX object src/CMakeFiles/diskann.dir/disk_utils.cpp.o
+[ 12%] Building CXX object src/CMakeFiles/diskann.dir/abstract_data_store.cpp.o
+[ 16%] Building CXX object src/CMakeFiles/diskann.dir/ann_exception.cpp.o
+[ 16%] Building CXX object src/CMakeFiles/diskann.dir/in_mem_graph_store.cpp.o
+[ 20%] Building CXX object src/CMakeFiles/diskann.dir/index.cpp.o
+[ 20%] Building CXX object src/CMakeFiles/diskann.dir/distance.cpp.o
+[ 25%] Building CXX object src/CMakeFiles/diskann.dir/linux_aligned_file_reader.cpp.o
+[ 29%] Building CXX object src/CMakeFiles/diskann.dir/in_mem_data_store.cpp.o
+[ 33%] Building CXX object src/CMakeFiles/diskann.dir/math_utils.cpp.o
+[ 37%] Building CXX object src/CMakeFiles/diskann.dir/natural_number_map.cpp.o
+[ 41%] Building CXX object src/CMakeFiles/diskann.dir/natural_number_set.cpp.o
+[ 41%] Building CXX object src/CMakeFiles/diskann.dir/memory_mapper.cpp.o
+[ 45%] Building CXX object src/CMakeFiles/diskann.dir/partition.cpp.o
+[ 50%] Building CXX object src/CMakeFiles/diskann.dir/pq.cpp.o
+[ 54%] Building CXX object src/CMakeFiles/diskann.dir/lapack_compat.cpp.o
+[ 58%] Building CXX object src/CMakeFiles/diskann.dir/pq_flash_index.cpp.o
+[ 62%] Building CXX object src/CMakeFiles/diskann.dir/scratch.cpp.o
+[ 66%] Building CXX object src/CMakeFiles/diskann.dir/logger.cpp.o
+[ 66%] Building CXX object src/CMakeFiles/diskann.dir/utils.cpp.o
+[ 70%] Building CXX object src/CMakeFiles/diskann.dir/filter_utils.cpp.o
+[ 75%] Building CXX object src/CMakeFiles/diskann.dir/index_factory.cpp.o
+[ 79%] Building CXX object src/CMakeFiles/diskann.dir/abstract_index.cpp.o
+[ 83%] Building CXX object src/CMakeFiles/diskann.dir/pq_l2_distance.cpp.o
+[ 87%] Building CXX object src/CMakeFiles/diskann.dir/pq_data_store.cpp.o
+[ 91%] Linking CXX static library libdiskann.a
+[ 91%] Built target diskann
+[ 95%] Building CXX object apps/CMakeFiles/search_disk_index.dir/search_disk_index.cpp.o
+[100%] Linking CXX executable search_disk_index
+[100%] Built target search_disk_index
