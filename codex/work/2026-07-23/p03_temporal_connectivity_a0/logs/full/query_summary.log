@@ -1,0 +1,117 @@
+{
+  "paired_seeds": [
+    11,
+    22,
+    33
+  ],
+  "gate": "Recall loss median>=0.01 and every seed>=0.005, or work ratio median>=1.05 and every seed>=1.02",
+  "cohorts": [
+    {
+      "cohort": 0,
+      "recall_losses": [
+        -0.0004044490000000289,
+        0.0003033367000000453,
+        -0.0003707448999999974
+      ],
+      "comparison_ratios": [
+        0.9930256152675588,
+        0.9927641704771227,
+        0.9938600369203774
+      ],
+      "visited_ratios": [
+        0.9989720536165184,
+        0.9988542741854858,
+        0.9992218051199965
+      ],
+      "target_entry_ratios_descriptive": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "recall_pass": false,
+      "comparison_pass": false,
+      "visited_pass": false
+    },
+    {
+      "cohort": 1,
+      "recall_losses": [
+        0.0,
+        -9.9634699999962e-05,
+        6.642310000004592e-05
+      ],
+      "comparison_ratios": [
+        0.9928531833556038,
+        0.9928410349520074,
+        0.9941842407136724
+      ],
+      "visited_ratios": [
+        0.9990140196749348,
+        0.9988286743618108,
+        0.9993762651711828
+      ],
+      "target_entry_ratios_descriptive": [
+        0.9664276619354136,
+        0.937524303397242,
+        1.0324498218018647
+      ],
+      "recall_pass": false,
+      "comparison_pass": false,
+      "visited_pass": false
+    },
+    {
+      "cohort": 2,
+      "recall_losses": [
+        0.00018110479999999818,
+        -6.036830000000215e-05,
+        -0.0009960761000000762
+      ],
+      "comparison_ratios": [
+        0.9880351487907515,
+        0.9884763110465454,
+        0.9901059219505801
+      ],
+      "visited_ratios": [
+        0.9987211700886923,
+        0.9988090066878186,
+        0.9996713223798381
+      ],
+      "target_entry_ratios_descriptive": [
+        1.0893869138880634,
+        1.022140971019972,
+        1.2210845108891306
+      ],
+      "recall_pass": false,
+      "comparison_pass": false,
+      "visited_pass": false
+    },
+    {
+      "cohort": 3,
+      "recall_losses": [
+        0.0,
+        0.0,
+        -0.0007052186000000571
+      ],
+      "comparison_ratios": [
+        0.9821005108203983,
+        0.9843812755276123,
+        0.9846892148461204
+      ],
+      "visited_ratios": [
+        0.9980283360618024,
+        0.9987178942143212,
+        0.9992255152166422
+      ],
+      "target_entry_ratios_descriptive": [
+        0.9108280253242997,
+        0.9709379127484739,
+        0.8466051970441685
+      ],
+      "recall_pass": false,
+      "comparison_pass": false,
+      "visited_pass": false
+    }
+  ],
+  "passing_cohorts": [],
+  "verdict": "HOLD-P03-STRUCTURE-ONLY",
+  "note": "Transition and target-entry differences are descriptive and cannot pass the query-harm gate alone."
+}

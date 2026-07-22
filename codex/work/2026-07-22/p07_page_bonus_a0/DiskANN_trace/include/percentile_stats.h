@@ -33,6 +33,8 @@ struct QueryStats
     unsigned n_cmps = 0;       // # cmps
     unsigned n_cache_hits = 0; // # cache_hits
     unsigned n_hops = 0;       // # search hops
+    // P10 A0 experiment counter. Zero in the stock PQ-navigation path.
+    unsigned n_exact_nav_reads = 0; // full vectors read only to steer navigation
 };
 
 template <typename T>

@@ -1,0 +1,12 @@
+[index.cpp:41:INFO] Getting distance function for metric: l2
+[index.cpp:373:INFO] Building index with normalize_cosine: 0
+[index.cpp:397:INFO] Loading only first 250000 from file..
+[utils.h:392:INFO] IndexBuildParameters with L: 96 R: 64 C: 750 alpha: 1.2 num_threads: 12 beam_width: 8 saturate_graph: 1 max_nthreads: 128
+0% of index build completed.40% of index build completed.80% of index build completed.[index.cpp:337:INFO] Starting final cleanup..
+[index.cpp:329:INFO] done. Link time: 20.977s
+[index.cpp:442:INFO] Index built with degree: max:64 avg:64 min:64 count(deg<2):0
+[index.cpp:337:INFO] Starting final cleanup..
+[ssd_index.cpp:398:INFO] Nodes written: 1000000/1000000
+[index.cpp:790:INFO] Memory index tags saved to /home/ubuntu/pz/VectorDB/data/VectorDB/p03_temporal_connectivity_a0_0723/full/indexes/shuffle_seed11.index.tags
+[ssd_index.cpp:405:INFO] save_from_mem: wrote /home/ubuntu/pz/VectorDB/data/VectorDB/p03_temporal_connectivity_a0_0723/full/indexes/shuffle_seed11.index
+A0_METRIC {"experiment":"p03_structure","label":"shuffle_seed11","build_seed":11,"update_seed":11,"checkpoint":0,"n_active":1000000,"batch_size":250000,"nqueries":0,"R":64,"L_build":96,"L_search":0,"recall_at_10":0,"recall_p01":0,"recall_p10":0,"recall_p50":0,"recall_p90":0,"distance_calcs_mean":0,"distance_calcs_p50":0,"distance_calcs_p95":0,"distance_calcs_p99":0,"visited_nodes_mean":0,"visited_nodes_p50":0,"visited_nodes_p95":0,"visited_nodes_p99":0,"edge_count":64000000,"edge_jaccard_vs_g0":-1,"edge_intersection":0,"edge_missing_vs_g0":0,"edge_added_vs_g0":0,"changed_owner_count":0,"logical_coupled_rewrite_bytes":0,"logical_topology_rewrite_bytes":0,"shadow_bytes_8":0,"shadow_bytes_12":0,"oracle_shadow_candidates":0,"oracle_shadow_reactivated":0,"oracle_shadow_acceptance":-1,"oracle_shadow_seconds":0,"build_seconds":21.42977033,"update_seconds":823.6826519}

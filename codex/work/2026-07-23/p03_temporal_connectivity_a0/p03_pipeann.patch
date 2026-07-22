@@ -1,0 +1,625 @@
+diff --git a/include/index.h b/include/index.h
+index c51b5e0..a529cec 100644
+--- a/include/index.h
++++ b/include/index.h
+@@ -51,7 +51,8 @@ namespace pipeann {
+     // can customize L on a per-query basis without tampering with "IndexBuildParameters"
+     std::pair<uint32_t, uint32_t> search(const T *query, const size_t K, const unsigned L, unsigned *indices,
+                                          float *distances = nullptr, QueryStats *stats = nullptr,
+-                                         const std::vector<uint32_t> *cand_ids = nullptr);
++                                         const std::vector<uint32_t> *cand_ids = nullptr,
++                                         std::vector<uint32_t> *expansion_trace = nullptr);
+ 
+     size_t search_with_tags(const T *query, const size_t K, const unsigned L, TagT *tags, float *distances,
+                             const std::vector<uint32_t> *cand_ids = nullptr);
+diff --git a/src/index.cpp b/src/index.cpp
+index 333b7b9..89bf630 100644
+--- a/src/index.cpp
++++ b/src/index.cpp
+@@ -482,7 +482,8 @@ namespace pipeann {
+   template<typename T, typename TagT>
+   std::pair<uint32_t, uint32_t> Index<T, TagT>::search(const T *query, const size_t K, const unsigned L,
+                                                        unsigned *indices, float *distances, QueryStats *stats,
+-                                                       const std::vector<uint32_t> *cand_ids) {
++                                                       const std::vector<uint32_t> *cand_ids,
++                                                       std::vector<uint32_t> *expansion_trace) {
+     std::vector<unsigned> init_ids;
+     tsl::robin_set<unsigned> visited(10 * L);
+     std::vector<Neighbor> best_L_nodes, expanded_nodes_info;
+@@ -515,6 +516,11 @@ namespace pipeann {
+       retval = iterate_to_fixed_point(aligned_query, L, init_ids, expanded_nodes_info, expanded_nodes_ids,
+                                       best_L_nodes, stats);
+     }
++    if (expansion_trace != nullptr) {
++      expansion_trace->clear();
++      expansion_trace->reserve(expanded_nodes_info.size());
++      for (const auto &expanded : expanded_nodes_info) expansion_trace->push_back(expanded.id);
++    }
+ 
+     size_t pos = 0;
+     for (auto it : best_L_nodes) {
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index ea0ae18..efee813 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -37,3 +37,8 @@ target_link_libraries(search_disk_index_filtered ${PROJECT_NAME})
+ 
+ add_executable(graph_aging_a0 graph_aging_a0.cpp)
+ target_link_libraries(graph_aging_a0 ${PROJECT_NAME})
++
++add_executable(p03_graph_analyzer p03_graph_analyzer.cpp)
++
++add_executable(p03_query_a0 p03_query_a0.cpp)
++target_link_libraries(p03_query_a0 ${PROJECT_NAME})
+diff --git a/tests/graph_aging_a0.cpp b/tests/graph_aging_a0.cpp
+index 9d14a7d..59f6876 100644
+--- a/tests/graph_aging_a0.cpp
++++ b/tests/graph_aging_a0.cpp
+@@ -650,17 +650,75 @@ void run_path3(const Args &args) {
+                                                total_n - initial_n));
+   }
+ }
++
++void run_p03_structure(const Args &args) {
++  const std::string variant = args.get("variant");
++  const size_t final_n = args.u64("npoints");
++  if (final_n == 0) throw std::runtime_error("p03-structure requires --npoints");
++
++  const size_t initial_n = variant == "static" ? final_n : args.u64("initial-n", final_n / 4);
++  if (variant != "static" && variant != "stream") {
++    throw std::runtime_error("p03-structure --variant must be static or stream");
++  }
++  if (initial_n == 0 || initial_n > final_n) {
++    throw std::runtime_error("invalid p03-structure initial/final sizes");
++  }
++
++  double build_seconds = 0;
++  auto index = build_index(args, initial_n, build_seconds);
++  double update_seconds = 0;
++  if (variant == "stream") {
++    std::vector<float> data;
++    size_t file_n = 0, dim = 0;
++    pipeann::load_bin<float>(args.get("data"), data, file_n, dim);
++    auto full_tags = load_tag_file(args.get("full-tags"));
++    if (file_n < final_n || dim != index->_dim || full_tags.size() < final_n) {
++      throw std::runtime_error("p03-structure stream data/tag mismatch");
++    }
++    const size_t batch = args.u64("batch", initial_n);
++    if (batch == 0) throw std::runtime_error("p03-structure batch must be positive");
++    auto params = params_from(args);
++    const auto update_start = std::chrono::steady_clock::now();
++    for (size_t begin = initial_n; begin < final_n; begin += batch) {
++      insert_range(*index, data, full_tags, begin, std::min(final_n, begin + batch), params,
++                   args.u64("threads", 16));
++    }
++    if (args.u64("final-prune", 1) != 0) index->final_prune(params);
++    update_seconds = seconds_since(update_start);
++  }
++
++  if (index->_nd != final_n || index->_location_to_tag.size() != final_n) {
++    throw std::runtime_error("p03-structure final active set size mismatch");
++  }
++  auto edges = graph_edges_by_tag(*index);
++  save_edges(args.get("save-edges"), edges);
++  if (!args.get("save-index").empty() && args.get("save-index") != "-") {
++    pipeann::SSDIndex<float, Tag>::save_from_mem(*index, args.get("save-index"));
++  }
++
++  Metrics metrics;
++  metrics.active_count = index->_nd;
++  metrics.edge_count = edges.size();
++  append_record(args.get("out"),
++                json_record("p03_structure", args.get("label", variant), args.u64("build-seed"),
++                            args.u64("update-seed"), 0, metrics, build_seconds, update_seconds,
++                            args.u64("R", 64), args.u64("L", 96), 0, 0,
++                            variant == "static" ? 0 : args.u64("batch", initial_n)));
++}
+ }  // namespace
+ 
+ int main(int argc, char **argv) {
+   try {
+-    if (argc < 2) throw std::runtime_error("usage: graph_aging_a0 <build|a01|path2|path3> --key value ...");
++    if (argc < 2) {
++      throw std::runtime_error("usage: graph_aging_a0 <build|a01|path2|path3|p03-structure> --key value ...");
++    }
+     const std::string mode(argv[1]);
+     Args args(argc, argv, 2);
+     if (mode == "build") run_build(args);
+     else if (mode == "a01") run_a01(args);
+     else if (mode == "path2") run_path2(args);
+     else if (mode == "path3") run_path3(args);
++    else if (mode == "p03-structure") run_p03_structure(args);
+     else throw std::runtime_error("unknown mode: " + mode);
+     return 0;
+   } catch (const std::exception &e) {
+diff --git a/tests/p03_graph_analyzer.cpp b/tests/p03_graph_analyzer.cpp
+new file mode 100644
+index 0000000..b8b73c4
+--- /dev/null
++++ b/tests/p03_graph_analyzer.cpp
+@@ -0,0 +1,280 @@
++#include <algorithm>
++#include <array>
++#include <cstdint>
++#include <fstream>
++#include <iomanip>
++#include <iostream>
++#include <numeric>
++#include <queue>
++#include <random>
++#include <stdexcept>
++#include <string>
++#include <unordered_map>
++#include <vector>
++
++namespace {
++constexpr size_t kCohorts = 4;
++
++struct Args {
++  std::unordered_map<std::string, std::string> values;
++  Args(int argc, char **argv) {
++    for (int i = 1; i < argc; ++i) {
++      std::string key(argv[i]);
++      if (key.rfind("--", 0) != 0 || i + 1 >= argc) throw std::runtime_error("expected --key value");
++      values[key.substr(2)] = argv[++i];
++    }
++  }
++  std::string get(const std::string &key, const std::string &fallback = "") const {
++    auto it = values.find(key);
++    return it == values.end() ? fallback : it->second;
++  }
++  uint64_t u64(const std::string &key, uint64_t fallback = 0) const {
++    auto value = get(key);
++    return value.empty() ? fallback : std::stoull(value);
++  }
++};
++
++struct CSR {
++  std::vector<uint64_t> offsets;
++  std::vector<uint32_t> neighbors;
++};
++
++size_t cohort(uint32_t tag, size_t cohort_size) {
++  return std::min(kCohorts - 1, static_cast<size_t>(tag) / cohort_size);
++}
++
++std::vector<uint64_t> read_edges(const std::string &path) {
++  std::ifstream in(path, std::ios::binary);
++  uint64_t count = 0;
++  in.read(reinterpret_cast<char *>(&count), sizeof(count));
++  std::vector<uint64_t> edges(count);
++  in.read(reinterpret_cast<char *>(edges.data()), static_cast<std::streamsize>(count * sizeof(uint64_t)));
++  if (!in) throw std::runtime_error("failed to read edge file: " + path);
++  return edges;
++}
++
++std::pair<CSR, CSR> build_csrs(const std::vector<uint64_t> &edges, size_t npoints) {
++  CSR out, rev;
++  out.offsets.assign(npoints + 1, 0);
++  rev.offsets.assign(npoints + 1, 0);
++  for (uint64_t packed : edges) {
++    uint32_t src = static_cast<uint32_t>(packed >> 32);
++    uint32_t dst = static_cast<uint32_t>(packed);
++    if (src >= npoints || dst >= npoints) throw std::runtime_error("edge tag exceeds npoints");
++    ++out.offsets[src + 1];
++    ++rev.offsets[dst + 1];
++  }
++  std::partial_sum(out.offsets.begin(), out.offsets.end(), out.offsets.begin());
++  std::partial_sum(rev.offsets.begin(), rev.offsets.end(), rev.offsets.begin());
++  out.neighbors.resize(edges.size());
++  rev.neighbors.resize(edges.size());
++  auto out_pos = out.offsets;
++  auto rev_pos = rev.offsets;
++  for (uint64_t packed : edges) {
++    uint32_t src = static_cast<uint32_t>(packed >> 32);
++    uint32_t dst = static_cast<uint32_t>(packed);
++    out.neighbors[out_pos[src]++] = dst;
++    rev.neighbors[rev_pos[dst]++] = src;
++  }
++  return {std::move(out), std::move(rev)};
++}
++
++std::pair<uint64_t, uint64_t> strongly_connected_components(const CSR &out, const CSR &rev) {
++  const size_t n = out.offsets.size() - 1;
++  std::vector<uint8_t> seen(n, 0);
++  std::vector<uint32_t> order;
++  order.reserve(n);
++  struct Frame { uint32_t node; uint64_t next; };
++  std::vector<Frame> stack;
++  for (uint32_t root = 0; root < n; ++root) {
++    if (seen[root]) continue;
++    seen[root] = 1;
++    stack.push_back({root, out.offsets[root]});
++    while (!stack.empty()) {
++      auto &frame = stack.back();
++      const uint64_t end = out.offsets[frame.node + 1];
++      if (frame.next < end) {
++        uint32_t next = out.neighbors[frame.next++];
++        if (!seen[next]) {
++          seen[next] = 1;
++          stack.push_back({next, out.offsets[next]});
++        }
++      } else {
++        order.push_back(frame.node);
++        stack.pop_back();
++      }
++    }
++  }
++
++  std::fill(seen.begin(), seen.end(), 0);
++  std::vector<uint32_t> todo;
++  uint64_t components = 0, largest = 0;
++  for (auto it = order.rbegin(); it != order.rend(); ++it) {
++    const uint32_t root = *it;
++    if (seen[root]) continue;
++    ++components;
++    uint64_t size = 0;
++    seen[root] = 1;
++    todo.push_back(root);
++    while (!todo.empty()) {
++      const uint32_t node = todo.back();
++      todo.pop_back();
++      ++size;
++      for (uint64_t p = rev.offsets[node]; p < rev.offsets[node + 1]; ++p) {
++        const uint32_t next = rev.neighbors[p];
++        if (!seen[next]) {
++          seen[next] = 1;
++          todo.push_back(next);
++        }
++      }
++    }
++    largest = std::max(largest, size);
++  }
++  return {components, largest};
++}
++
++struct ReachSummary {
++  double rate = 0;
++  double mean = 0;
++  int p50 = -1;
++  int p95 = -1;
++};
++
++std::array<std::array<ReachSummary, kCohorts>, kCohorts> reachability(
++    const CSR &rev, size_t cohort_size, size_t targets_per_cohort, uint64_t seed) {
++  const size_t n = rev.offsets.size() - 1;
++  std::array<std::array<ReachSummary, kCohorts>, kCohorts> result{};
++  std::mt19937_64 rng(seed);
++  for (size_t target_cohort = 0; target_cohort < kCohorts; ++target_cohort) {
++    std::vector<uint32_t> candidates(cohort_size);
++    std::iota(candidates.begin(), candidates.end(), static_cast<uint32_t>(target_cohort * cohort_size));
++    std::shuffle(candidates.begin(), candidates.end(), rng);
++    candidates.resize(std::min(targets_per_cohort, candidates.size()));
++
++    std::vector<int32_t> distance(n, -1);
++    std::queue<uint32_t> queue;
++    for (uint32_t target : candidates) {
++      distance[target] = 0;
++      queue.push(target);
++    }
++    while (!queue.empty()) {
++      const uint32_t node = queue.front();
++      queue.pop();
++      for (uint64_t p = rev.offsets[node]; p < rev.offsets[node + 1]; ++p) {
++        const uint32_t predecessor = rev.neighbors[p];
++        if (distance[predecessor] < 0) {
++          distance[predecessor] = distance[node] + 1;
++          queue.push(predecessor);
++        }
++      }
++    }
++
++    for (size_t source_cohort = 0; source_cohort < kCohorts; ++source_cohort) {
++      std::vector<int32_t> reached;
++      const size_t begin = source_cohort * cohort_size;
++      const size_t end = std::min(n, begin + cohort_size);
++      reached.reserve(end - begin);
++      for (size_t node = begin; node < end; ++node) {
++        if (distance[node] >= 0) reached.push_back(distance[node]);
++      }
++      auto &summary = result[source_cohort][target_cohort];
++      summary.rate = static_cast<double>(reached.size()) / (end - begin);
++      if (!reached.empty()) {
++        const uint64_t sum = std::accumulate(reached.begin(), reached.end(), uint64_t{0});
++        summary.mean = static_cast<double>(sum) / reached.size();
++        std::sort(reached.begin(), reached.end());
++        summary.p50 = reached[(reached.size() - 1) / 2];
++        summary.p95 = reached[static_cast<size_t>(0.95 * (reached.size() - 1))];
++      }
++    }
++  }
++  return result;
++}
++
++template <typename T>
++void print_vector(const std::array<T, kCohorts> &values) {
++  std::cout << "[";
++  for (size_t i = 0; i < kCohorts; ++i) {
++    if (i) std::cout << ",";
++    std::cout << values[i];
++  }
++  std::cout << "]";
++}
++}  // namespace
++
++int main(int argc, char **argv) {
++  try {
++    Args args(argc, argv);
++    const size_t npoints = args.u64("npoints");
++    const size_t cohort_size = args.u64("cohort-size", npoints / kCohorts);
++    const size_t R = args.u64("R", 64);
++    if (npoints == 0 || cohort_size == 0 || cohort_size * kCohorts != npoints) {
++      throw std::runtime_error("npoints must equal four equal cohorts");
++    }
++    const auto edges = read_edges(args.get("edges"));
++    std::array<std::array<uint64_t, kCohorts>, kCohorts> counts{};
++    std::array<uint64_t, kCohorts> outgoing{}, incoming{};
++    for (uint64_t packed : edges) {
++      const uint32_t src = static_cast<uint32_t>(packed >> 32);
++      const uint32_t dst = static_cast<uint32_t>(packed);
++      const size_t sc = cohort(src, cohort_size), dc = cohort(dst, cohort_size);
++      ++counts[sc][dc];
++      ++outgoing[sc];
++      ++incoming[dc];
++    }
++    auto [out, rev] = build_csrs(edges, npoints);
++    const auto [scc_count, largest_scc] = strongly_connected_components(out, rev);
++    const auto reach = reachability(rev, cohort_size, args.u64("reach-targets", 1024), args.u64("seed", 0));
++
++    std::cout << std::setprecision(10) << "{";
++    std::cout << "\"label\":\"" << args.get("label") << "\",\"seed\":" << args.u64("seed")
++              << ",\"npoints\":" << npoints << ",\"R\":" << R << ",\"edge_count\":" << edges.size();
++    std::cout << ",\"matrix_counts\":[";
++    for (size_t i = 0; i < kCohorts; ++i) {
++      if (i) std::cout << ",";
++      print_vector(counts[i]);
++    }
++    std::cout << "],\"matrix_density_r\":[";
++    for (size_t i = 0; i < kCohorts; ++i) {
++      if (i) std::cout << ",";
++      std::array<double, kCohorts> row{};
++      for (size_t j = 0; j < kCohorts; ++j) row[j] = static_cast<double>(counts[i][j]) / (cohort_size * R);
++      print_vector(row);
++    }
++    std::cout << "],\"matrix_source_mass\":[";
++    for (size_t i = 0; i < kCohorts; ++i) {
++      if (i) std::cout << ",";
++      std::array<double, kCohorts> row{};
++      for (size_t j = 0; j < kCohorts; ++j) row[j] = static_cast<double>(counts[i][j]) / outgoing[i];
++      print_vector(row);
++    }
++    std::array<double, kCohorts> out_cross{}, in_cross{}, same_cross_ratio{};
++    for (size_t i = 0; i < kCohorts; ++i) {
++      out_cross[i] = 1.0 - static_cast<double>(counts[i][i]) / outgoing[i];
++      in_cross[i] = 1.0 - static_cast<double>(counts[i][i]) / incoming[i];
++      same_cross_ratio[i] = static_cast<double>(counts[i][i]) / std::max<uint64_t>(1, outgoing[i] - counts[i][i]);
++    }
++    std::cout << "],\"outgoing_cross_mass\":"; print_vector(out_cross);
++    std::cout << ",\"incoming_cross_mass\":"; print_vector(in_cross);
++    std::cout << ",\"same_cross_ratio\":"; print_vector(same_cross_ratio);
++    std::cout << ",\"scc_count\":" << scc_count << ",\"largest_scc\":" << largest_scc
++              << ",\"largest_scc_fraction\":" << static_cast<double>(largest_scc) / npoints;
++    std::cout << ",\"reachability\":[";
++    for (size_t i = 0; i < kCohorts; ++i) {
++      if (i) std::cout << ",";
++      std::cout << "[";
++      for (size_t j = 0; j < kCohorts; ++j) {
++        if (j) std::cout << ",";
++        const auto &r = reach[i][j];
++        std::cout << "{\"rate\":" << r.rate << ",\"mean_hops\":" << r.mean
++                  << ",\"p50_hops\":" << r.p50 << ",\"p95_hops\":" << r.p95 << "}";
++      }
++      std::cout << "]";
++    }
++    std::cout << "]}\n";
++    return 0;
++  } catch (const std::exception &error) {
++    std::cerr << "p03_graph_analyzer error: " << error.what() << "\n";
++    return 2;
++  }
++}
+diff --git a/tests/p03_query_a0.cpp b/tests/p03_query_a0.cpp
+new file mode 100644
+index 0000000..e0a8d64
+--- /dev/null
++++ b/tests/p03_query_a0.cpp
+@@ -0,0 +1,199 @@
++#include <algorithm>
++#include <array>
++#include <cstdint>
++#include <fstream>
++#include <iomanip>
++#include <iostream>
++#include <memory>
++#include <numeric>
++#include <string>
++#include <stdexcept>
++#include <unordered_map>
++#include <unordered_set>
++#include <vector>
++
++#include <omp.h>
++
++#include "index.h"
++#include "ssd_index.h"
++#include "utils.h"
++
++namespace {
++constexpr size_t kCohorts = 4;
++using Tag = uint32_t;
++using Index = pipeann::Index<float, Tag>;
++
++struct Args {
++  std::unordered_map<std::string, std::string> values;
++  Args(int argc, char **argv) {
++    for (int i = 1; i < argc; ++i) {
++      std::string key(argv[i]);
++      if (key.rfind("--", 0) != 0 || i + 1 >= argc) throw std::runtime_error("expected --key value");
++      values[key.substr(2)] = argv[++i];
++    }
++  }
++  std::string get(const std::string &key, const std::string &fallback = "") const {
++    auto it = values.find(key);
++    return it == values.end() ? fallback : it->second;
++  }
++  uint64_t u64(const std::string &key, uint64_t fallback = 0) const {
++    auto value = get(key);
++    return value.empty() ? fallback : std::stoull(value);
++  }
++};
++
++struct Accumulator {
++  uint64_t queries = 0;
++  uint64_t recall_hits = 0;
++  double comparisons = 0;
++  double visited = 0;
++  uint64_t target_entry_reached = 0;
++  double target_entry_expansion = 0;
++  std::array<uint64_t, kCohorts> first_expanded{};
++  std::array<uint64_t, kCohorts> first_result{};
++  std::array<std::array<uint64_t, kCohorts>, kCohorts> transitions{};
++
++  void merge(const Accumulator &other) {
++    queries += other.queries;
++    recall_hits += other.recall_hits;
++    comparisons += other.comparisons;
++    visited += other.visited;
++    target_entry_reached += other.target_entry_reached;
++    target_entry_expansion += other.target_entry_expansion;
++    for (size_t i = 0; i < kCohorts; ++i) {
++      first_expanded[i] += other.first_expanded[i];
++      first_result[i] += other.first_result[i];
++      for (size_t j = 0; j < kCohorts; ++j) transitions[i][j] += other.transitions[i][j];
++    }
++  }
++};
++
++size_t cohort(Tag tag, size_t cohort_size) {
++  return std::min(kCohorts - 1, static_cast<size_t>(tag) / cohort_size);
++}
++
++template <typename T>
++void print_array(const std::array<T, kCohorts> &values) {
++  std::cout << "[";
++  for (size_t i = 0; i < kCohorts; ++i) {
++    if (i) std::cout << ",";
++    std::cout << values[i];
++  }
++  std::cout << "]";
++}
++
++void print_accumulator(const Accumulator &acc) {
++  std::cout << "{\"queries\":" << acc.queries
++            << ",\"recall_at_10\":" << (acc.queries ? static_cast<double>(acc.recall_hits) / (10.0 * acc.queries) : 0)
++            << ",\"comparisons_mean\":" << (acc.queries ? acc.comparisons / acc.queries : 0)
++            << ",\"visited_mean\":" << (acc.queries ? acc.visited / acc.queries : 0)
++            << ",\"target_entry_rate\":" << (acc.queries ? static_cast<double>(acc.target_entry_reached) / acc.queries : 0)
++            << ",\"target_entry_expansion_mean\":"
++            << (acc.target_entry_reached ? acc.target_entry_expansion / acc.target_entry_reached : -1)
++            << ",\"first_expanded_cohort\":";
++  print_array(acc.first_expanded);
++  std::cout << ",\"first_result_cohort\":";
++  print_array(acc.first_result);
++  std::cout << ",\"transition_counts\":[";
++  for (size_t i = 0; i < kCohorts; ++i) {
++    if (i) std::cout << ",";
++    print_array(acc.transitions[i]);
++  }
++  std::cout << "]}";
++}
++}  // namespace
++
++int main(int argc, char **argv) {
++  try {
++    Args args(argc, argv);
++    auto index = std::unique_ptr<Index>(
++        pipeann::SSDIndex<float, Tag>::load_to_mem(args.get("index"), pipeann::Metric::L2));
++    const size_t cohort_size = args.u64("cohort-size", index->_nd / kCohorts);
++    if (cohort_size * kCohorts != index->_nd) throw std::runtime_error("index does not contain four equal cohorts");
++
++    std::vector<float> queries;
++    size_t query_n = 0, query_dim = 0;
++    pipeann::load_bin<float>(args.get("query"), queries, query_n, query_dim);
++    if (query_dim != index->_dim) throw std::runtime_error("query dimension mismatch");
++    unsigned *gt_ids = nullptr;
++    float *gt_dists = nullptr;
++    unsigned *gt_tags = nullptr;
++    size_t gt_n = 0, gt_dim = 0;
++    pipeann::load_truthset(args.get("gt"), gt_ids, gt_dists, gt_n, gt_dim, &gt_tags);
++    if (gt_dim < 10) throw std::runtime_error("ground truth has fewer than 10 neighbors");
++    const size_t nqueries = std::min({args.u64("nqueries", query_n), query_n, gt_n});
++    const unsigned search_L = args.u64("search-L", 96);
++    const int threads = args.u64("threads", 12);
++    std::vector<std::array<Accumulator, kCohorts>> locals(threads);
++
++#pragma omp parallel for schedule(static) num_threads(threads)
++    for (int64_t qi = 0; qi < static_cast<int64_t>(nqueries); ++qi) {
++      const int tid = omp_get_thread_num();
++      const unsigned *truth_values = gt_tags == nullptr ? gt_ids : gt_tags;
++      const size_t query_cohort = cohort(truth_values[qi * gt_dim], cohort_size);
++      auto &acc = locals[tid][query_cohort];
++      ++acc.queries;
++
++      std::vector<unsigned> ids(search_L);
++      std::vector<float> distances(search_L);
++      std::vector<uint32_t> trace;
++      pipeann::QueryStats stats;
++      index->search(queries.data() + qi * query_dim, search_L, search_L, ids.data(), distances.data(),
++                    &stats, nullptr, &trace);
++      acc.comparisons += stats.n_cmps;
++      acc.visited += stats.n_hops;
++
++      std::unordered_set<unsigned> truth;
++      for (size_t k = 0; k < 10; ++k) truth.insert(truth_values[qi * gt_dim + k]);
++      size_t returned = 0;
++      for (unsigned location : ids) {
++        auto tag_it = index->_location_to_tag.find(location);
++        if (tag_it == index->_location_to_tag.end()) continue;
++        if (truth.count(tag_it->second)) ++acc.recall_hits;
++        if (returned == 0) ++acc.first_result[cohort(tag_it->second, cohort_size)];
++        if (++returned == 10) break;
++      }
++
++      bool entered = false;
++      size_t previous = kCohorts;
++      for (size_t expansion = 0; expansion < trace.size(); ++expansion) {
++        auto tag_it = index->_location_to_tag.find(trace[expansion]);
++        if (tag_it == index->_location_to_tag.end()) continue;
++        const size_t current = cohort(tag_it->second, cohort_size);
++        if (expansion == 0) ++acc.first_expanded[current];
++        if (previous < kCohorts) ++acc.transitions[previous][current];
++        previous = current;
++        if (!entered && current == query_cohort) {
++          entered = true;
++          ++acc.target_entry_reached;
++          acc.target_entry_expansion += expansion + 1;
++        }
++      }
++    }
++
++    delete[] gt_ids;
++    delete[] gt_dists;
++    delete[] gt_tags;
++    std::array<Accumulator, kCohorts> cohorts{};
++    for (const auto &local : locals) {
++      for (size_t c = 0; c < kCohorts; ++c) cohorts[c].merge(local[c]);
++    }
++    Accumulator overall;
++    for (const auto &acc : cohorts) overall.merge(acc);
++
++    std::cout << std::setprecision(10) << "{\"label\":\"" << args.get("label")
++              << "\",\"seed\":" << args.u64("seed") << ",\"nqueries\":" << nqueries
++              << ",\"search_L\":" << search_L << ",\"cohorts\":[";
++    for (size_t c = 0; c < kCohorts; ++c) {
++      if (c) std::cout << ",";
++      print_accumulator(cohorts[c]);
++    }
++    std::cout << "],\"overall\":";
++    print_accumulator(overall);
++    std::cout << "}\n";
++    return 0;
++  } catch (const std::exception &error) {
++    std::cerr << "p03_query_a0 error: " << error.what() << "\n";
++    return 2;
++  }
++}

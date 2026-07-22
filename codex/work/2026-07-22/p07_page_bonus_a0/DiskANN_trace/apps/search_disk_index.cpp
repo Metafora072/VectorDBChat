@@ -292,6 +292,25 @@ int search_disk_index(diskann::Metric &metric, const std::string &index_path_pre
         }
         else
             diskann::cout << std::endl;
+
+        const char *p10_metrics_path = std::getenv("P10_METRICS_PATH");
+        if (p10_metrics_path != nullptr && p10_metrics_path[0] != '\0')
+        {
+            std::ofstream metrics(p10_metrics_path);
+            metrics << "qid,L,total_us,cpu_us,io_us,n_ios,n_cmps,n_hops,n_exact_nav_reads";
+            for (uint32_t k = 0; k < recall_at; ++k)
+                metrics << ",id" << k;
+            metrics << '\n';
+            for (uint64_t i = 0; i < query_num; ++i)
+            {
+                metrics << i << ',' << L << ',' << stats[i].total_us << ',' << stats[i].cpu_us << ','
+                        << stats[i].io_us << ',' << stats[i].n_ios << ',' << stats[i].n_cmps << ','
+                        << stats[i].n_hops << ',' << stats[i].n_exact_nav_reads;
+                for (uint32_t k = 0; k < recall_at; ++k)
+                    metrics << ',' << query_result_ids_64[i * recall_at + k];
+                metrics << '\n';
+            }
+        }
         delete[] stats;
     }
 

@@ -80,6 +80,8 @@ template <typename T, typename LabelT> PQFlashIndex<T, LabelT>::~PQFlashIndex()
 
     if (_centroid_data != nullptr)
         aligned_free(_centroid_data);
+    if (_p10_full_data != nullptr)
+        delete[] _p10_full_data;
     // delete backing bufs for nhood and coord cache
     if (_nhood_cache_buf != nullptr)
     {
@@ -841,6 +843,25 @@ int PQFlashIndex<T, LabelT>::load_from_separate_paths(uint32_t num_threads, cons
 
     this->_num_points = npts_u64;
     this->_n_chunks = nchunks_u64;
+
+    // P10 A0: optionally load the original vectors as a navigation oracle.
+    // Normal DiskANN runs are unchanged because the environment variable is
+    // absent and the pointer remains null.
+    const char *p10_full_data_path = std::getenv("P10_FULL_DATA");
+    if (p10_full_data_path != nullptr && p10_full_data_path[0] != '\0')
+    {
+#ifdef EXEC_ENV_OLS
+        throw diskann::ANNException("P10_FULL_DATA is not supported in EXEC_ENV_OLS", -1);
+#else
+        diskann::load_bin<T>(p10_full_data_path, _p10_full_data, _p10_full_num, _p10_full_dim);
+        if (_p10_full_num != this->_num_points || _p10_full_dim != this->_data_dim)
+        {
+            throw diskann::ANNException("P10_FULL_DATA metadata does not match the index", -1);
+        }
+        diskann::cout << "P10: loaded " << _p10_full_num << " full vectors for navigation instrumentation."
+                      << std::endl;
+#endif
+    }
 #ifdef EXEC_ENV_OLS
     if (files.fileExists(labels_file))
     {
@@ -1289,7 +1310,21 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
     // P07 A0: capture expanded (and therefore explicitly requested) node ids.
     // The vector stays empty and no file is opened in normal builds/runs.
     const char *p07_trace_path = std::getenv("P07_TRACE_PATH");
+    const char *p10_trace_path = std::getenv("P10_TRACE_PATH");
     std::vector<uint32_t> p07_expanded_nodes;
+    std::vector<float> p10_expanded_scores;
+
+    const char *p10_mode_env = std::getenv("P10_NAV_MODE");
+    const std::string p10_mode = p10_mode_env == nullptr ? "pq" : std::string(p10_mode_env);
+    const uint32_t p10_early_blocks = std::getenv("P10_EARLY_BLOCKS") == nullptr
+                                          ? 0U
+                                          : static_cast<uint32_t>(std::stoul(std::getenv("P10_EARLY_BLOCKS")));
+    const uint32_t p10_late_start = std::getenv("P10_LATE_START_BLOCK") == nullptr
+                                        ? std::numeric_limits<uint32_t>::max()
+                                        : static_cast<uint32_t>(std::stoul(std::getenv("P10_LATE_START_BLOCK")));
+    const bool p10_needs_full = p10_mode == "exact" || p10_mode == "early" || p10_mode == "late";
+    if (p10_needs_full && _p10_full_data == nullptr)
+        throw diskann::ANNException("P10 exact navigation requires P10_FULL_DATA", -1);
 
     uint64_t num_sector_per_nodes = DIV_ROUND_UP(_max_node_len, defaults::SECTOR_LEN);
     if (beam_width > num_sector_per_nodes * defaults::MAX_N_SECTOR_READS)
@@ -1369,6 +1404,30 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
         diskann::aggregate_coords(ids, n_ids, this->data, this->_n_chunks, pq_coord_scratch);
         diskann::pq_dist_lookup(pq_coord_scratch, n_ids, this->_n_chunks, pq_dists, dists_out);
     };
+    auto use_exact_navigation = [p10_mode, p10_early_blocks, p10_late_start](uint32_t block) {
+        if (p10_mode == "exact")
+            return true;
+        if (p10_mode == "early")
+            return block < p10_early_blocks;
+        if (p10_mode == "late")
+            return block >= p10_late_start;
+        return false;
+    };
+    auto compute_nav_dists = [this, &compute_dists, aligned_query_T, stats, &use_exact_navigation](
+                                 const uint32_t *ids, const uint64_t n_ids, float *dists_out, uint32_t block) {
+        if (!use_exact_navigation(block))
+        {
+            compute_dists(ids, n_ids, dists_out);
+            return;
+        }
+        for (uint64_t i = 0; i < n_ids; ++i)
+        {
+            dists_out[i] = _dist_cmp->compare(aligned_query_T, _p10_full_data + ((size_t)ids[i] * _p10_full_dim),
+                                               (uint32_t)_p10_full_dim);
+        }
+        if (stats != nullptr)
+            stats->n_exact_nav_reads += static_cast<unsigned>(n_ids);
+    };
     Timer query_timer, io_timer, cpu_timer;
 
     tsl::robin_set<uint64_t> &visited = query_scratch->visited;
@@ -1415,13 +1474,14 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
         }
     }
 
-    compute_dists(&best_medoid, 1, dist_scratch);
+    compute_nav_dists(&best_medoid, 1, dist_scratch, 0);
     retset.insert(Neighbor(best_medoid, dist_scratch[0]));
     visited.insert(best_medoid);
 
     uint32_t cmps = 0;
     uint32_t hops = 0;
     uint32_t num_ios = 0;
+    uint32_t p10_block = 0;
 
     // cleared every iteration
     std::vector<uint32_t> frontier;
@@ -1447,8 +1507,12 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
         {
             auto nbr = retset.closest_unexpanded();
             num_seen++;
-            if (p07_trace_path != nullptr && p07_trace_path[0] != '\0')
+            if ((p07_trace_path != nullptr && p07_trace_path[0] != '\0') ||
+                (p10_trace_path != nullptr && p10_trace_path[0] != '\0'))
+            {
                 p07_expanded_nodes.push_back(nbr.id);
+                p10_expanded_scores.push_back(nbr.distance);
+            }
             auto iter = _nhood_cache.find(nbr.id);
             if (iter != _nhood_cache.end())
             {
@@ -1528,7 +1592,7 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
 
             // compute node_nbrs <-> query dists in PQ space
             cpu_timer.reset();
-            compute_dists(node_nbrs, nnbrs, dist_scratch);
+            compute_nav_dists(node_nbrs, nnbrs, dist_scratch, p10_block);
             if (stats != nullptr)
             {
                 stats->n_cmps += (uint32_t)nnbrs;
@@ -1590,7 +1654,7 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
             uint32_t *node_nbrs = (node_buf + 1);
             // compute node_nbrs <-> query dist in PQ space
             cpu_timer.reset();
-            compute_dists(node_nbrs, nnbrs, dist_scratch);
+            compute_nav_dists(node_nbrs, nnbrs, dist_scratch, p10_block);
             if (stats != nullptr)
             {
                 stats->n_cmps += (uint32_t)nnbrs;
@@ -1629,6 +1693,7 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
         }
 
         hops++;
+        p10_block++;
     }
 
     // re-sort by distance
@@ -1725,6 +1790,28 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
         trace << p07_trace_query_id;
         for (uint32_t id : p07_expanded_nodes)
             trace << ',' << id;
+        trace << '\n';
+    }
+    if (p10_trace_path != nullptr && p10_trace_path[0] != '\0')
+    {
+        std::lock_guard<std::mutex> lock(p07_trace_mutex);
+        std::ofstream trace(p10_trace_path, std::ios::app);
+        trace << p07_trace_query_id << "\te=";
+        for (size_t i = 0; i < p07_expanded_nodes.size(); ++i)
+        {
+            if (i != 0)
+                trace << ',';
+            trace << p07_expanded_nodes[i] << ':' << p10_expanded_scores[i];
+        }
+        trace << "\tv=";
+        bool first = true;
+        for (uint64_t id : visited)
+        {
+            if (!first)
+                trace << ',';
+            trace << id;
+            first = false;
+        }
         trace << '\n';
     }
 }

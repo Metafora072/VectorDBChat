@@ -1,0 +1,7 @@
+# Reproducible binary inputs and bulky per-query artifacts.
+/queries_*.bin
+/results/*_idx_uint32.bin
+/results/*_dists_float.bin
+/traces/*
+/logs/*.log
+/results/smoke_*

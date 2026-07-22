@@ -186,6 +186,10 @@ template <typename T, typename LabelT = uint32_t> class PQFlashIndex
     // chunk_size = chunk size of each dimension chunk
     // pq_tables = float* [[2^8 * [chunk_size]] * _n_chunks]
     uint8_t *data = nullptr;
+    // P10 A0 optional navigation oracle. Loaded only when P10_FULL_DATA is set.
+    T *_p10_full_data = nullptr;
+    size_t _p10_full_num = 0;
+    size_t _p10_full_dim = 0;
     uint64_t _n_chunks;
     FixedChunkPQTable _pq_table;
 

@@ -1,0 +1,221 @@
+{
+  "paired_seeds": [
+    11,
+    22,
+    33
+  ],
+  "expected_seeds": 3,
+  "descriptive_structure_gate": {
+    "criterion": "cross-cell median TIME/SHUFFLE <=0.8, every seed <0.9, median source-mass loss >=0.005",
+    "stable_cells": [
+      {
+        "source": 0,
+        "target": 2,
+        "time_over_shuffle": [
+          0.7196385411574896,
+          0.7203513076753748,
+          0.7203152461530881
+        ],
+        "median_ratio": 0.7203152461530881,
+        "max_ratio": 0.7203513076753748,
+        "median_absolute_mass_loss": 0.06704531249999998
+      },
+      {
+        "source": 0,
+        "target": 3,
+        "time_over_shuffle": [
+          0.6136972411452567,
+          0.6123895470220845,
+          0.6142141300029711
+        ],
+        "median_ratio": 0.6136972411452567,
+        "max_ratio": 0.6142141300029711,
+        "median_absolute_mass_loss": 0.0868640625
+      },
+      {
+        "source": 1,
+        "target": 2,
+        "time_over_shuffle": [
+          0.789358662912416,
+          0.7895981343432372,
+          0.7899365191398808
+        ],
+        "median_ratio": 0.7895981343432372,
+        "max_ratio": 0.7899365191398808,
+        "median_absolute_mass_loss": 0.049796375000000004
+      },
+      {
+        "source": 1,
+        "target": 3,
+        "time_over_shuffle": [
+          0.6589193992980765,
+          0.6581650447304753,
+          0.659895318576906
+        ],
+        "median_ratio": 0.6589193992980765,
+        "max_ratio": 0.659895318576906,
+        "median_absolute_mass_loss": 0.07359299999999999
+      },
+      {
+        "source": 2,
+        "target": 3,
+        "time_over_shuffle": [
+          0.7450216780563169,
+          0.7441045708516737,
+          0.7459257808414744
+        ],
+        "median_ratio": 0.7450216780563169,
+        "max_ratio": 0.7459257808414744,
+        "median_absolute_mass_loss": 0.06118837499999999
+      }
+    ]
+  },
+  "all_cross_cell_summaries": [
+    {
+      "source": 0,
+      "target": 1,
+      "time_over_shuffle": [
+        0.8947642214009468,
+        0.8956280303323295,
+        0.8946915818342398
+      ],
+      "median_ratio": 0.8947642214009468,
+      "max_ratio": 0.8956280303323295,
+      "median_absolute_mass_loss": 0.02604562499999999
+    },
+    {
+      "source": 0,
+      "target": 2,
+      "time_over_shuffle": [
+        0.7196385411574896,
+        0.7203513076753748,
+        0.7203152461530881
+      ],
+      "median_ratio": 0.7203152461530881,
+      "max_ratio": 0.7203513076753748,
+      "median_absolute_mass_loss": 0.06704531249999998
+    },
+    {
+      "source": 0,
+      "target": 3,
+      "time_over_shuffle": [
+        0.6136972411452567,
+        0.6123895470220845,
+        0.6142141300029711
+      ],
+      "median_ratio": 0.6136972411452567,
+      "max_ratio": 0.6142141300029711,
+      "median_absolute_mass_loss": 0.0868640625
+    },
+    {
+      "source": 1,
+      "target": 0,
+      "time_over_shuffle": [
+        1.3751861404862002,
+        1.3751468804298217,
+        1.3734491975336554
+      ],
+      "median_ratio": 1.3751468804298217,
+      "max_ratio": 1.3751861404862002,
+      "median_absolute_mass_loss": -0.09369425
+    },
+    {
+      "source": 1,
+      "target": 2,
+      "time_over_shuffle": [
+        0.789358662912416,
+        0.7895981343432372,
+        0.7899365191398808
+      ],
+      "median_ratio": 0.7895981343432372,
+      "max_ratio": 0.7899365191398808,
+      "median_absolute_mass_loss": 0.049796375000000004
+    },
+    {
+      "source": 1,
+      "target": 3,
+      "time_over_shuffle": [
+        0.6589193992980765,
+        0.6581650447304753,
+        0.659895318576906
+      ],
+      "median_ratio": 0.6589193992980765,
+      "max_ratio": 0.659895318576906,
+      "median_absolute_mass_loss": 0.07359299999999999
+    },
+    {
+      "source": 2,
+      "target": 0,
+      "time_over_shuffle": [
+        1.140659039063132,
+        1.142041186210954,
+        1.1391487632755086
+      ],
+      "median_ratio": 1.140659039063132,
+      "max_ratio": 1.142041186210954,
+      "median_absolute_mass_loss": -0.033377062500000027
+    },
+    {
+      "source": 2,
+      "target": 1,
+      "time_over_shuffle": [
+        1.1085968020320227,
+        1.1073813535301582,
+        1.1086916649684124
+      ],
+      "median_ratio": 1.1085968020320227,
+      "max_ratio": 1.1086916649684124,
+      "median_absolute_mass_loss": -0.02530512500000001
+    },
+    {
+      "source": 2,
+      "target": 3,
+      "time_over_shuffle": [
+        0.7450216780563169,
+        0.7441045708516737,
+        0.7459257808414744
+      ],
+      "median_ratio": 0.7450216780563169,
+      "max_ratio": 0.7459257808414744,
+      "median_absolute_mass_loss": 0.06118837499999999
+    },
+    {
+      "source": 3,
+      "target": 0,
+      "time_over_shuffle": [
+        1.0321783151833384,
+        1.033550036757898,
+        1.0305360078939592
+      ],
+      "median_ratio": 1.0321783151833384,
+      "max_ratio": 1.033550036757898,
+      "median_absolute_mass_loss": -0.007260437499999994
+    },
+    {
+      "source": 3,
+      "target": 1,
+      "time_over_shuffle": [
+        1.0114289306558157,
+        1.010813580065642,
+        1.0104420783773864
+      ],
+      "median_ratio": 1.010813580065642,
+      "max_ratio": 1.0114289306558157,
+      "median_absolute_mass_loss": -0.002333687499999987
+    },
+    {
+      "source": 3,
+      "target": 2,
+      "time_over_shuffle": [
+        1.0409987415460058,
+        1.0415310490387004,
+        1.0419027834454941
+      ],
+      "median_ratio": 1.0415310490387004,
+      "max_ratio": 1.0419027834454941,
+      "median_absolute_mass_loss": -0.010101812499999974
+    }
+  ],
+  "verdict": "GO-P03-QUERY-EFFECT",
+  "note": "This gate only decides whether grouped-query measurement is allowed; it is not a paper-level PASS."
+}
