@@ -1,0 +1,10 @@
+[index.cpp:41:INFO] Getting distance function for metric: l2
+[index.cpp:373:INFO] Building index with normalize_cosine: 0
+[index.cpp:397:INFO] Loading only first 10000 from file.. 
+[utils.h:392:INFO] IndexBuildParameters with L: 96 R: 64 C: 750 alpha: 1.2 num_threads: 8 beam_width: 8 saturate_graph: 1 max_nthreads: 128
+0% of index build completed.[index.cpp:337:INFO] Starting final cleanup..
+[index.cpp:329:INFO] done. Link time: 0.824771s
+[index.cpp:442:INFO] Index built with degree: max:64 avg:64 min:64 count(deg<2):0
+[index.cpp:790:INFO] Memory index tags saved to /home/ubuntu/pz/VectorDB/data/VectorDB/graph_aging_a0_0722/smoke/g0.index.tags
+[ssd_index.cpp:405:INFO] save_from_mem: wrote /home/ubuntu/pz/VectorDB/data/VectorDB/graph_aging_a0_0722/smoke/g0.index
+A0_METRIC {"experiment":"static","label":"smoke_g0","build_seed":101,"update_seed":0,"checkpoint":0,"n_active":10000,"batch_size":0,"nqueries":100,"R":64,"L_build":96,"L_search":96,"recall_at_10":1,"distance_calcs_mean":1405.39,"distance_calcs_p50":1521,"distance_calcs_p95":1881,"distance_calcs_p99":1986,"visited_nodes_mean":98.06,"visited_nodes_p50":98,"visited_nodes_p95":99,"visited_nodes_p99":100,"edge_count":640000,"edge_jaccard_vs_g0":-1,"build_seconds":0.834071673,"update_seconds":0}

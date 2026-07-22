@@ -1,0 +1,3204 @@
+[
+  {
+    "input": {
+      "content": {
+        "build": {
+          "alpha": 1.2000000476837158,
+          "backedge_ratio": 1.0,
+          "data": "/home/ubuntu/pz/VectorDB/data/VectorDB/graph_aging_a0_0722/overfill/combined_1p2m.bin",
+          "data_type": "float32",
+          "distance": "squared_l2",
+          "insert_retry": null,
+          "l_build": 96,
+          "max_degree": 64,
+          "multi_insert": null,
+          "num_threads": 32,
+          "save_path": null,
+          "start_point_strategy": "medoid"
+        },
+        "runbook_params": {
+          "consolidate_threshold": 0.20000000298023224,
+          "dataset_name": "sift-1M-reversible-100",
+          "gt_directory": "sift1m_cycle_gt",
+          "ip_delete_method": {
+            "method": "visited_and_top_k",
+            "params": {
+              "k_value": 20,
+              "l_value": 100
+            }
+          },
+          "ip_delete_num_to_replace": 3,
+          "runbook_path": "./sift1m_cycle_100.yaml"
+        },
+        "search_phase": {
+          "groundtruth": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/groundtruth/sift1m/gt_cp00",
+          "num_threads": [
+            32
+          ],
+          "queries": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift1m/query.bin",
+          "reps": 1,
+          "runs": [
+            {
+              "recall_k": 10,
+              "search_l": [
+                96
+              ],
+              "search_n": 10
+            }
+          ],
+          "search-type": "topk"
+        }
+      },
+      "type": "graph-index-dynamic-run"
+    },
+    "results": [
+      {
+        "Insert": {
+          "insert_latencies": {
+            "mean": 957.934444,
+            "median": 957.0,
+            "minimum": 9,
+            "p90": 1411,
+            "p99": 1785
+          },
+          "kind": "SingleInsert",
+          "total_time": 33517132,
+          "vectors_inserted": 1000000
+        },
+        "manager_overhead": 436727
+      },
+      {
+        "Search": [
+          {
+            "mean_cmps": 3326.53369140625,
+            "mean_hops": 100.97049713134766,
+            "mean_latencies": [
+              1367.8042
+            ],
+            "num_tasks": 32,
+            "p90_latencies": [
+              1610
+            ],
+            "p99_latencies": [
+              6136
+            ],
+            "qps": [
+              18130.459534627364
+            ],
+            "recall": {
+              "average": 0.795,
+              "num_queries": 10000,
+              "recall_k": 10,
+              "recall_n": 10
+            },
+            "search_l": 96,
+            "search_latencies": [
+              551558
+            ],
+            "search_n": 10
+          }
+        ],
+        "manager_overhead": 246344
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 860.1513,
+            "median": 675.0,
+            "minimum": 108,
+            "p90": 1256,
+            "p99": 5341
+          },
+          "kind": "SingleInsert",
+          "total_time": 363200,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4831
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1240.024,
+            "median": 1165.0,
+            "minimum": 272,
+            "p90": 1513,
+            "p99": 5334
+          },
+          "kind": "SingleInsert",
+          "total_time": 546874,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2481
+      },
+      {
+        "Search": [
+          {
+            "mean_cmps": 3313.40576171875,
+            "mean_hops": 100.92389678955078,
+            "mean_latencies": [
+              1287.0327
+            ],
+            "num_tasks": 32,
+            "p90_latencies": [
+              1551
+            ],
+            "p99_latencies": [
+              5665
+            ],
+            "qps": [
+              19319.863524484063
+            ],
+            "recall": {
+              "average": 0.795,
+              "num_queries": 10000,
+              "recall_k": 10,
+              "recall_n": 10
+            },
+            "search_l": 96,
+            "search_latencies": [
+              517602
+            ],
+            "search_n": 10
+          }
+        ],
+        "manager_overhead": 277575
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 810.174,
+            "median": 640.0,
+            "minimum": 101,
+            "p90": 1138,
+            "p99": 5170
+          },
+          "kind": "SingleInsert",
+          "total_time": 382320,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5467
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1311.8637,
+            "median": 1139.0,
+            "minimum": 307,
+            "p90": 1471,
+            "p99": 6497
+          },
+          "kind": "SingleInsert",
+          "total_time": 563677,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4163
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 810.0716,
+            "median": 651.5,
+            "minimum": 104,
+            "p90": 1153,
+            "p99": 5167
+          },
+          "kind": "SingleInsert",
+          "total_time": 382159,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3971
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1257.7367,
+            "median": 1102.0,
+            "minimum": 241,
+            "p90": 1461,
+            "p99": 5575
+          },
+          "kind": "SingleInsert",
+          "total_time": 594887,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3938
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 850.8686,
+            "median": 663.0,
+            "minimum": 104,
+            "p90": 1177,
+            "p99": 5257
+          },
+          "kind": "SingleInsert",
+          "total_time": 418092,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4395
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1334.5877,
+            "median": 1119.0,
+            "minimum": 275,
+            "p90": 1562,
+            "p99": 5716
+          },
+          "kind": "SingleInsert",
+          "total_time": 637144,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4119
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 843.9072,
+            "median": 691.0,
+            "minimum": 122,
+            "p90": 1223,
+            "p99": 5094
+          },
+          "kind": "SingleInsert",
+          "total_time": 402830,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4204
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1275.6809,
+            "median": 1156.0,
+            "minimum": 192,
+            "p90": 1536,
+            "p99": 5471
+          },
+          "kind": "SingleInsert",
+          "total_time": 533997,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2778
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 831.4374,
+            "median": 648.0,
+            "minimum": 98,
+            "p90": 1164,
+            "p99": 5218
+          },
+          "kind": "SingleInsert",
+          "total_time": 422391,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4251
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1264.5834,
+            "median": 1134.0,
+            "minimum": 276,
+            "p90": 1515,
+            "p99": 5520
+          },
+          "kind": "SingleInsert",
+          "total_time": 533934,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4117
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 838.8863,
+            "median": 695.0,
+            "minimum": 105,
+            "p90": 1227,
+            "p99": 5019
+          },
+          "kind": "SingleInsert",
+          "total_time": 389410,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3977
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1324.5118,
+            "median": 1159.0,
+            "minimum": 204,
+            "p90": 1601,
+            "p99": 5592
+          },
+          "kind": "SingleInsert",
+          "total_time": 626530,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3597
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 794.8428,
+            "median": 682.0,
+            "minimum": 87,
+            "p90": 1193,
+            "p99": 4770
+          },
+          "kind": "SingleInsert",
+          "total_time": 327141,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2534
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1218.6189,
+            "median": 1143.0,
+            "minimum": 252,
+            "p90": 1496,
+            "p99": 5263
+          },
+          "kind": "SingleInsert",
+          "total_time": 506779,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 6144
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 740.1796,
+            "median": 631.0,
+            "minimum": 99,
+            "p90": 1108,
+            "p99": 4641
+          },
+          "kind": "SingleInsert",
+          "total_time": 359615,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4416
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1248.8816,
+            "median": 1147.0,
+            "minimum": 283,
+            "p90": 1540,
+            "p99": 5395
+          },
+          "kind": "SingleInsert",
+          "total_time": 563022,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4160
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 927.2257,
+            "median": 674.0,
+            "minimum": 111,
+            "p90": 1217,
+            "p99": 7662
+          },
+          "kind": "SingleInsert",
+          "total_time": 457160,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4067
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1239.2602,
+            "median": 1117.0,
+            "minimum": 246,
+            "p90": 1498,
+            "p99": 5640
+          },
+          "kind": "SingleInsert",
+          "total_time": 659211,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 6102
+      },
+      {
+        "Search": [
+          {
+            "mean_cmps": 3307.946533203125,
+            "mean_hops": 100.90239715576172,
+            "mean_latencies": [
+              1394.8382
+            ],
+            "num_tasks": 32,
+            "p90_latencies": [
+              1777
+            ],
+            "p99_latencies": [
+              8165
+            ],
+            "qps": [
+              16528.40654591013
+            ],
+            "recall": {
+              "average": 0.795,
+              "num_queries": 10000,
+              "recall_k": 10,
+              "recall_n": 10
+            },
+            "search_l": 96,
+            "search_latencies": [
+              605019
+            ],
+            "search_n": 10
+          }
+        ],
+        "manager_overhead": 374737
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 809.2185,
+            "median": 659.0,
+            "minimum": 111,
+            "p90": 1188,
+            "p99": 4963
+          },
+          "kind": "SingleInsert",
+          "total_time": 417184,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4136
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1360.7602,
+            "median": 1148.0,
+            "minimum": 262,
+            "p90": 1604,
+            "p99": 6487
+          },
+          "kind": "SingleInsert",
+          "total_time": 596400,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5005
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 795.9692,
+            "median": 651.0,
+            "minimum": 82,
+            "p90": 1153,
+            "p99": 5048
+          },
+          "kind": "SingleInsert",
+          "total_time": 357644,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2356
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1289.5364,
+            "median": 1137.0,
+            "minimum": 292,
+            "p90": 1548,
+            "p99": 5528
+          },
+          "kind": "SingleInsert",
+          "total_time": 548069,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5489
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 875.7924,
+            "median": 684.0,
+            "minimum": 108,
+            "p90": 1227,
+            "p99": 5379
+          },
+          "kind": "SingleInsert",
+          "total_time": 415473,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2874
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1274.0963,
+            "median": 1129.0,
+            "minimum": 303,
+            "p90": 1528,
+            "p99": 5735
+          },
+          "kind": "SingleInsert",
+          "total_time": 578691,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4347
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 767.7321,
+            "median": 649.0,
+            "minimum": 82,
+            "p90": 1142,
+            "p99": 4859
+          },
+          "kind": "SingleInsert",
+          "total_time": 323126,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 10963
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1259.1472,
+            "median": 1114.0,
+            "minimum": 270,
+            "p90": 1466,
+            "p99": 5467
+          },
+          "kind": "SingleInsert",
+          "total_time": 700708,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4206
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 883.4283,
+            "median": 661.5,
+            "minimum": 103,
+            "p90": 1243,
+            "p99": 5367
+          },
+          "kind": "SingleInsert",
+          "total_time": 404990,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4555
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1374.5587,
+            "median": 1207.0,
+            "minimum": 186,
+            "p90": 1621,
+            "p99": 5841
+          },
+          "kind": "SingleInsert",
+          "total_time": 585110,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4287
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 834.3475,
+            "median": 673.0,
+            "minimum": 72,
+            "p90": 1194,
+            "p99": 5263
+          },
+          "kind": "SingleInsert",
+          "total_time": 367184,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4264
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1320.9934,
+            "median": 1149.0,
+            "minimum": 290,
+            "p90": 1542,
+            "p99": 5621
+          },
+          "kind": "SingleInsert",
+          "total_time": 530580,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4275
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 819.876,
+            "median": 651.0,
+            "minimum": 99,
+            "p90": 1167,
+            "p99": 5220
+          },
+          "kind": "SingleInsert",
+          "total_time": 396233,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4405
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1295.0612,
+            "median": 1153.0,
+            "minimum": 294,
+            "p90": 1536,
+            "p99": 5737
+          },
+          "kind": "SingleInsert",
+          "total_time": 553246,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4824
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 804.2129,
+            "median": 649.0,
+            "minimum": 101,
+            "p90": 1156,
+            "p99": 5208
+          },
+          "kind": "SingleInsert",
+          "total_time": 382312,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4181
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1291.7811,
+            "median": 1187.0,
+            "minimum": 259,
+            "p90": 1557,
+            "p99": 5532
+          },
+          "kind": "SingleInsert",
+          "total_time": 525115,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4186
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 842.9709,
+            "median": 646.0,
+            "minimum": 82,
+            "p90": 1180,
+            "p99": 5421
+          },
+          "kind": "SingleInsert",
+          "total_time": 351042,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2085
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1114.1666,
+            "median": 1069.0,
+            "minimum": 236,
+            "p90": 1391,
+            "p99": 4943
+          },
+          "kind": "SingleInsert",
+          "total_time": 428171,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3192
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 813.0244,
+            "median": 636.0,
+            "minimum": 101,
+            "p90": 1118,
+            "p99": 5228
+          },
+          "kind": "SingleInsert",
+          "total_time": 342429,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 1791
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1320.4904,
+            "median": 1125.0,
+            "minimum": 282,
+            "p90": 1557,
+            "p99": 5695
+          },
+          "kind": "SingleInsert",
+          "total_time": 585981,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3573
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 776.6594,
+            "median": 630.5,
+            "minimum": 99,
+            "p90": 1111,
+            "p99": 5125
+          },
+          "kind": "SingleInsert",
+          "total_time": 335463,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3916
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1298.1718,
+            "median": 1147.0,
+            "minimum": 256,
+            "p90": 1536,
+            "p99": 5632
+          },
+          "kind": "SingleInsert",
+          "total_time": 571345,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 6050
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 852.6034,
+            "median": 664.0,
+            "minimum": 80,
+            "p90": 1193,
+            "p99": 5467
+          },
+          "kind": "SingleInsert",
+          "total_time": 373067,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3731
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1361.6185,
+            "median": 1146.0,
+            "minimum": 225,
+            "p90": 1585,
+            "p99": 6225
+          },
+          "kind": "SingleInsert",
+          "total_time": 592383,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3850
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 950.322,
+            "median": 670.0,
+            "minimum": 89,
+            "p90": 1228,
+            "p99": 6585
+          },
+          "kind": "SingleInsert",
+          "total_time": 396676,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3495
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1372.4388,
+            "median": 1190.0,
+            "minimum": 257,
+            "p90": 1603,
+            "p99": 6168
+          },
+          "kind": "SingleInsert",
+          "total_time": 553511,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4114
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 913.5404,
+            "median": 674.5,
+            "minimum": 113,
+            "p90": 1230,
+            "p99": 5489
+          },
+          "kind": "SingleInsert",
+          "total_time": 405504,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3804
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1314.9394,
+            "median": 1135.0,
+            "minimum": 168,
+            "p90": 1532,
+            "p99": 7376
+          },
+          "kind": "SingleInsert",
+          "total_time": 561298,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3871
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 877.6851,
+            "median": 669.0,
+            "minimum": 115,
+            "p90": 1215,
+            "p99": 5306
+          },
+          "kind": "SingleInsert",
+          "total_time": 378550,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3805
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1347.2618,
+            "median": 1195.0,
+            "minimum": 267,
+            "p90": 1623,
+            "p99": 5703
+          },
+          "kind": "SingleInsert",
+          "total_time": 542048,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3903
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 931.6766,
+            "median": 698.0,
+            "minimum": 108,
+            "p90": 1257,
+            "p99": 5392
+          },
+          "kind": "SingleInsert",
+          "total_time": 396574,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2008
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1401.3832,
+            "median": 1239.0,
+            "minimum": 272,
+            "p90": 1762,
+            "p99": 5641
+          },
+          "kind": "SingleInsert",
+          "total_time": 598006,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4018
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 885.3512,
+            "median": 772.0,
+            "minimum": 120,
+            "p90": 1379,
+            "p99": 4840
+          },
+          "kind": "SingleInsert",
+          "total_time": 351496,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5075
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1505.8141,
+            "median": 1381.5,
+            "minimum": 337,
+            "p90": 1963,
+            "p99": 5957
+          },
+          "kind": "SingleInsert",
+          "total_time": 601882,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2825
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 871.2749,
+            "median": 809.0,
+            "minimum": 103,
+            "p90": 1474,
+            "p99": 1939
+          },
+          "kind": "SingleInsert",
+          "total_time": 345262,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5660
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1397.85,
+            "median": 1359.0,
+            "minimum": 293,
+            "p90": 1843,
+            "p99": 4989
+          },
+          "kind": "SingleInsert",
+          "total_time": 535417,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3247
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 862.6179,
+            "median": 776.0,
+            "minimum": 105,
+            "p90": 1383,
+            "p99": 2603
+          },
+          "kind": "SingleInsert",
+          "total_time": 328128,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3013
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1360.3285,
+            "median": 1323.0,
+            "minimum": 331,
+            "p90": 1770,
+            "p99": 5002
+          },
+          "kind": "SingleInsert",
+          "total_time": 574842,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4357
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 893.916,
+            "median": 793.0,
+            "minimum": 133,
+            "p90": 1453,
+            "p99": 3462
+          },
+          "kind": "SingleInsert",
+          "total_time": 392240,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 7865
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1364.0112,
+            "median": 1313.0,
+            "minimum": 330,
+            "p90": 1794,
+            "p99": 5079
+          },
+          "kind": "SingleInsert",
+          "total_time": 521521,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4395
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 862.7321,
+            "median": 773.0,
+            "minimum": 99,
+            "p90": 1366,
+            "p99": 3355
+          },
+          "kind": "SingleInsert",
+          "total_time": 317403,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4534
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1394.1371,
+            "median": 1330.0,
+            "minimum": 290,
+            "p90": 1831,
+            "p99": 4927
+          },
+          "kind": "SingleInsert",
+          "total_time": 556562,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4748
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 905.7845,
+            "median": 797.0,
+            "minimum": 101,
+            "p90": 1428,
+            "p99": 4714
+          },
+          "kind": "SingleInsert",
+          "total_time": 374358,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2451
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1379.3143,
+            "median": 1337.0,
+            "minimum": 345,
+            "p90": 1810,
+            "p99": 4538
+          },
+          "kind": "SingleInsert",
+          "total_time": 520492,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4460
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 913.5749,
+            "median": 792.0,
+            "minimum": 100,
+            "p90": 1440,
+            "p99": 4389
+          },
+          "kind": "SingleInsert",
+          "total_time": 352745,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5546
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1338.7017,
+            "median": 1324.0,
+            "minimum": 295,
+            "p90": 1733,
+            "p99": 4444
+          },
+          "kind": "SingleInsert",
+          "total_time": 489280,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 6046
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 865.1549,
+            "median": 809.5,
+            "minimum": 100,
+            "p90": 1418,
+            "p99": 1845
+          },
+          "kind": "SingleInsert",
+          "total_time": 327847,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4365
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1345.6666,
+            "median": 1359.0,
+            "minimum": 322,
+            "p90": 1789,
+            "p99": 2153
+          },
+          "kind": "SingleInsert",
+          "total_time": 561070,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2413
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 829.722,
+            "median": 773.0,
+            "minimum": 110,
+            "p90": 1354,
+            "p99": 1768
+          },
+          "kind": "SingleInsert",
+          "total_time": 297165,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2544
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1298.7638,
+            "median": 1297.0,
+            "minimum": 299,
+            "p90": 1800,
+            "p99": 2167
+          },
+          "kind": "SingleInsert",
+          "total_time": 561756,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5172
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 848.6443,
+            "median": 768.0,
+            "minimum": 111,
+            "p90": 1366,
+            "p99": 1921
+          },
+          "kind": "SingleInsert",
+          "total_time": 325741,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2556
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1320.9662,
+            "median": 1332.0,
+            "minimum": 289,
+            "p90": 1737,
+            "p99": 2094
+          },
+          "kind": "SingleInsert",
+          "total_time": 502224,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2309
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 841.5754,
+            "median": 781.0,
+            "minimum": 120,
+            "p90": 1384,
+            "p99": 1796
+          },
+          "kind": "SingleInsert",
+          "total_time": 316608,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4545
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1330.891,
+            "median": 1346.0,
+            "minimum": 340,
+            "p90": 1765,
+            "p99": 2153
+          },
+          "kind": "SingleInsert",
+          "total_time": 523446,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2417
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 745.9611,
+            "median": 685.0,
+            "minimum": 78,
+            "p90": 1264,
+            "p99": 1624
+          },
+          "kind": "SingleInsert",
+          "total_time": 281812,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4001
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1205.1476,
+            "median": 1225.0,
+            "minimum": 213,
+            "p90": 1632,
+            "p99": 1900
+          },
+          "kind": "SingleInsert",
+          "total_time": 466314,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 1979
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 750.3173,
+            "median": 693.0,
+            "minimum": 98,
+            "p90": 1240,
+            "p99": 1606
+          },
+          "kind": "SingleInsert",
+          "total_time": 276153,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3806
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1309.8672,
+            "median": 1328.0,
+            "minimum": 274,
+            "p90": 1722,
+            "p99": 2008
+          },
+          "kind": "SingleInsert",
+          "total_time": 496784,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2462
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 788.9776,
+            "median": 727.0,
+            "minimum": 108,
+            "p90": 1315,
+            "p99": 1736
+          },
+          "kind": "SingleInsert",
+          "total_time": 314210,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2841
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1209.6803,
+            "median": 1225.0,
+            "minimum": 208,
+            "p90": 1650,
+            "p99": 1881
+          },
+          "kind": "SingleInsert",
+          "total_time": 462898,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2044
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 749.087,
+            "median": 702.0,
+            "minimum": 101,
+            "p90": 1241,
+            "p99": 1596
+          },
+          "kind": "SingleInsert",
+          "total_time": 302334,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3545
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1212.5285,
+            "median": 1222.0,
+            "minimum": 269,
+            "p90": 1669,
+            "p99": 1938
+          },
+          "kind": "SingleInsert",
+          "total_time": 471907,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2385
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 745.8482,
+            "median": 695.0,
+            "minimum": 96,
+            "p90": 1258,
+            "p99": 1601
+          },
+          "kind": "SingleInsert",
+          "total_time": 284628,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4161
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1197.0466,
+            "median": 1215.0,
+            "minimum": 266,
+            "p90": 1642,
+            "p99": 1949
+          },
+          "kind": "SingleInsert",
+          "total_time": 467406,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5924
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 733.1916,
+            "median": 685.0,
+            "minimum": 82,
+            "p90": 1196,
+            "p99": 1605
+          },
+          "kind": "SingleInsert",
+          "total_time": 281287,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2405
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1153.1296,
+            "median": 1176.0,
+            "minimum": 284,
+            "p90": 1564,
+            "p99": 1820
+          },
+          "kind": "SingleInsert",
+          "total_time": 455476,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2254
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 736.9849,
+            "median": 688.0,
+            "minimum": 109,
+            "p90": 1210,
+            "p99": 1574
+          },
+          "kind": "SingleInsert",
+          "total_time": 282048,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2505
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1160.8212,
+            "median": 1182.5,
+            "minimum": 226,
+            "p90": 1579,
+            "p99": 1859
+          },
+          "kind": "SingleInsert",
+          "total_time": 463420,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2221
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 727.7371,
+            "median": 681.0,
+            "minimum": 104,
+            "p90": 1208,
+            "p99": 1552
+          },
+          "kind": "SingleInsert",
+          "total_time": 278235,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2640
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1190.6671,
+            "median": 1195.0,
+            "minimum": 217,
+            "p90": 1631,
+            "p99": 2053
+          },
+          "kind": "SingleInsert",
+          "total_time": 512037,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2817
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 721.7874,
+            "median": 679.0,
+            "minimum": 108,
+            "p90": 1188,
+            "p99": 1535
+          },
+          "kind": "SingleInsert",
+          "total_time": 270792,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2214
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1190.8435,
+            "median": 1209.0,
+            "minimum": 261,
+            "p90": 1616,
+            "p99": 1988
+          },
+          "kind": "SingleInsert",
+          "total_time": 507555,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2294
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 732.3436,
+            "median": 687.0,
+            "minimum": 108,
+            "p90": 1197,
+            "p99": 1631
+          },
+          "kind": "SingleInsert",
+          "total_time": 314351,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2921
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1205.7013,
+            "median": 1220.0,
+            "minimum": 291,
+            "p90": 1662,
+            "p99": 1941
+          },
+          "kind": "SingleInsert",
+          "total_time": 499325,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3536
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 741.6454,
+            "median": 697.0,
+            "minimum": 106,
+            "p90": 1243,
+            "p99": 1572
+          },
+          "kind": "SingleInsert",
+          "total_time": 292723,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3931
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1084.4266,
+            "median": 1102.0,
+            "minimum": 244,
+            "p90": 1534,
+            "p99": 1755
+          },
+          "kind": "SingleInsert",
+          "total_time": 459225,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2911
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 647.2045,
+            "median": 597.0,
+            "minimum": 81,
+            "p90": 1100,
+            "p99": 1456
+          },
+          "kind": "SingleInsert",
+          "total_time": 279358,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3057
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1083.6615,
+            "median": 1099.0,
+            "minimum": 242,
+            "p90": 1528,
+            "p99": 1766
+          },
+          "kind": "SingleInsert",
+          "total_time": 462911,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3050
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 642.9535,
+            "median": 601.0,
+            "minimum": 83,
+            "p90": 1088,
+            "p99": 1421
+          },
+          "kind": "SingleInsert",
+          "total_time": 297421,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3167
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1156.5444,
+            "median": 1161.0,
+            "minimum": 247,
+            "p90": 1647,
+            "p99": 1916
+          },
+          "kind": "SingleInsert",
+          "total_time": 494107,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4795
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 795.1003,
+            "median": 748.0,
+            "minimum": 103,
+            "p90": 1321,
+            "p99": 1685
+          },
+          "kind": "SingleInsert",
+          "total_time": 326030,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 8211
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1277.0063,
+            "median": 1297.5,
+            "minimum": 317,
+            "p90": 1753,
+            "p99": 2046
+          },
+          "kind": "SingleInsert",
+          "total_time": 501530,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 6161
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 811.4114,
+            "median": 759.0,
+            "minimum": 83,
+            "p90": 1365,
+            "p99": 1789
+          },
+          "kind": "SingleInsert",
+          "total_time": 321254,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4080
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1237.9542,
+            "median": 1271.0,
+            "minimum": 222,
+            "p90": 1671,
+            "p99": 1922
+          },
+          "kind": "SingleInsert",
+          "total_time": 489020,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3943
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 779.0412,
+            "median": 738.0,
+            "minimum": 95,
+            "p90": 1289,
+            "p99": 1633
+          },
+          "kind": "SingleInsert",
+          "total_time": 309997,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5571
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1289.6252,
+            "median": 1322.0,
+            "minimum": 294,
+            "p90": 1743,
+            "p99": 1984
+          },
+          "kind": "SingleInsert",
+          "total_time": 501149,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3728
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 776.6485,
+            "median": 730.0,
+            "minimum": 96,
+            "p90": 1298,
+            "p99": 1654
+          },
+          "kind": "SingleInsert",
+          "total_time": 318257,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4940
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1265.0079,
+            "median": 1295.0,
+            "minimum": 298,
+            "p90": 1711,
+            "p99": 1949
+          },
+          "kind": "SingleInsert",
+          "total_time": 493368,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3277
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 786.0474,
+            "median": 741.0,
+            "minimum": 81,
+            "p90": 1296,
+            "p99": 1633
+          },
+          "kind": "SingleInsert",
+          "total_time": 283969,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3576
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1250.627,
+            "median": 1281.0,
+            "minimum": 278,
+            "p90": 1695,
+            "p99": 1945
+          },
+          "kind": "SingleInsert",
+          "total_time": 496137,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5769
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 782.2126,
+            "median": 730.0,
+            "minimum": 106,
+            "p90": 1294,
+            "p99": 1652
+          },
+          "kind": "SingleInsert",
+          "total_time": 347415,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5703
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1255.4954,
+            "median": 1285.0,
+            "minimum": 231,
+            "p90": 1685,
+            "p99": 1948
+          },
+          "kind": "SingleInsert",
+          "total_time": 500308,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 6278
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 775.3089,
+            "median": 731.5,
+            "minimum": 102,
+            "p90": 1291,
+            "p99": 1641
+          },
+          "kind": "SingleInsert",
+          "total_time": 285441,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3673
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1258.9612,
+            "median": 1280.0,
+            "minimum": 285,
+            "p90": 1722,
+            "p99": 2007
+          },
+          "kind": "SingleInsert",
+          "total_time": 518453,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3262
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 776.9082,
+            "median": 727.0,
+            "minimum": 96,
+            "p90": 1295,
+            "p99": 1632
+          },
+          "kind": "SingleInsert",
+          "total_time": 290668,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 7307
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1254.5037,
+            "median": 1282.5,
+            "minimum": 231,
+            "p90": 1709,
+            "p99": 1956
+          },
+          "kind": "SingleInsert",
+          "total_time": 519401,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3057
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 773.2921,
+            "median": 727.0,
+            "minimum": 92,
+            "p90": 1283,
+            "p99": 1640
+          },
+          "kind": "SingleInsert",
+          "total_time": 293386,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4780
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1283.9362,
+            "median": 1307.0,
+            "minimum": 303,
+            "p90": 1755,
+            "p99": 2105
+          },
+          "kind": "SingleInsert",
+          "total_time": 521731,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4085
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 771.4145,
+            "median": 722.0,
+            "minimum": 81,
+            "p90": 1282,
+            "p99": 1637
+          },
+          "kind": "SingleInsert",
+          "total_time": 305264,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4443
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1268.0062,
+            "median": 1295.0,
+            "minimum": 326,
+            "p90": 1704,
+            "p99": 1947
+          },
+          "kind": "SingleInsert",
+          "total_time": 491318,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3358
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 780.8588,
+            "median": 730.0,
+            "minimum": 119,
+            "p90": 1296,
+            "p99": 1683
+          },
+          "kind": "SingleInsert",
+          "total_time": 305556,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 7030
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1251.3067,
+            "median": 1279.0,
+            "minimum": 299,
+            "p90": 1683,
+            "p99": 1942
+          },
+          "kind": "SingleInsert",
+          "total_time": 496876,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 8023
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 764.7823,
+            "median": 716.0,
+            "minimum": 99,
+            "p90": 1269,
+            "p99": 1652
+          },
+          "kind": "SingleInsert",
+          "total_time": 280537,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3786
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1252.7171,
+            "median": 1272.0,
+            "minimum": 228,
+            "p90": 1743,
+            "p99": 1986
+          },
+          "kind": "SingleInsert",
+          "total_time": 497370,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3122
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 776.1512,
+            "median": 720.0,
+            "minimum": 100,
+            "p90": 1282,
+            "p99": 1662
+          },
+          "kind": "SingleInsert",
+          "total_time": 324962,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5822
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1249.8633,
+            "median": 1275.0,
+            "minimum": 348,
+            "p90": 1683,
+            "p99": 1957
+          },
+          "kind": "SingleInsert",
+          "total_time": 514272,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3958
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 775.9915,
+            "median": 723.0,
+            "minimum": 97,
+            "p90": 1285,
+            "p99": 1690
+          },
+          "kind": "SingleInsert",
+          "total_time": 311918,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5479
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1279.2668,
+            "median": 1300.0,
+            "minimum": 262,
+            "p90": 1734,
+            "p99": 1987
+          },
+          "kind": "SingleInsert",
+          "total_time": 496943,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5678
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 774.9418,
+            "median": 726.0,
+            "minimum": 96,
+            "p90": 1282,
+            "p99": 1628
+          },
+          "kind": "SingleInsert",
+          "total_time": 293484,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 6067
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1256.3131,
+            "median": 1282.0,
+            "minimum": 291,
+            "p90": 1719,
+            "p99": 1978
+          },
+          "kind": "SingleInsert",
+          "total_time": 499907,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3152
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 767.2602,
+            "median": 719.0,
+            "minimum": 95,
+            "p90": 1284,
+            "p99": 1623
+          },
+          "kind": "SingleInsert",
+          "total_time": 296257,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3066
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1259.3797,
+            "median": 1284.0,
+            "minimum": 314,
+            "p90": 1732,
+            "p99": 1989
+          },
+          "kind": "SingleInsert",
+          "total_time": 506766,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5482
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 770.4606,
+            "median": 719.0,
+            "minimum": 111,
+            "p90": 1282,
+            "p99": 1670
+          },
+          "kind": "SingleInsert",
+          "total_time": 289620,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5227
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1297.1823,
+            "median": 1337.5,
+            "minimum": 242,
+            "p90": 1734,
+            "p99": 1980
+          },
+          "kind": "SingleInsert",
+          "total_time": 507589,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5691
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 803.4996,
+            "median": 753.0,
+            "minimum": 93,
+            "p90": 1349,
+            "p99": 1712
+          },
+          "kind": "SingleInsert",
+          "total_time": 291061,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5230
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1308.8904,
+            "median": 1356.0,
+            "minimum": 279,
+            "p90": 1760,
+            "p99": 1995
+          },
+          "kind": "SingleInsert",
+          "total_time": 497849,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5156
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 803.1975,
+            "median": 751.0,
+            "minimum": 86,
+            "p90": 1341,
+            "p99": 1669
+          },
+          "kind": "SingleInsert",
+          "total_time": 298512,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2802
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1338.1338,
+            "median": 1397.0,
+            "minimum": 334,
+            "p90": 1759,
+            "p99": 2002
+          },
+          "kind": "SingleInsert",
+          "total_time": 491249,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4575
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 797.5883,
+            "median": 750.0,
+            "minimum": 97,
+            "p90": 1341,
+            "p99": 1648
+          },
+          "kind": "SingleInsert",
+          "total_time": 301217,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3356
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1340.6877,
+            "median": 1393.0,
+            "minimum": 259,
+            "p90": 1788,
+            "p99": 2038
+          },
+          "kind": "SingleInsert",
+          "total_time": 513901,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3018
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 787.3188,
+            "median": 736.0,
+            "minimum": 82,
+            "p90": 1319,
+            "p99": 1670
+          },
+          "kind": "SingleInsert",
+          "total_time": 292996,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2875
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1315.9232,
+            "median": 1349.0,
+            "minimum": 232,
+            "p90": 1757,
+            "p99": 2060
+          },
+          "kind": "SingleInsert",
+          "total_time": 499027,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2817
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 783.3906,
+            "median": 729.0,
+            "minimum": 96,
+            "p90": 1322,
+            "p99": 1644
+          },
+          "kind": "SingleInsert",
+          "total_time": 294561,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3563
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1295.6181,
+            "median": 1334.0,
+            "minimum": 250,
+            "p90": 1734,
+            "p99": 2014
+          },
+          "kind": "SingleInsert",
+          "total_time": 512959,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2901
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 762.8489,
+            "median": 714.0,
+            "minimum": 96,
+            "p90": 1262,
+            "p99": 1602
+          },
+          "kind": "SingleInsert",
+          "total_time": 283226,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4908
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1184.2187,
+            "median": 1208.0,
+            "minimum": 241,
+            "p90": 1631,
+            "p99": 1869
+          },
+          "kind": "SingleInsert",
+          "total_time": 471094,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3308
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 712.3131,
+            "median": 669.0,
+            "minimum": 92,
+            "p90": 1205,
+            "p99": 1507
+          },
+          "kind": "SingleInsert",
+          "total_time": 264147,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4390
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1154.0568,
+            "median": 1203.0,
+            "minimum": 238,
+            "p90": 1591,
+            "p99": 1792
+          },
+          "kind": "SingleInsert",
+          "total_time": 452702,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4197
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 705.4745,
+            "median": 657.0,
+            "minimum": 72,
+            "p90": 1199,
+            "p99": 1487
+          },
+          "kind": "SingleInsert",
+          "total_time": 261635,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4395
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1158.0913,
+            "median": 1205.5,
+            "minimum": 261,
+            "p90": 1582,
+            "p99": 1782
+          },
+          "kind": "SingleInsert",
+          "total_time": 450283,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4530
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 673.8481,
+            "median": 629.0,
+            "minimum": 73,
+            "p90": 1145,
+            "p99": 1439
+          },
+          "kind": "SingleInsert",
+          "total_time": 257151,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4882
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1276.325,
+            "median": 1316.5,
+            "minimum": 318,
+            "p90": 1670,
+            "p99": 1931
+          },
+          "kind": "SingleInsert",
+          "total_time": 505695,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 7672
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 817.5777,
+            "median": 773.0,
+            "minimum": 83,
+            "p90": 1357,
+            "p99": 1725
+          },
+          "kind": "SingleInsert",
+          "total_time": 323174,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5532
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1321.0065,
+            "median": 1360.0,
+            "minimum": 319,
+            "p90": 1755,
+            "p99": 2042
+          },
+          "kind": "SingleInsert",
+          "total_time": 536437,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 7570
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 811.8771,
+            "median": 767.0,
+            "minimum": 79,
+            "p90": 1360,
+            "p99": 1674
+          },
+          "kind": "SingleInsert",
+          "total_time": 288379,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4191
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1285.2096,
+            "median": 1322.5,
+            "minimum": 300,
+            "p90": 1716,
+            "p99": 1981
+          },
+          "kind": "SingleInsert",
+          "total_time": 482853,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3284
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 786.4641,
+            "median": 738.0,
+            "minimum": 77,
+            "p90": 1321,
+            "p99": 1637
+          },
+          "kind": "SingleInsert",
+          "total_time": 282554,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4363
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1330.9166,
+            "median": 1369.0,
+            "minimum": 273,
+            "p90": 1772,
+            "p99": 2029
+          },
+          "kind": "SingleInsert",
+          "total_time": 522040,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3839
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 786.869,
+            "median": 737.0,
+            "minimum": 88,
+            "p90": 1312,
+            "p99": 1659
+          },
+          "kind": "SingleInsert",
+          "total_time": 295118,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4045
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1291.7096,
+            "median": 1339.0,
+            "minimum": 345,
+            "p90": 1731,
+            "p99": 2009
+          },
+          "kind": "SingleInsert",
+          "total_time": 519723,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 7322
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 778.1885,
+            "median": 729.0,
+            "minimum": 92,
+            "p90": 1297,
+            "p99": 1630
+          },
+          "kind": "SingleInsert",
+          "total_time": 301163,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 6871
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1300.0757,
+            "median": 1351.5,
+            "minimum": 287,
+            "p90": 1715,
+            "p99": 1977
+          },
+          "kind": "SingleInsert",
+          "total_time": 511369,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 6054
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 802.1679,
+            "median": 754.0,
+            "minimum": 93,
+            "p90": 1351,
+            "p99": 1724
+          },
+          "kind": "SingleInsert",
+          "total_time": 328262,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 6686
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1313.7519,
+            "median": 1355.0,
+            "minimum": 307,
+            "p90": 1752,
+            "p99": 2024
+          },
+          "kind": "SingleInsert",
+          "total_time": 535162,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3913
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 785.925,
+            "median": 736.0,
+            "minimum": 87,
+            "p90": 1324,
+            "p99": 1660
+          },
+          "kind": "SingleInsert",
+          "total_time": 298539,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 8039
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1335.6938,
+            "median": 1390.0,
+            "minimum": 284,
+            "p90": 1789,
+            "p99": 2064
+          },
+          "kind": "SingleInsert",
+          "total_time": 521640,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 7171
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 812.9064,
+            "median": 767.0,
+            "minimum": 92,
+            "p90": 1351,
+            "p99": 1683
+          },
+          "kind": "SingleInsert",
+          "total_time": 298994,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 6585
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1326.5058,
+            "median": 1382.0,
+            "minimum": 269,
+            "p90": 1751,
+            "p99": 2018
+          },
+          "kind": "SingleInsert",
+          "total_time": 522468,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 6280
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 792.3149,
+            "median": 745.0,
+            "minimum": 86,
+            "p90": 1323,
+            "p99": 1646
+          },
+          "kind": "SingleInsert",
+          "total_time": 291732,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3837
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1315.5609,
+            "median": 1359.0,
+            "minimum": 289,
+            "p90": 1775,
+            "p99": 2044
+          },
+          "kind": "SingleInsert",
+          "total_time": 522257,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 7574
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 802.1586,
+            "median": 758.0,
+            "minimum": 81,
+            "p90": 1330,
+            "p99": 1647
+          },
+          "kind": "SingleInsert",
+          "total_time": 299365,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 8929
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1315.9535,
+            "median": 1356.0,
+            "minimum": 299,
+            "p90": 1786,
+            "p99": 2078
+          },
+          "kind": "SingleInsert",
+          "total_time": 508337,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 7246
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 783.6809,
+            "median": 732.0,
+            "minimum": 79,
+            "p90": 1320,
+            "p99": 1663
+          },
+          "kind": "SingleInsert",
+          "total_time": 294967,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 6121
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1294.6673,
+            "median": 1326.0,
+            "minimum": 217,
+            "p90": 1769,
+            "p99": 2058
+          },
+          "kind": "SingleInsert",
+          "total_time": 526084,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3737
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 817.0877,
+            "median": 759.0,
+            "minimum": 92,
+            "p90": 1391,
+            "p99": 1794
+          },
+          "kind": "SingleInsert",
+          "total_time": 372642,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 7528
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1317.0017,
+            "median": 1347.0,
+            "minimum": 286,
+            "p90": 1802,
+            "p99": 2137
+          },
+          "kind": "SingleInsert",
+          "total_time": 536828,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 7481
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 800.6643,
+            "median": 751.0,
+            "minimum": 79,
+            "p90": 1349,
+            "p99": 1663
+          },
+          "kind": "SingleInsert",
+          "total_time": 298568,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 6915
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1278.2339,
+            "median": 1317.0,
+            "minimum": 256,
+            "p90": 1746,
+            "p99": 2018
+          },
+          "kind": "SingleInsert",
+          "total_time": 520044,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 6824
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 809.8907,
+            "median": 757.0,
+            "minimum": 86,
+            "p90": 1359,
+            "p99": 1722
+          },
+          "kind": "SingleInsert",
+          "total_time": 311899,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3914
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1305.5208,
+            "median": 1338.0,
+            "minimum": 291,
+            "p90": 1787,
+            "p99": 2077
+          },
+          "kind": "SingleInsert",
+          "total_time": 525638,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3464
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 813.7113,
+            "median": 758.0,
+            "minimum": 94,
+            "p90": 1364,
+            "p99": 1748
+          },
+          "kind": "SingleInsert",
+          "total_time": 360980,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3538
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1248.0067,
+            "median": 1264.5,
+            "minimum": 266,
+            "p90": 1708,
+            "p99": 2004
+          },
+          "kind": "SingleInsert",
+          "total_time": 520600,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4230
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 802.7347,
+            "median": 750.0,
+            "minimum": 96,
+            "p90": 1342,
+            "p99": 1678
+          },
+          "kind": "SingleInsert",
+          "total_time": 299923,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 6113
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1122.1132,
+            "median": 1122.0,
+            "minimum": 233,
+            "p90": 1592,
+            "p99": 1838
+          },
+          "kind": "SingleInsert",
+          "total_time": 457201,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3971
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 760.3857,
+            "median": 703.5,
+            "minimum": 108,
+            "p90": 1260,
+            "p99": 1630
+          },
+          "kind": "SingleInsert",
+          "total_time": 293121,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2638
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1250.9863,
+            "median": 1278.0,
+            "minimum": 288,
+            "p90": 1690,
+            "p99": 1974
+          },
+          "kind": "SingleInsert",
+          "total_time": 486178,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 5544
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 752.4223,
+            "median": 709.0,
+            "minimum": 96,
+            "p90": 1259,
+            "p99": 1586
+          },
+          "kind": "SingleInsert",
+          "total_time": 275765,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3479
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1213.414,
+            "median": 1254.0,
+            "minimum": 258,
+            "p90": 1647,
+            "p99": 1887
+          },
+          "kind": "SingleInsert",
+          "total_time": 493489,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2896
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 773.499,
+            "median": 729.0,
+            "minimum": 81,
+            "p90": 1268,
+            "p99": 1608
+          },
+          "kind": "SingleInsert",
+          "total_time": 284844,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3146
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1207.6079,
+            "median": 1241.0,
+            "minimum": 232,
+            "p90": 1637,
+            "p99": 1844
+          },
+          "kind": "SingleInsert",
+          "total_time": 465478,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4271
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 770.189,
+            "median": 717.0,
+            "minimum": 87,
+            "p90": 1283,
+            "p99": 1634
+          },
+          "kind": "SingleInsert",
+          "total_time": 304582,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 7048
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1252.0202,
+            "median": 1283.0,
+            "minimum": 218,
+            "p90": 1706,
+            "p99": 1942
+          },
+          "kind": "SingleInsert",
+          "total_time": 498235,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3738
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 769.5616,
+            "median": 717.5,
+            "minimum": 97,
+            "p90": 1292,
+            "p99": 1619
+          },
+          "kind": "SingleInsert",
+          "total_time": 292076,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 4323
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1259.2155,
+            "median": 1297.0,
+            "minimum": 279,
+            "p90": 1699,
+            "p99": 1927
+          },
+          "kind": "SingleInsert",
+          "total_time": 484356,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2865
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 769.7036,
+            "median": 721.0,
+            "minimum": 92,
+            "p90": 1281,
+            "p99": 1660
+          },
+          "kind": "SingleInsert",
+          "total_time": 294170,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 7070
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1201.6168,
+            "median": 1220.0,
+            "minimum": 279,
+            "p90": 1649,
+            "p99": 1892
+          },
+          "kind": "SingleInsert",
+          "total_time": 480940,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3062
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 751.1005,
+            "median": 706.0,
+            "minimum": 113,
+            "p90": 1241,
+            "p99": 1597
+          },
+          "kind": "SingleInsert",
+          "total_time": 302820,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3594
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1218.4531,
+            "median": 1247.5,
+            "minimum": 238,
+            "p90": 1673,
+            "p99": 1905
+          },
+          "kind": "SingleInsert",
+          "total_time": 483194,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3225
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 762.0168,
+            "median": 715.0,
+            "minimum": 100,
+            "p90": 1266,
+            "p99": 1605
+          },
+          "kind": "SingleInsert",
+          "total_time": 277363,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 3139
+      },
+      {
+        "Replace": {
+          "insert_latencies": {
+            "mean": 1214.4417,
+            "median": 1234.0,
+            "minimum": 255,
+            "p90": 1660,
+            "p99": 1919
+          },
+          "kind": "SingleInsert",
+          "total_time": 496476,
+          "vectors_inserted": 10000
+        },
+        "manager_overhead": 2862
+      },
+      {
+        "Search": [
+          {
+            "mean_cmps": 3324.1083984375,
+            "mean_hops": 100.99669647216797,
+            "mean_latencies": [
+              1174.6952
+            ],
+            "num_tasks": 32,
+            "p90_latencies": [
+              1569
+            ],
+            "p99_latencies": [
+              1842
+            ],
+            "qps": [
+              23470.81755898803
+            ],
+            "recall": {
+              "average": 0.79503,
+              "num_queries": 10000,
+              "recall_k": 10,
+              "recall_n": 10
+            },
+            "search_l": 96,
+            "search_latencies": [
+              426061
+            ],
+            "search_n": 10
+          }
+        ],
+        "manager_overhead": 341095
+      }
+    ]
+  }
+]

@@ -1,0 +1,308 @@
+[ssd_index_defs.h:144:INFO] Loading metadata from disk index, sharded: 0 nr: 9 nc: 1
+[index.cpp:41:INFO] Getting distance function for metric: l2
+[index.cpp:765:INFO] Resize from 0 to 1000000
+[ssd_index.cpp:325:INFO] Loaded 1000000/1000000 nodes.
+[index.cpp:765:INFO] Resize from 1000000 to 1500000
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 20.9004s.
+A0_METRIC {"experiment":"a0_1","label":"insert_delete_seed1002","build_seed":0,"update_seed":1002,"checkpoint":1,"n_active":1000000,"batch_size":100000,"nqueries":1000,"R":64,"L_build":96,"L_search":96,"recall_at_10":0.8162,"distance_calcs_mean":3689.002,"distance_calcs_p50":3843,"distance_calcs_p95":4610,"distance_calcs_p99":4837,"visited_nodes_mean":100.009,"visited_nodes_p50":100,"visited_nodes_p95":102,"visited_nodes_p99":103,"edge_count":64000000,"edge_jaccard_vs_g0":0.7054339563,"build_seconds":0,"update_seconds":39.45077057}
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 21.0877s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 21.48s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 21.3925s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 23.0397s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 25.8612s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 23.4376s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 24.6318s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 26.029s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 24.3952s.
+A0_METRIC {"experiment":"a0_1","label":"insert_delete_seed1002","build_seed":0,"update_seed":1002,"checkpoint":10,"n_active":1000000,"batch_size":100000,"nqueries":1000,"R":64,"L_build":96,"L_search":96,"recall_at_10":0.8162,"distance_calcs_mean":3700.893,"distance_calcs_p50":3854,"distance_calcs_p95":4621,"distance_calcs_p99":4839,"visited_nodes_mean":100.002,"visited_nodes_p50":100,"visited_nodes_p95":102,"visited_nodes_p99":103,"edge_count":64000000,"edge_jaccard_vs_g0":0.6863428847,"build_seconds":0,"update_seconds":439.3927784}
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 23.9724s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 25.8529s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 26.6559s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 26.2112s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 27.3224s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 26.4895s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 27.4012s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 25.4485s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 25.1262s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 25.6085s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 26.2553s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 23.8638s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 25.1098s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 24.3587s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 25.5074s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 26.0138s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 26.1761s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 24.7966s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 25.5547s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 24.8861s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 25.2303s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 26.7235s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 26.023s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 25.889s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 25.8862s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 25.071s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 24.302s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 24.4776s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 25.0183s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 25.2864s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 25.7707s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 34.3817s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 53.3138s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 34.9227s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 35.7723s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 34.9113s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 35.7412s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 37.0774s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 35.6104s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 34.828s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 32.4613s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 34.6895s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 33.7692s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 33.0591s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 32.7501s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 32.6383s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 57.3931s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 37.9117s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 33.706s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 37.5075s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 37.6219s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 43.5881s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 38.7108s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 36.758s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 37.8886s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 36.9764s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 37.0018s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 36.2806s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 31.2222s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 29.8002s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 31.7492s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 30.4785s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 30.8357s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 30.6436s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 30.3957s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 31.8341s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 29.4393s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 28.0659s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 28.6607s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 29.1769s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 28.7746s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 30.4233s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 29.2874s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 28.9312s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 28.4991s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 26.2222s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 24.1171s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 23.9188s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 23.907s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 23.99s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 23.884s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 24.0533s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 24.2986s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 24.368s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 24.5831s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 19.6531s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 19.6602s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 19.7908s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 19.7783s.
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 19.7304s.
+A0_METRIC {"experiment":"a0_1","label":"insert_delete_seed1002","build_seed":0,"update_seed":1002,"checkpoint":100,"n_active":1000000,"batch_size":100000,"nqueries":1000,"R":64,"L_build":96,"L_search":96,"recall_at_10":0.8162,"distance_calcs_mean":3724.432,"distance_calcs_p50":3867,"distance_calcs_p95":4643,"distance_calcs_p99":4826,"visited_nodes_mean":99.983,"visited_nodes_p50":100,"visited_nodes_p95":102,"visited_nodes_p99":103,"edge_count":64000000,"edge_jaccard_vs_g0":0.6614571763,"build_seconds":0,"update_seconds":5245.73906}

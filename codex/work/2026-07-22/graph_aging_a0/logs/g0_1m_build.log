@@ -1,0 +1,34 @@
+[index.cpp:41:INFO] Getting distance function for metric: l2
+[index.cpp:373:INFO] Building index with normalize_cosine: 0
+[index.cpp:397:INFO] Loading only first 1000000 from file.. 
+[utils.h:392:INFO] IndexBuildParameters with L: 96 R: 64 C: 750 alpha: 1.2 num_threads: 16 beam_width: 8 saturate_graph: 1 max_nthreads: 128
+0% of index build completed.10% of index build completed.20% of index build completed.30% of index build completed.40% of index build completed.50% of index build completed.60% of index build completed.70% of index build completed.80% of index build completed.90% of index build completed.[index.cpp:337:INFO] Starting final cleanup..
+[index.cpp:329:INFO] done. Link time: 63.888s
+[index.cpp:442:INFO] Index built with degree: max:64 avg:64 min:64 count(deg<2):0
+[ssd_index.cpp:398:INFO] Nodes written: 1000000/1000000
+[index.cpp:790:INFO] Memory index tags saved to /home/ubuntu/pz/VectorDB/data/VectorDB/graph_aging_a0_0722/g0_1m.index.tags
+[ssd_index.cpp:405:INFO] save_from_mem: wrote /home/ubuntu/pz/VectorDB/data/VectorDB/graph_aging_a0_0722/g0_1m.index
+A0_METRIC {"experiment":"static","label":"g0_identity","build_seed":0,"update_seed":0,"checkpoint":0,"n_active":1000000,"batch_size":0,"nqueries":1000,"R":64,"L_build":96,"L_search":96,"recall_at_10":0.8162,"distance_calcs_mean":3584.271,"distance_calcs_p50":3751,"distance_calcs_p95":4559,"distance_calcs_p99":4771,"visited_nodes_mean":100.018,"visited_nodes_p50":100,"visited_nodes_p95":102,"visited_nodes_p99":103,"edge_count":64000000,"edge_jaccard_vs_g0":-1,"build_seconds":64.83148553,"update_seconds":0}
+	Command being timed: "./build-a0/tests/graph_aging_a0 build --data /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift1m/full_1m.bin --tags - --npoints 1000000 --query /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift1m/query.bin --gt /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/groundtruth/sift1m/gt_cp00 --nqueries 1000 --R 64 --L 96 --search-L 96 --threads 16 --build-seed 0 --label g0_identity --out /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/graph_aging_a0/results/a01_full.jsonl --save-index /home/ubuntu/pz/VectorDB/data/VectorDB/graph_aging_a0_0722/g0_1m.index --save-edges /home/ubuntu/pz/VectorDB/data/VectorDB/graph_aging_a0_0722/g0_1m.edges"
+	User time (seconds): 1016.03
+	System time (seconds): 6.00
+	Percent of CPU this job got: 1455%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:10.21
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 1707512
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 1404131
+	Voluntary context switches: 9097
+	Involuntary context switches: 1618
+	Swaps: 0
+	File system inputs: 1013384
+	File system outputs: 2607840
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

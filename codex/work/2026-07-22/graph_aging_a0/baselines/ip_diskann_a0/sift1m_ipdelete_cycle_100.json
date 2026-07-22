@@ -1,0 +1,55 @@
+{
+  "search_directories": [
+    "/home/ubuntu/pz/VectorDB/data/VectorDB/graph_aging_a0_0722/overfill",
+    "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift1m",
+    "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/groundtruth/sift1m",
+    "."
+  ],
+  "output_directory": "../../results/ip_diskann",
+  "jobs": [
+    {
+      "type": "graph-index-dynamic-run",
+      "content": {
+        "build": {
+          "data_type": "float32",
+          "data": "combined_1p2m.bin",
+          "distance": "squared_l2",
+          "max_degree": 64,
+          "l_build": 96,
+          "alpha": 1.2,
+          "backedge_ratio": 1.0,
+          "num_threads": 32,
+          "start_point_strategy": "medoid"
+        },
+        "search_phase": {
+          "search-type": "topk",
+          "queries": "query.bin",
+          "groundtruth": "gt_cp00",
+          "reps": 1,
+          "num_threads": [32],
+          "runs": [
+            {
+              "search_n": 10,
+              "search_l": [96],
+              "recall_k": 10
+            }
+          ]
+        },
+        "runbook_params": {
+          "runbook_path": "sift1m_ipdelete_cycle_100.yaml",
+          "dataset_name": "sift-1M-ipdelete-reversible-100",
+          "gt_directory": "sift1m_ipdelete_cycle_gt",
+          "ip_delete_method": {
+            "method": "visited_and_top_k",
+            "params": {
+              "k_value": 20,
+              "l_value": 100
+            }
+          },
+          "ip_delete_num_to_replace": 3,
+          "consolidate_threshold": 0.0005
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+[ssd_index_defs.h:144:INFO] Loading metadata from disk index, sharded: 0 nr: 9 nc: 1
+[index.cpp:41:INFO] Getting distance function for metric: l2
+[index.cpp:765:INFO] Resize from 0 to 50000
+[index.cpp:631:INFO] Consolidating 1000 deleted points, _nd: 11000, max_points: 50000
+[index.cpp:643:INFO] After consolidation, new_nd: 10000
+[index.cpp:734:INFO] Consolidation completed in 0.264811s.
+A0_METRIC {"experiment":"a0_1","label":"smoke_cycle","build_seed":101,"update_seed":202,"checkpoint":1,"n_active":10000,"batch_size":1000,"nqueries":100,"R":64,"L_build":96,"L_search":96,"recall_at_10":1,"distance_calcs_mean":1451.43,"distance_calcs_p50":1558,"distance_calcs_p95":1933,"distance_calcs_p99":2015,"visited_nodes_mean":98.01,"visited_nodes_p50":98,"visited_nodes_p95":99,"visited_nodes_p99":100,"edge_count":640000,"edge_jaccard_vs_g0":0.712232564,"build_seconds":0,"update_seconds":0.327223273}
+[index.cpp:631:INFO] Consolidating 1000 deleted points, _nd: 11000, max_points: 50000
+[index.cpp:643:INFO] After consolidation, new_nd: 10000
+[index.cpp:734:INFO] Consolidation completed in 0.219879s.
+[index.cpp:631:INFO] Consolidating 1000 deleted points, _nd: 11000, max_points: 50000
+[index.cpp:643:INFO] After consolidation, new_nd: 10000
+[index.cpp:734:INFO] Consolidation completed in 0.218393s.
+A0_METRIC {"experiment":"a0_1","label":"smoke_cycle","build_seed":101,"update_seed":202,"checkpoint":3,"n_active":10000,"batch_size":1000,"nqueries":100,"R":64,"L_build":96,"L_search":96,"recall_at_10":1,"distance_calcs_mean":1454.1,"distance_calcs_p50":1556,"distance_calcs_p95":1929,"distance_calcs_p99":2018,"visited_nodes_mean":98,"visited_nodes_p50":98,"visited_nodes_p95":99,"visited_nodes_p99":100,"edge_count":640000,"edge_jaccard_vs_g0":0.7047686909,"build_seconds":0,"update_seconds":0.882070703}

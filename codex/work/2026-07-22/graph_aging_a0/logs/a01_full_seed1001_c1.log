@@ -1,0 +1,32 @@
+[ssd_index_defs.h:144:INFO] Loading metadata from disk index, sharded: 0 nr: 9 nc: 1
+[index.cpp:41:INFO] Getting distance function for metric: l2
+[index.cpp:765:INFO] Resize from 0 to 1000000
+[ssd_index.cpp:325:INFO] Loaded 1000000/1000000 nodes.
+[index.cpp:765:INFO] Resize from 1000000 to 1500000
+[index.cpp:631:INFO] Consolidating 100000 deleted points, _nd: 1100000, max_points: 1500000
+[index.cpp:643:INFO] After consolidation, new_nd: 1000000
+[index.cpp:734:INFO] Consolidation completed in 13.2082s.
+A0_METRIC {"experiment":"a0_1","label":"full_cycle_timing","build_seed":0,"update_seed":1001,"checkpoint":1,"n_active":1000000,"batch_size":100000,"nqueries":1000,"R":64,"L_build":96,"L_search":96,"recall_at_10":0.8161,"distance_calcs_mean":3685.765,"distance_calcs_p50":3827,"distance_calcs_p95":4616,"distance_calcs_p99":4831,"visited_nodes_mean":99.968,"visited_nodes_p50":100,"visited_nodes_p95":102,"visited_nodes_p99":103,"edge_count":64000000,"edge_jaccard_vs_g0":0.7057844577,"build_seconds":0,"update_seconds":22.44849746}
+	Command being timed: "./build-a0/tests/graph_aging_a0 a01 --index /home/ubuntu/pz/VectorDB/data/VectorDB/graph_aging_a0_0722/g0_1m.index --data /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift1m/full_1m.bin --query /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift1m/query.bin --gt /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/groundtruth/sift1m/gt_cp00 --nqueries 1000 --batch 100000 --checkpoints 1 --R 64 --L 96 --search-L 96 --threads 16 --build-seed 0 --update-seed 1001 --label full_cycle_timing --baseline-edges /home/ubuntu/pz/VectorDB/data/VectorDB/graph_aging_a0_0722/g0_1m.edges --out /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/graph_aging_a0/results/a01_full.jsonl"
+	User time (seconds): 337.27
+	System time (seconds): 9.16
+	Percent of CPU this job got: 1144%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:30.26
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 4017688
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 3113052
+	Voluntary context switches: 340975
+	Involuntary context switches: 520
+	Swaps: 0
+	File system inputs: 1600008
+	File system outputs: 8
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

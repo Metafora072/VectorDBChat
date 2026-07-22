@@ -1,0 +1,735 @@
+# Apply from a clean PipeANN checkout at commit 9e7a193dc3f38ad12063bfe50aa5885efb4e8d3b
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f40a9b8..e033cd7 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -171,7 +171,12 @@ if(BLAS_FOUND)
+     if("${BLAS_LIBRARIES}" MATCHES "mkl")
+ 		message(STATUS "BLAS is MKL, adding mkl_rt")
+ 		set(BLAS_LIBRARIES mkl_rt)
+-    endif()
++	endif()
++else()
++	# The experiment host provides the reference CBLAS symbols in libblas,
++	# but no distro cblas.h development header/package metadata.
++	set(BLAS_LIBRARIES /lib/x86_64-linux-gnu/libblas.so.3)
++	message(STATUS "Using reference libblas fallback")
+ endif()
+ 
+ add_subdirectory(src)
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index a73c111..ea0ae18 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -34,3 +34,6 @@ target_link_libraries(build_disk_index_filtered ${PROJECT_NAME})
+ 
+ add_executable(search_disk_index_filtered search_disk_index_filtered.cpp)
+ target_link_libraries(search_disk_index_filtered ${PROJECT_NAME})
++
++add_executable(graph_aging_a0 graph_aging_a0.cpp)
++target_link_libraries(graph_aging_a0 ${PROJECT_NAME})
+diff --git a/include/cblas.h b/include/cblas.h
+new file mode 100644
+index 0000000..60a0e47
+--- /dev/null
++++ b/include/cblas.h
+@@ -0,0 +1,21 @@
++#pragma once
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++typedef enum CBLAS_LAYOUT { CblasRowMajor = 101, CblasColMajor = 102 } CBLAS_LAYOUT;
++typedef CBLAS_LAYOUT CBLAS_ORDER;
++typedef enum CBLAS_TRANSPOSE { CblasNoTrans = 111, CblasTrans = 112, CblasConjTrans = 113 } CBLAS_TRANSPOSE;
++typedef enum CBLAS_UPLO { CblasUpper = 121, CblasLower = 122 } CBLAS_UPLO;
++
++float cblas_sdot(int n, const float *x, int incx, const float *y, int incy);
++float cblas_snrm2(int n, const float *x, int incx);
++void cblas_sgemm(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transa, CBLAS_TRANSPOSE transb, int m, int n, int k,
++                 float alpha, const float *a, int lda, const float *b, int ldb, float beta, float *c, int ldc);
++void cblas_ssyrk(CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k, float alpha,
++                 const float *a, int lda, float beta, float *c, int ldc);
++
++#ifdef __cplusplus
++}
++#endif
+diff --git a/tests/graph_aging_a0.cpp b/tests/graph_aging_a0.cpp
+new file mode 100644
+index 0000000..9d14a7d
+--- /dev/null
++++ b/tests/graph_aging_a0.cpp
+@@ -0,0 +1,670 @@
++#include <algorithm>
++#include <chrono>
++#include <cmath>
++#include <cstdint>
++#include <fstream>
++#include <iomanip>
++#include <iostream>
++#include <memory>
++#include <numeric>
++#include <random>
++#include <sstream>
++#include <string>
++#include <unordered_map>
++#include <unordered_set>
++#include <vector>
++
++#include <omp.h>
++
++#include "index.h"
++#include "ssd_index.h"
++#include "utils.h"
++#include "utils/prune_neighbors.h"
++
++namespace {
++using Tag = uint32_t;
++using Index = pipeann::Index<float, Tag>;
++
++struct Args {
++  std::unordered_map<std::string, std::string> kv;
++
++  Args(int argc, char **argv, int start) {
++    for (int i = start; i < argc; ++i) {
++      std::string key(argv[i]);
++      if (key.rfind("--", 0) != 0 || i + 1 >= argc) {
++        throw std::runtime_error("expected --key value, got: " + key);
++      }
++      kv[key.substr(2)] = argv[++i];
++    }
++  }
++
++  std::string get(const std::string &key, const std::string &fallback = "") const {
++    auto it = kv.find(key);
++    return it == kv.end() ? fallback : it->second;
++  }
++
++  uint64_t u64(const std::string &key, uint64_t fallback = 0) const {
++    auto value = get(key);
++    return value.empty() ? fallback : std::stoull(value);
++  }
++
++  double f64(const std::string &key, double fallback = 0) const {
++    auto value = get(key);
++    return value.empty() ? fallback : std::stod(value);
++  }
++};
++
++double seconds_since(const std::chrono::steady_clock::time_point &start) {
++  return std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count();
++}
++
++double quantile(std::vector<double> values, double q) {
++  if (values.empty()) return 0;
++  std::sort(values.begin(), values.end());
++  const size_t i = std::min(values.size() - 1, static_cast<size_t>(std::floor(q * (values.size() - 1))));
++  return values[i];
++}
++
++double mean(const std::vector<double> &values) {
++  if (values.empty()) return 0;
++  return std::accumulate(values.begin(), values.end(), 0.0) / values.size();
++}
++
++std::vector<uint64_t> graph_edges_by_tag(const Index &index) {
++  std::vector<uint64_t> edges;
++  size_t reserve = 0;
++  for (const auto &nbrs : index._final_graph) reserve += nbrs.size();
++  edges.reserve(reserve);
++  for (uint32_t owner = 0; owner < index._final_graph.size(); ++owner) {
++    auto owner_it = index._location_to_tag.find(owner);
++    if (owner_it == index._location_to_tag.end()) continue;
++    for (uint32_t nbr : index._final_graph[owner]) {
++      auto nbr_it = index._location_to_tag.find(nbr);
++      if (nbr_it == index._location_to_tag.end()) continue;
++      edges.push_back((static_cast<uint64_t>(owner_it->second) << 32) | nbr_it->second);
++    }
++  }
++  std::sort(edges.begin(), edges.end());
++  edges.erase(std::unique(edges.begin(), edges.end()), edges.end());
++  return edges;
++}
++
++void save_edges(const std::string &path, const std::vector<uint64_t> &edges) {
++  if (path.empty() || path == "-") return;
++  std::ofstream out(path, std::ios::binary | std::ios::trunc);
++  uint64_t count = edges.size();
++  out.write(reinterpret_cast<const char *>(&count), sizeof(count));
++  out.write(reinterpret_cast<const char *>(edges.data()), edges.size() * sizeof(uint64_t));
++  if (!out) throw std::runtime_error("failed to save edge file: " + path);
++}
++
++std::vector<uint64_t> load_edges(const std::string &path) {
++  if (path.empty() || path == "-") return {};
++  std::ifstream in(path, std::ios::binary);
++  uint64_t count = 0;
++  in.read(reinterpret_cast<char *>(&count), sizeof(count));
++  std::vector<uint64_t> edges(count);
++  in.read(reinterpret_cast<char *>(edges.data()), edges.size() * sizeof(uint64_t));
++  if (!in) throw std::runtime_error("failed to load edge file: " + path);
++  return edges;
++}
++
++double edge_jaccard(const std::vector<uint64_t> &a, const std::vector<uint64_t> &b) {
++  if (a.empty() && b.empty()) return 1.0;
++  size_t i = 0, j = 0, intersection = 0;
++  while (i < a.size() && j < b.size()) {
++    if (a[i] == b[j]) {
++      ++intersection;
++      ++i;
++      ++j;
++    } else if (a[i] < b[j]) {
++      ++i;
++    } else {
++      ++j;
++    }
++  }
++  const size_t union_size = a.size() + b.size() - intersection;
++  return union_size == 0 ? 1.0 : static_cast<double>(intersection) / union_size;
++}
++
++struct EdgeDiff {
++  uint64_t intersection = 0;
++  uint64_t missing_vs_baseline = 0;
++  uint64_t added_vs_baseline = 0;
++  uint64_t changed_owners = 0;
++};
++
++EdgeDiff edge_diff(const std::vector<uint64_t> &current, const std::vector<uint64_t> &baseline) {
++  EdgeDiff result;
++  size_t i = 0, j = 0;
++  uint32_t last_changed_owner = std::numeric_limits<uint32_t>::max();
++  auto mark_changed = [&](uint64_t edge) {
++    const uint32_t owner = static_cast<uint32_t>(edge >> 32);
++    if (owner != last_changed_owner) {
++      ++result.changed_owners;
++      last_changed_owner = owner;
++    }
++  };
++  while (i < current.size() && j < baseline.size()) {
++    if (current[i] == baseline[j]) {
++      ++result.intersection;
++      ++i;
++      ++j;
++    } else if (current[i] < baseline[j]) {
++      mark_changed(current[i]);
++      ++result.added_vs_baseline;
++      ++i;
++    } else {
++      mark_changed(baseline[j]);
++      ++result.missing_vs_baseline;
++      ++j;
++    }
++  }
++  while (i < current.size()) {
++    mark_changed(current[i++]);
++    ++result.added_vs_baseline;
++  }
++  while (j < baseline.size()) {
++    mark_changed(baseline[j++]);
++    ++result.missing_vs_baseline;
++  }
++  return result;
++}
++
++struct Metrics {
++  double recall = 0;
++  double recall_p01 = 0, recall_p10 = 0, recall_p50 = 0, recall_p90 = 0;
++  double cmps_mean = 0, cmps_p50 = 0, cmps_p95 = 0, cmps_p99 = 0;
++  double hops_mean = 0, hops_p50 = 0, hops_p95 = 0, hops_p99 = 0;
++  double jaccard = -1;
++  uint64_t edge_count = 0;
++  uint64_t active_count = 0;
++  uint64_t edge_intersection = 0;
++  uint64_t edge_missing_vs_g0 = 0;
++  uint64_t edge_added_vs_g0 = 0;
++  uint64_t changed_owner_count = 0;
++  uint64_t logical_coupled_rewrite_bytes = 0;
++  uint64_t logical_topology_rewrite_bytes = 0;
++  uint64_t shadow_bytes_8 = 0;
++  uint64_t shadow_bytes_12 = 0;
++  uint64_t oracle_shadow_candidates = 0;
++  uint64_t oracle_shadow_reactivated = 0;
++  double oracle_shadow_acceptance = -1;
++  double oracle_shadow_seconds = 0;
++};
++
++Metrics evaluate(Index &index, const std::string &query_file, const std::string &gt_file, size_t nqueries,
++                 unsigned search_L, const std::vector<uint64_t> &baseline_edges, std::vector<uint64_t> *current_out) {
++  std::vector<float> queries;
++  size_t query_n = 0, query_dim = 0;
++  pipeann::load_bin<float>(query_file, queries, query_n, query_dim);
++  if (query_dim != index._dim) throw std::runtime_error("query dimension mismatch");
++  nqueries = std::min(nqueries, query_n);
++
++  unsigned *gt_ids = nullptr;
++  float *gt_dists = nullptr;
++  unsigned *gt_tags = nullptr;
++  size_t gt_n = 0, gt_dim = 0;
++  pipeann::load_truthset(gt_file, gt_ids, gt_dists, gt_n, gt_dim, &gt_tags);
++  nqueries = std::min(nqueries, gt_n);
++  if (gt_dim < 10) throw std::runtime_error("ground truth has fewer than 10 neighbors");
++
++  std::vector<double> cmps(nqueries), hops(nqueries);
++  std::vector<uint64_t> hits(nqueries, 0);
++#pragma omp parallel for schedule(static)
++  for (int64_t qi = 0; qi < static_cast<int64_t>(nqueries); ++qi) {
++    std::vector<unsigned> ids(search_L);
++    std::vector<float> dists(search_L);
++    pipeann::QueryStats stats;
++    index.search(queries.data() + qi * query_dim, search_L, search_L, ids.data(), dists.data(), &stats);
++    std::unordered_set<unsigned> truth;
++    const unsigned *truth_values = gt_tags == nullptr ? gt_ids : gt_tags;
++    for (size_t k = 0; k < 10; ++k) truth.insert(truth_values[qi * gt_dim + k]);
++    size_t returned = 0;
++    for (unsigned loc : ids) {
++      auto it = index._location_to_tag.find(loc);
++      if (it == index._location_to_tag.end()) continue;
++      if (truth.count(it->second)) ++hits[qi];
++      if (++returned == 10) break;
++    }
++    cmps[qi] = stats.n_cmps;
++    hops[qi] = stats.n_hops;
++  }
++  delete[] gt_ids;
++  delete[] gt_dists;
++  delete[] gt_tags;
++
++  auto edges = graph_edges_by_tag(index);
++  Metrics m;
++  m.recall = static_cast<double>(std::accumulate(hits.begin(), hits.end(), uint64_t{0})) / (nqueries * 10.0);
++  std::vector<double> per_query_recall(nqueries);
++  for (size_t i = 0; i < nqueries; ++i) per_query_recall[i] = static_cast<double>(hits[i]) / 10.0;
++  m.recall_p01 = quantile(per_query_recall, 0.01);
++  m.recall_p10 = quantile(per_query_recall, 0.10);
++  m.recall_p50 = quantile(per_query_recall, 0.50);
++  m.recall_p90 = quantile(per_query_recall, 0.90);
++  m.cmps_mean = mean(cmps);
++  m.cmps_p50 = quantile(cmps, 0.50);
++  m.cmps_p95 = quantile(cmps, 0.95);
++  m.cmps_p99 = quantile(cmps, 0.99);
++  m.hops_mean = mean(hops);
++  m.hops_p50 = quantile(hops, 0.50);
++  m.hops_p95 = quantile(hops, 0.95);
++  m.hops_p99 = quantile(hops, 0.99);
++  m.edge_count = edges.size();
++  m.active_count = index._location_to_tag.size();
++  if (!baseline_edges.empty()) {
++    m.jaccard = edge_jaccard(edges, baseline_edges);
++    const auto diff = edge_diff(edges, baseline_edges);
++    m.edge_intersection = diff.intersection;
++    m.edge_missing_vs_g0 = diff.missing_vs_baseline;
++    m.edge_added_vs_g0 = diff.added_vs_baseline;
++    m.changed_owner_count = diff.changed_owners;
++    const uint64_t vector_bytes = index._dim * sizeof(float);
++    const uint64_t adjacency_bytes = index.range * sizeof(uint32_t);
++    m.logical_coupled_rewrite_bytes = diff.changed_owners * (vector_bytes + adjacency_bytes);
++    m.logical_topology_rewrite_bytes = diff.changed_owners * adjacency_bytes;
++    m.shadow_bytes_8 = diff.missing_vs_baseline * 8;
++    m.shadow_bytes_12 = diff.missing_vs_baseline * 12;
++  }
++  if (current_out != nullptr) *current_out = std::move(edges);
++  return m;
++}
++
++std::string json_record(const std::string &experiment, const std::string &label, uint64_t build_seed,
++                        uint64_t update_seed, uint64_t checkpoint, const Metrics &m, double build_sec,
++                        double update_sec, unsigned R, unsigned L, unsigned search_L, size_t nqueries,
++                        size_t batch_size) {
++  std::ostringstream out;
++  out << std::setprecision(10) << "{"
++      << "\"experiment\":\"" << experiment << "\","
++      << "\"label\":\"" << label << "\","
++      << "\"build_seed\":" << build_seed << ","
++      << "\"update_seed\":" << update_seed << ","
++      << "\"checkpoint\":" << checkpoint << ","
++      << "\"n_active\":" << m.active_count << ","
++      << "\"batch_size\":" << batch_size << ","
++      << "\"nqueries\":" << nqueries << ","
++      << "\"R\":" << R << ",\"L_build\":" << L << ",\"L_search\":" << search_L << ","
++      << "\"recall_at_10\":" << m.recall << ","
++      << "\"recall_p01\":" << m.recall_p01 << ","
++      << "\"recall_p10\":" << m.recall_p10 << ","
++      << "\"recall_p50\":" << m.recall_p50 << ","
++      << "\"recall_p90\":" << m.recall_p90 << ","
++      << "\"distance_calcs_mean\":" << m.cmps_mean << ","
++      << "\"distance_calcs_p50\":" << m.cmps_p50 << ","
++      << "\"distance_calcs_p95\":" << m.cmps_p95 << ","
++      << "\"distance_calcs_p99\":" << m.cmps_p99 << ","
++      << "\"visited_nodes_mean\":" << m.hops_mean << ","
++      << "\"visited_nodes_p50\":" << m.hops_p50 << ","
++      << "\"visited_nodes_p95\":" << m.hops_p95 << ","
++      << "\"visited_nodes_p99\":" << m.hops_p99 << ","
++      << "\"edge_count\":" << m.edge_count << ","
++      << "\"edge_jaccard_vs_g0\":" << m.jaccard << ","
++      << "\"edge_intersection\":" << m.edge_intersection << ","
++      << "\"edge_missing_vs_g0\":" << m.edge_missing_vs_g0 << ","
++      << "\"edge_added_vs_g0\":" << m.edge_added_vs_g0 << ","
++      << "\"changed_owner_count\":" << m.changed_owner_count << ","
++      << "\"logical_coupled_rewrite_bytes\":" << m.logical_coupled_rewrite_bytes << ","
++      << "\"logical_topology_rewrite_bytes\":" << m.logical_topology_rewrite_bytes << ","
++      << "\"shadow_bytes_8\":" << m.shadow_bytes_8 << ","
++      << "\"shadow_bytes_12\":" << m.shadow_bytes_12 << ","
++      << "\"oracle_shadow_candidates\":" << m.oracle_shadow_candidates << ","
++      << "\"oracle_shadow_reactivated\":" << m.oracle_shadow_reactivated << ","
++      << "\"oracle_shadow_acceptance\":" << m.oracle_shadow_acceptance << ","
++      << "\"oracle_shadow_seconds\":" << m.oracle_shadow_seconds << ","
++      << "\"build_seconds\":" << build_sec << ","
++      << "\"update_seconds\":" << update_sec << "}";
++  return out.str();
++}
++
++void append_record(const std::string &path, const std::string &line) {
++  std::cout << "A0_METRIC " << line << std::endl;
++  if (path.empty() || path == "-") return;
++  std::ofstream out(path, std::ios::app);
++  out << line << '\n';
++  if (!out) throw std::runtime_error("failed to append result: " + path);
++}
++
++pipeann::IndexBuildParameters params_from(const Args &args) {
++  pipeann::IndexBuildParameters params;
++  params.set(args.u64("R", 64), args.u64("L", 96), 750, args.f64("alpha", 1.2), args.u64("threads", 16), true);
++  return params;
++}
++
++struct ShadowReplayResult {
++  uint64_t candidates = 0;
++  uint64_t reactivated = 0;
++  double seconds = 0;
++};
++
++ShadowReplayResult oracle_shadow_replay(Index &index, const std::vector<uint64_t> &baseline_edges,
++                                        const pipeann::IndexBuildParameters &params, int threads) {
++  ShadowReplayResult result;
++  if (baseline_edges.empty()) return result;
++  auto start = std::chrono::steady_clock::now();
++
++  Tag max_tag = 0;
++  for (const auto &entry : index._tag_to_location) max_tag = std::max(max_tag, entry.first);
++  std::vector<uint32_t> tag_to_loc(static_cast<size_t>(max_tag) + 1, pipeann::kInvalidID);
++  for (const auto &entry : index._tag_to_location) tag_to_loc[entry.first] = entry.second;
++
++  std::vector<std::vector<uint32_t>> baseline_by_loc(index.max_points());
++  for (uint64_t edge : baseline_edges) {
++    const Tag owner_tag = static_cast<Tag>(edge >> 32);
++    const Tag nbr_tag = static_cast<Tag>(edge & 0xffffffffULL);
++    if (owner_tag >= tag_to_loc.size() || nbr_tag >= tag_to_loc.size()) continue;
++    const uint32_t owner = tag_to_loc[owner_tag];
++    const uint32_t nbr = tag_to_loc[nbr_tag];
++    if (owner == pipeann::kInvalidID || nbr == pipeann::kInvalidID || owner == nbr) continue;
++    baseline_by_loc[owner].push_back(nbr);
++  }
++
++  std::vector<uint64_t> candidates_per_node(index._nd, 0);
++  std::vector<uint64_t> reactivated_per_node(index._nd, 0);
++#pragma omp parallel for schedule(dynamic, 1024) num_threads(threads)
++  for (int64_t owner = 0; owner < static_cast<int64_t>(index._nd); ++owner) {
++    const auto &baseline_nbrs = baseline_by_loc[owner];
++    if (baseline_nbrs.empty()) continue;
++    const auto before = index._final_graph[owner];
++    std::vector<uint32_t> candidates = before;
++    candidates.insert(candidates.end(), baseline_nbrs.begin(), baseline_nbrs.end());
++    std::sort(candidates.begin(), candidates.end());
++    candidates.erase(std::unique(candidates.begin(), candidates.end()), candidates.end());
++    candidates.erase(std::remove(candidates.begin(), candidates.end(), static_cast<uint32_t>(owner)),
++                     candidates.end());
++
++    uint64_t missing = 0;
++    for (uint32_t nbr : baseline_nbrs) {
++      if (std::find(before.begin(), before.end(), nbr) == before.end()) ++missing;
++    }
++    if (missing == 0) continue;
++    candidates_per_node[owner] = missing;
++
++    std::vector<pipeann::Neighbor> pool;
++    pool.reserve(candidates.size());
++    for (uint32_t nbr : candidates) {
++      const float dist = index._distance->compare(index._data.data() + index._dim * owner,
++                                                  index._data.data() + index._dim * nbr, index._dim);
++      pool.emplace_back(nbr, dist);
++    }
++    std::vector<uint32_t> replayed;
++    pipeann::prune_neighbors(pool, replayed, params, index._dist_metric, [&index](uint32_t a, uint32_t b) {
++      return index._distance->compare(index._data.data() + index._dim * a,
++                                      index._data.data() + index._dim * b, index._dim);
++    });
++    uint64_t accepted = 0;
++    for (uint32_t nbr : baseline_nbrs) {
++      if (std::find(before.begin(), before.end(), nbr) == before.end() &&
++          std::find(replayed.begin(), replayed.end(), nbr) != replayed.end()) {
++        ++accepted;
++      }
++    }
++    reactivated_per_node[owner] = accepted;
++    index._final_graph[owner] = std::move(replayed);
++  }
++  result.candidates = std::accumulate(candidates_per_node.begin(), candidates_per_node.end(), uint64_t{0});
++  result.reactivated = std::accumulate(reactivated_per_node.begin(), reactivated_per_node.end(), uint64_t{0});
++  result.seconds = seconds_since(start);
++  return result;
++}
++
++std::vector<Tag> load_tag_file(const std::string &path) {
++  std::vector<Tag> tags;
++  size_t n = 0, dim = 0;
++  pipeann::load_bin<Tag>(path, tags, n, dim);
++  if (dim != 1) throw std::runtime_error("tag file dimension must be 1: " + path);
++  return tags;
++}
++
++std::unique_ptr<Index> build_index(const Args &args, size_t npoints, double &build_seconds) {
++  size_t file_n = 0, dim = 0;
++  pipeann::get_bin_metadata(args.get("data"), file_n, dim);
++  if (npoints == 0) npoints = file_n;
++  std::vector<Tag> tags;
++  if (args.get("tags").empty() || args.get("tags") == "-") {
++    tags.resize(npoints);
++    std::iota(tags.begin(), tags.end(), Tag{0});
++  } else {
++    tags = load_tag_file(args.get("tags"));
++  }
++  if (tags.size() != npoints) throw std::runtime_error("tag count does not match npoints");
++  auto params = params_from(args);
++  auto index = std::make_unique<Index>(pipeann::Metric::L2, dim);
++  auto start = std::chrono::steady_clock::now();
++  index->build(args.get("data").c_str(), npoints, params, tags, false);
++  build_seconds = seconds_since(start);
++  return index;
++}
++
++void run_build(const Args &args) {
++  double build_seconds = 0;
++  auto index = build_index(args, args.u64("npoints"), build_seconds);
++  auto baseline = load_edges(args.get("baseline-edges", "-"));
++  std::vector<uint64_t> current;
++  auto metrics = evaluate(*index, args.get("query"), args.get("gt"), args.u64("nqueries", 1000),
++                          args.u64("search-L", 96), baseline, &current);
++  save_edges(args.get("save-edges", "-"), current);
++  if (!args.get("save-index").empty() && args.get("save-index") != "-") {
++    pipeann::SSDIndex<float, Tag>::save_from_mem(*index, args.get("save-index"));
++  }
++  append_record(args.get("out"), json_record("static", args.get("label", "static"), args.u64("build-seed"), 0,
++                                             0, metrics, build_seconds, 0, args.u64("R", 64), args.u64("L", 96),
++                                             args.u64("search-L", 96), args.u64("nqueries", 1000), 0));
++}
++
++std::vector<uint64_t> parse_checkpoints(const std::string &text) {
++  std::vector<uint64_t> result;
++  std::stringstream in(text);
++  std::string token;
++  while (std::getline(in, token, ',')) result.push_back(std::stoull(token));
++  std::sort(result.begin(), result.end());
++  return result;
++}
++
++void run_a01(const Args &args) {
++  auto index = std::unique_ptr<Index>(pipeann::SSDIndex<float, Tag>::load_to_mem(args.get("index"), pipeann::Metric::L2));
++  std::vector<float> data;
++  size_t npoints = 0, dim = 0;
++  pipeann::load_bin<float>(args.get("data"), data, npoints, dim);
++  if (dim != index->_dim || npoints < index->_nd) throw std::runtime_error("A0-1 data/index mismatch");
++  npoints = index->_nd;
++  const size_t batch_size = std::min<size_t>(args.u64("batch"), npoints);
++  std::vector<uint32_t> candidates(npoints);
++  std::iota(candidates.begin(), candidates.end(), 0);
++  std::mt19937 rng(args.u64("update-seed"));
++  std::shuffle(candidates.begin(), candidates.end(), rng);
++  candidates.resize(batch_size);
++  const auto checkpoints = parse_checkpoints(args.get("checkpoints", "1,10,100"));
++  const auto baseline = load_edges(args.get("baseline-edges"));
++  auto params = params_from(args);
++  const int threads = args.u64("threads", 16);
++  double cumulative_update_seconds = 0;
++  size_t checkpoint_pos = 0;
++  for (uint64_t cycle = 1; cycle <= checkpoints.back(); ++cycle) {
++    std::shuffle(candidates.begin(), candidates.end(), rng);
++    auto start = std::chrono::steady_clock::now();
++#pragma omp parallel for schedule(dynamic, 16) num_threads(threads)
++    for (int64_t j = 0; j < static_cast<int64_t>(candidates.size()); ++j) {
++      const uint32_t original_tag = candidates[j];
++      const Tag duplicate_tag = static_cast<Tag>(npoints + original_tag);
++      index->insert_point(data.data() + static_cast<size_t>(original_tag) * dim, params, duplicate_tag);
++    }
++    for (uint32_t original_tag : candidates) {
++      const Tag duplicate_tag = static_cast<Tag>(npoints + original_tag);
++      if (index->lazy_delete(duplicate_tag) != 0) throw std::runtime_error("A0-1 lazy_delete failed");
++    }
++    index->consolidate(params);
++    cumulative_update_seconds += seconds_since(start);
++    if (cycle == checkpoints[checkpoint_pos]) {
++      auto metrics = evaluate(*index, args.get("query"), args.get("gt"), args.u64("nqueries", 1000),
++                              args.u64("search-L", 96), baseline, nullptr);
++      append_record(args.get("out"),
++                    json_record("a0_1", args.get("label", "insert_delete"), args.u64("build-seed"),
++                                args.u64("update-seed"), cycle, metrics, 0, cumulative_update_seconds,
++                                args.u64("R", 64), args.u64("L", 96), args.u64("search-L", 96),
++                                args.u64("nqueries", 1000), batch_size));
++      const bool final_checkpoint = checkpoint_pos + 1 == checkpoints.size();
++      if (final_checkpoint && args.u64("oracle-shadow", 0) != 0) {
++        const auto replay = oracle_shadow_replay(*index, baseline, params, threads);
++        auto replay_metrics = evaluate(*index, args.get("query"), args.get("gt"), args.u64("nqueries", 1000),
++                                       args.u64("search-L", 96), baseline, nullptr);
++        replay_metrics.oracle_shadow_candidates = replay.candidates;
++        replay_metrics.oracle_shadow_reactivated = replay.reactivated;
++        replay_metrics.oracle_shadow_acceptance = replay.candidates == 0
++                                                       ? 0
++                                                       : static_cast<double>(replay.reactivated) / replay.candidates;
++        replay_metrics.oracle_shadow_seconds = replay.seconds;
++        append_record(args.get("out"),
++                      json_record("a0_4", args.get("label", "insert_delete") + "_oracle_shadow",
++                                  args.u64("build-seed"), args.u64("update-seed"), cycle, replay_metrics, 0,
++                                  cumulative_update_seconds, args.u64("R", 64), args.u64("L", 96),
++                                  args.u64("search-L", 96), args.u64("nqueries", 1000), batch_size));
++      }
++      ++checkpoint_pos;
++      if (checkpoint_pos == checkpoints.size()) break;
++    }
++  }
++}
++
++void insert_range(Index &index, const std::vector<float> &data, const std::vector<Tag> &tags, size_t begin,
++                  size_t end, const pipeann::IndexBuildParameters &params, int threads) {
++#pragma omp parallel for schedule(dynamic, 16) num_threads(threads)
++  for (int64_t i = static_cast<int64_t>(begin); i < static_cast<int64_t>(end); ++i) {
++    index.insert_point(data.data() + static_cast<size_t>(i) * index._dim, params, tags[i]);
++  }
++}
++
++void run_path2(const Args &args) {
++  const size_t final_n = args.u64("final-n");
++  const size_t initial_n = args.u64("initial-n", final_n / 2);
++  double build_seconds = 0;
++  auto index = build_index(args, initial_n, build_seconds);
++  std::vector<float> data;
++  size_t file_n = 0, dim = 0;
++  pipeann::load_bin<float>(args.get("data"), data, file_n, dim);
++  auto full_tags = load_tag_file(args.get("full-tags"));
++  if (file_n < final_n || full_tags.size() < final_n) throw std::runtime_error("Path 2 input too small");
++  const size_t batch = args.u64("batch", (final_n - initial_n) / 5);
++  auto params = params_from(args);
++  auto start = std::chrono::steady_clock::now();
++  for (size_t begin = initial_n; begin < final_n; begin += batch) {
++    insert_range(*index, data, full_tags, begin, std::min(final_n, begin + batch), params, args.u64("threads", 16));
++  }
++  const double update_seconds = seconds_since(start);
++  auto baseline = load_edges(args.get("baseline-edges"));
++  auto preprune_metrics = evaluate(*index, args.get("query"), args.get("gt"), args.u64("nqueries", 1000),
++                                   args.u64("search-L", 96), baseline, nullptr);
++  append_record(args.get("out"), json_record("a0_2_preprune", args.get("label", "path2_batched") + "_preprune",
++                                             args.u64("build-seed"), args.u64("update-seed"), 0,
++                                             preprune_metrics, build_seconds, update_seconds, args.u64("R", 64),
++                                             args.u64("L", 96), args.u64("search-L", 96),
++                                             args.u64("nqueries", 1000), batch));
++
++  auto prune_start = std::chrono::steady_clock::now();
++  index->final_prune(params);
++  const double final_prune_seconds = seconds_since(prune_start);
++  auto metrics = evaluate(*index, args.get("query"), args.get("gt"), args.u64("nqueries", 1000),
++                          args.u64("search-L", 96), baseline, nullptr);
++  append_record(args.get("out"), json_record("a0_2", args.get("label", "path2_batched") + "_postprune",
++                                             args.u64("build-seed"), args.u64("update-seed"), 1, metrics,
++                                             build_seconds, update_seconds + final_prune_seconds,
++                                             args.u64("R", 64), args.u64("L", 96), args.u64("search-L", 96),
++                                             args.u64("nqueries", 1000), batch));
++  if (args.u64("oracle-shadow", 0) != 0) {
++    const auto replay = oracle_shadow_replay(*index, baseline, params, args.u64("threads", 16));
++    auto replay_metrics = evaluate(*index, args.get("query"), args.get("gt"), args.u64("nqueries", 1000),
++                                   args.u64("search-L", 96), baseline, nullptr);
++    replay_metrics.oracle_shadow_candidates = replay.candidates;
++    replay_metrics.oracle_shadow_reactivated = replay.reactivated;
++    replay_metrics.oracle_shadow_acceptance = replay.candidates == 0
++                                                   ? 0
++                                                   : static_cast<double>(replay.reactivated) / replay.candidates;
++    replay_metrics.oracle_shadow_seconds = replay.seconds;
++    append_record(args.get("out"), json_record("a0_4", args.get("label", "path2_batched") + "_oracle_shadow",
++                                               args.u64("build-seed"), args.u64("update-seed"), 1,
++                                               replay_metrics, build_seconds,
++                                               update_seconds + final_prune_seconds + replay.seconds,
++                                               args.u64("R", 64), args.u64("L", 96), args.u64("search-L", 96),
++                                               args.u64("nqueries", 1000), batch));
++  }
++}
++
++void run_path3(const Args &args) {
++  const size_t final_n = args.u64("final-n");
++  const size_t total_n = args.u64("npoints");
++  const size_t initial_n = args.u64("initial-n", total_n);
++  double build_seconds = 0;
++  auto index = build_index(args, initial_n, build_seconds);
++  auto params = params_from(args);
++  auto start = std::chrono::steady_clock::now();
++  if (initial_n < total_n) {
++    std::vector<float> data;
++    size_t file_n = 0, dim = 0;
++    pipeann::load_bin<float>(args.get("data"), data, file_n, dim);
++    auto full_tags = load_tag_file(args.get("full-tags"));
++    if (file_n < total_n || full_tags.size() < total_n) throw std::runtime_error("Path 3 input too small");
++    insert_range(*index, data, full_tags, initial_n, total_n, params, args.u64("threads", 16));
++  }
++  for (Tag tag = static_cast<Tag>(final_n); tag < total_n; ++tag) {
++    if (index->lazy_delete(tag) != 0) throw std::runtime_error("Path 3 lazy_delete failed");
++  }
++  index->consolidate(params);
++  const double update_seconds = seconds_since(start);
++  auto baseline = load_edges(args.get("baseline-edges"));
++  auto preprune_metrics = evaluate(*index, args.get("query"), args.get("gt"), args.u64("nqueries", 1000),
++                                   args.u64("search-L", 96), baseline, nullptr);
++  append_record(args.get("out"), json_record("a0_2_preprune", args.get("label", "path3_overfill_delete") + "_preprune",
++                                             args.u64("build-seed"), args.u64("update-seed"), 0,
++                                             preprune_metrics, build_seconds, update_seconds,
++                                             args.u64("R", 64), args.u64("L", 96),
++                                             args.u64("search-L", 96), args.u64("nqueries", 1000),
++                                             total_n - initial_n));
++
++  auto prune_start = std::chrono::steady_clock::now();
++  index->final_prune(params);
++  const double final_prune_seconds = seconds_since(prune_start);
++  auto metrics = evaluate(*index, args.get("query"), args.get("gt"), args.u64("nqueries", 1000),
++                          args.u64("search-L", 96), baseline, nullptr);
++  append_record(args.get("out"), json_record("a0_2", args.get("label", "path3_overfill_delete") + "_postprune",
++                                             args.u64("build-seed"), args.u64("update-seed"), 1, metrics,
++                                             build_seconds, update_seconds + final_prune_seconds,
++                                             args.u64("R", 64), args.u64("L", 96),
++                                             args.u64("search-L", 96), args.u64("nqueries", 1000), total_n - initial_n));
++  if (args.u64("oracle-shadow", 0) != 0) {
++    const auto replay = oracle_shadow_replay(*index, baseline, params, args.u64("threads", 16));
++    auto replay_metrics = evaluate(*index, args.get("query"), args.get("gt"), args.u64("nqueries", 1000),
++                                   args.u64("search-L", 96), baseline, nullptr);
++    replay_metrics.oracle_shadow_candidates = replay.candidates;
++    replay_metrics.oracle_shadow_reactivated = replay.reactivated;
++    replay_metrics.oracle_shadow_acceptance = replay.candidates == 0
++                                                   ? 0
++                                                   : static_cast<double>(replay.reactivated) / replay.candidates;
++    replay_metrics.oracle_shadow_seconds = replay.seconds;
++    append_record(args.get("out"), json_record("a0_4", args.get("label", "path3_overfill_delete") + "_oracle_shadow",
++                                               args.u64("build-seed"), args.u64("update-seed"), 1,
++                                               replay_metrics, build_seconds,
++                                               update_seconds + final_prune_seconds + replay.seconds,
++                                               args.u64("R", 64), args.u64("L", 96),
++                                               args.u64("search-L", 96), args.u64("nqueries", 1000),
++                                               total_n - initial_n));
++  }
++}
++}  // namespace
++
++int main(int argc, char **argv) {
++  try {
++    if (argc < 2) throw std::runtime_error("usage: graph_aging_a0 <build|a01|path2|path3> --key value ...");
++    const std::string mode(argv[1]);
++    Args args(argc, argv, 2);
++    if (mode == "build") run_build(args);
++    else if (mode == "a01") run_a01(args);
++    else if (mode == "path2") run_path2(args);
++    else if (mode == "path3") run_path3(args);
++    else throw std::runtime_error("unknown mode: " + mode);
++    return 0;
++  } catch (const std::exception &e) {
++    std::cerr << "graph_aging_a0 error: " << e.what() << std::endl;
++    return 2;
++  }
++}
+

@@ -1,0 +1,8 @@
+[index.cpp:41:INFO] Getting distance function for metric: l2
+[index.cpp:373:INFO] Building index with normalize_cosine: 0
+[index.cpp:397:INFO] Loading only first 1000000 from file.. 
+[utils.h:392:INFO] IndexBuildParameters with L: 96 R: 64 C: 750 alpha: 1.2 num_threads: 12 beam_width: 8 saturate_graph: 1 max_nthreads: 128
+0% of index build completed.10% of index build completed.20% of index build completed.30% of index build completed.40% of index build completed.50% of index build completed.60% of index build completed.70% of index build completed.80% of index build completed.90% of index build completed.[index.cpp:337:INFO] Starting final cleanup..
+[index.cpp:329:INFO] done. Link time: 179.205s
+[index.cpp:442:INFO] Index built with degree: max:64 avg:64 min:64 count(deg<2):0
+A0_METRIC {"experiment":"static","label":"static_seed44","build_seed":44,"update_seed":0,"checkpoint":0,"n_active":1000000,"batch_size":0,"nqueries":1000,"R":64,"L_build":96,"L_search":96,"recall_at_10":0.8164,"distance_calcs_mean":3611.46,"distance_calcs_p50":3782,"distance_calcs_p95":4581,"distance_calcs_p99":4787,"visited_nodes_mean":99.938,"visited_nodes_p50":100,"visited_nodes_p95":102,"visited_nodes_p99":103,"edge_count":64000000,"edge_jaccard_vs_g0":0.43701253,"build_seconds":180.0236704,"update_seconds":0}
