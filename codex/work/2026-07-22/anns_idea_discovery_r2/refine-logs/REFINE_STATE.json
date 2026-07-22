@@ -1,0 +1,21 @@
+{
+  "phase": "final_ruling",
+  "round": 2,
+  "agent_id": "aris_research_review",
+  "last_score": 5.1,
+  "last_verdict": "RETHINK",
+  "status": "not_ready",
+  "timestamp": "2026-07-22T11:57:22Z",
+  "score_history": [
+    {
+      "round": 1,
+      "score": 6.4,
+      "verdict": "REVISE"
+    },
+    {
+      "round": 2,
+      "score": 5.1,
+      "verdict": "RETHINK"
+    }
+  ]
+}

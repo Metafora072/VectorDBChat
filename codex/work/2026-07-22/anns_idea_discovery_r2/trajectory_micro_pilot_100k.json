@@ -1,0 +1,101 @@
+{
+  "status": "phenomenon_micro_pilot_only",
+  "dataset": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift1m/full_1m.bin",
+  "npoints": 100000,
+  "nqueries": 80,
+  "dimension": 128,
+  "horizon": 8,
+  "k": 10,
+  "beta": 0.45,
+  "elapsed_seconds": 80.2659158706665,
+  "records": [
+    {
+      "law": "centroid",
+      "ef": 12,
+      "mean_local_recall": 0.9529687499999999,
+      "mean_open_loop_recall": 0.9484375,
+      "mean_trajectory_overlap": 0.8345312500000001,
+      "mean_terminal_overlap": 0.8150000000000001,
+      "p10_terminal_overlap": 0.2,
+      "mean_terminal_query_divergence": 0.15380952798258343,
+      "p90_terminal_query_divergence": 0.7271026879806051
+    },
+    {
+      "law": "centroid",
+      "ef": 20,
+      "mean_local_recall": 0.97734375,
+      "mean_open_loop_recall": 0.9725000000000001,
+      "mean_trajectory_overlap": 0.8998437500000002,
+      "mean_terminal_overlap": 0.89375,
+      "p10_terminal_overlap": 0.4,
+      "mean_terminal_query_divergence": 0.08997854324236854,
+      "p90_terminal_query_divergence": 0.39351657028215
+    },
+    {
+      "law": "centroid",
+      "ef": 40,
+      "mean_local_recall": 0.99484375,
+      "mean_open_loop_recall": 0.99390625,
+      "mean_trajectory_overlap": 0.9775,
+      "mean_terminal_overlap": 0.97625,
+      "p10_terminal_overlap": 1.0,
+      "mean_terminal_query_divergence": 0.02011054684467652,
+      "p90_terminal_query_divergence": 0.0
+    },
+    {
+      "law": "centroid",
+      "ef": 80,
+      "mean_local_recall": 0.9996875,
+      "mean_open_loop_recall": 0.9990625,
+      "mean_trajectory_overlap": 0.9962500000000001,
+      "mean_terminal_overlap": 0.9949999999999999,
+      "p10_terminal_overlap": 1.0,
+      "mean_terminal_query_divergence": 0.004430552593822303,
+      "p90_terminal_query_divergence": 0.0
+    },
+    {
+      "law": "rocchio",
+      "ef": 12,
+      "mean_local_recall": 0.84921875,
+      "mean_open_loop_recall": 0.8940625000000001,
+      "mean_trajectory_overlap": 0.7303124999999999,
+      "mean_terminal_overlap": 0.6912499999999999,
+      "p10_terminal_overlap": 0.49000000000000005,
+      "mean_terminal_query_divergence": 0.5765079646632778,
+      "p90_terminal_query_divergence": 1.224797059291685
+    },
+    {
+      "law": "rocchio",
+      "ef": 20,
+      "mean_local_recall": 0.91078125,
+      "mean_open_loop_recall": 0.9412500000000001,
+      "mean_trajectory_overlap": 0.8126562499999999,
+      "mean_terminal_overlap": 0.7625,
+      "p10_terminal_overlap": 0.5,
+      "mean_terminal_query_divergence": 0.4095846793915565,
+      "p90_terminal_query_divergence": 0.8659374327481985
+    },
+    {
+      "law": "rocchio",
+      "ef": 40,
+      "mean_local_recall": 0.9723437500000001,
+      "mean_open_loop_recall": 0.9814062500000003,
+      "mean_trajectory_overlap": 0.91484375,
+      "mean_terminal_overlap": 0.86875,
+      "p10_terminal_overlap": 0.69,
+      "mean_terminal_query_divergence": 0.20633521049836862,
+      "p90_terminal_query_divergence": 0.5315888879252965
+    },
+    {
+      "law": "rocchio",
+      "ef": 80,
+      "mean_local_recall": 0.99375,
+      "mean_open_loop_recall": 0.9959374999999999,
+      "mean_trajectory_overlap": 0.97578125,
+      "mean_terminal_overlap": 0.9550000000000001,
+      "p10_terminal_overlap": 0.8,
+      "mean_terminal_query_divergence": 0.06133092434271096,
+      "p90_terminal_query_divergence": 0.30668105787579253
+    }
+  ]
+}
