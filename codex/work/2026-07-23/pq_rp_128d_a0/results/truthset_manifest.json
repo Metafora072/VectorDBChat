@@ -1,0 +1,20 @@
+{
+  "base": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift1m/full_1m.bin",
+  "base_sha256": "8c7b3d999ba3133f865af72df078f77c2d248fdb80571d7ea1f1bb8e1750658e",
+  "distance": "squared_l2_for_official_ids_only",
+  "ids_unchanged": true,
+  "official_ids": "/home/ubuntu/pz/VectorDB/data/VectorDB/datasets/real/sift-128-euclidean/groundtruth.bin",
+  "official_ids_sha256": "b13dbf370590829050f554d747fbf79d43f6d81bd0f7d3b34f1483135af8ebcf",
+  "output": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_128d_a0_0723/sift1m_official_gt100.truthset",
+  "output_sha256": "b457d14c7f4f37002752e02728d91ddd351c3795a0c9ff14d51fafdb8a1c0f0d",
+  "query": "/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift1m/query.bin",
+  "query_sha256": "9b0082b67d0ac55b4c7d42216560344567ad87ce3e75a9d5214a0762f1c15d65",
+  "reference": "codex/work/2026-07-22/p07_page_bonus_a0/results/gt_1000_top100",
+  "reference_exact_top100_set_fraction": 0.988,
+  "reference_mean_top10_overlap": 9.992,
+  "reference_queries": 1000,
+  "shape": [
+    10000,
+    100
+  ]
+}

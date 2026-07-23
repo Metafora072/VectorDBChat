@@ -1,0 +1,26 @@
+{
+  "16": {
+    "code_bytes": 16,
+    "disk_index_bytes": 819204096,
+    "disk_index_realpath": "/home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/index/sift1m_disk.index",
+    "points": 1000000,
+    "pq_resident_bytes": 16000000,
+    "prefix": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_128d_a0_0723/sift1m_pq16"
+  },
+  "32": {
+    "code_bytes": 32,
+    "disk_index_bytes": 819204096,
+    "disk_index_realpath": "/home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/index/sift1m_disk.index",
+    "points": 1000000,
+    "pq_resident_bytes": 32000000,
+    "prefix": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_128d_a0_0723/sift1m_pq32"
+  },
+  "8": {
+    "code_bytes": 8,
+    "disk_index_bytes": 819204096,
+    "disk_index_realpath": "/home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/index/sift1m_disk.index",
+    "points": 1000000,
+    "pq_resident_bytes": 8000000,
+    "prefix": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_128d_a0_0723/sift1m_pq8"
+  }
+}

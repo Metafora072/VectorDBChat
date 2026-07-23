@@ -27,8 +27,6 @@
 #endif
 #endif
 
-#define WARMUP false
-
 namespace po = boost::program_options;
 
 void print_stats(std::string category, std::vector<float> percentiles, std::vector<float> results)
@@ -135,7 +133,14 @@ int search_disk_index(diskann::Metric &metric, const std::string &index_path_pre
     uint64_t warmup_num = 0, warmup_dim = 0, warmup_aligned_dim = 0;
     T *warmup = nullptr;
 
-    if (WARMUP)
+    const char *pqr_warmup_env = std::getenv("PQR_ENABLE_WARMUP");
+    const bool pqr_enable_warmup =
+        pqr_warmup_env != nullptr && pqr_warmup_env[0] != '\0' && std::string(pqr_warmup_env) != "0";
+    const char *pqr_warmup_file_env = std::getenv("PQR_WARMUP_FILE");
+    if (pqr_warmup_file_env != nullptr && pqr_warmup_file_env[0] != '\0')
+        warmup_query_file = pqr_warmup_file_env;
+
+    if (pqr_enable_warmup)
     {
         if (file_exists(warmup_query_file))
         {
@@ -158,6 +163,12 @@ int search_disk_index(diskann::Metric &metric, const std::string &index_path_pre
                     warmup[i * warmup_aligned_dim + d] = (T)dis(gen);
                 }
             }
+        }
+        const char *pqr_warmup_count_env = std::getenv("PQR_WARMUP_COUNT");
+        if (pqr_warmup_count_env != nullptr && pqr_warmup_count_env[0] != '\0')
+        {
+            const uint64_t requested = std::stoull(pqr_warmup_count_env);
+            warmup_num = (std::min)(warmup_num, requested);
         }
         diskann::cout << "Warming up index... " << std::flush;
         std::vector<uint64_t> warmup_result_ids_64(warmup_num, 0);
@@ -196,6 +207,7 @@ int search_disk_index(diskann::Metric &metric, const std::string &index_path_pre
     uint32_t optimized_beamwidth = 2;
 
     double best_recall = 0.0;
+    bool pqr_metrics_initialized = false;
 
     for (uint32_t test_id = 0; test_id < Lvec.size(); test_id++)
     {
@@ -296,16 +308,21 @@ int search_disk_index(diskann::Metric &metric, const std::string &index_path_pre
         const char *p10_metrics_path = std::getenv("P10_METRICS_PATH");
         if (p10_metrics_path != nullptr && p10_metrics_path[0] != '\0')
         {
-            std::ofstream metrics(p10_metrics_path);
-            metrics << "qid,L,total_us,cpu_us,io_us,n_ios,n_cmps,n_hops,n_exact_nav_reads";
-            for (uint32_t k = 0; k < recall_at; ++k)
-                metrics << ",id" << k;
-            metrics << '\n';
+            std::ofstream metrics(p10_metrics_path,
+                                  pqr_metrics_initialized ? std::ios::app : std::ios::out);
+            if (!pqr_metrics_initialized)
+            {
+                metrics << "qid,L,qps,run_wall_s,total_us,cpu_us,io_us,n_ios,n_cmps,n_hops,n_exact_nav_reads";
+                for (uint32_t k = 0; k < recall_at; ++k)
+                    metrics << ",id" << k;
+                metrics << '\n';
+                pqr_metrics_initialized = true;
+            }
             for (uint64_t i = 0; i < query_num; ++i)
             {
-                metrics << i << ',' << L << ',' << stats[i].total_us << ',' << stats[i].cpu_us << ','
-                        << stats[i].io_us << ',' << stats[i].n_ios << ',' << stats[i].n_cmps << ','
-                        << stats[i].n_hops << ',' << stats[i].n_exact_nav_reads;
+                metrics << i << ',' << L << ',' << qps << ',' << diff.count() << ',' << stats[i].total_us << ','
+                        << stats[i].cpu_us << ',' << stats[i].io_us << ',' << stats[i].n_ios << ','
+                        << stats[i].n_cmps << ',' << stats[i].n_hops << ',' << stats[i].n_exact_nav_reads;
                 for (uint32_t k = 0; k < recall_at; ++k)
                     metrics << ',' << query_result_ids_64[i * recall_at + k];
                 metrics << '\n';

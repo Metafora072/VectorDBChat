@@ -1,0 +1,7 @@
+# Reproducible large/raw artifacts.
+/results/*_idx_uint32.bin
+/results/*_dists_float.bin
+/results/per_query/*.csv
+/__pycache__/
+/scripts/__pycache__/
+/figures/__pycache__/

@@ -1,0 +1,82 @@
+Search parameters: #threads: 1,  beamwidth: 4.
+Reading (with alignment) bin file /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift1m/query.bin ...Metadata: #pts = 10000, #dims = 128, aligned_dim = 128... allocating aligned memory of 5120000 bytes... done. Copying data to mem_aligned buffer... done.
+Opened: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_128d_a0_0723/sift1m_official_gt100.truthset, size: 8000008, cache_size: 8000008
+Reading truthset file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_128d_a0_0723/sift1m_official_gt100.truthset ...
+Metadata: #pts = 10000, #dims = 100... 
+L2: Using AVX2 distance computation DistanceL2Float
+L2: Using AVX2 distance computation DistanceL2Float
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_128d_a0_0723/sift1m_pq32_pq_compressed.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_128d_a0_0723/sift1m_pq32_pq_compressed.bin... 
+Metadata: #pts = 1000000, #dims = 32...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_128d_a0_0723/sift1m_pq32_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_128d_a0_0723/sift1m_pq32_pq_pivots.bin... 
+Metadata: #pts = 4, #dims = 1...
+done.
+Offsets: 4096 135176 135696 135836
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_128d_a0_0723/sift1m_pq32_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_128d_a0_0723/sift1m_pq32_pq_pivots.bin... 
+Metadata: #pts = 256, #dims = 128...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_128d_a0_0723/sift1m_pq32_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_128d_a0_0723/sift1m_pq32_pq_pivots.bin... 
+Metadata: #pts = 128, #dims = 1...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_128d_a0_0723/sift1m_pq32_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_128d_a0_0723/sift1m_pq32_pq_pivots.bin... 
+Metadata: #pts = 33, #dims = 1...
+done.
+Loaded PQ Pivots: #ctrs: 256, #dims: 128, #chunks: 32
+Loaded PQ centroids and in-memory compressed vectors. #points: 1000000 #dim: 128 #aligned_dim: 128 #chunks: 32
+Disk-Index File Meta-data: # nodes per sector: 5, max node len (bytes): 772, max node degree: 64
+Opened file : /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_128d_a0_0723/sift1m_pq32_disk.index
+Setting up thread-specific contexts for nthreads: 1
+allocating ctx: 0x796e9a0f8000 to thread-id:133515938151744
+Loading centroid data from medoids vector data of 1 medoid(s)
+done..
+Caching 0 nodes around medoid(s)
+Caching 0...
+Level: 1. #nodes: 0, #nodes thus far: 0
+done
+Loading the cache list into memory....done.
+Reading (with alignment) bin file /home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/datasets/sift1m/query.bin ...Metadata: #pts = 10000, #dims = 128, aligned_dim = 128... allocating aligned memory of 5120000 bytes... done. Copying data to mem_aligned buffer... done.
+Warming up index... ..done
+     L   Beamwidth             QPS    Mean Latency    99.9 Latency        Mean IOs    Mean IO (us)         CPU (s)       Recall@10
+===================================================================================================================================
+    50           4          193.59         5014.73        12643.00           62.85         4025.85          850.72           98.38
+   100           4          112.45         8655.43        19311.00          111.79         6948.69         1465.45           99.70
+   150           4           78.28        12500.57        24843.00          161.22        10007.77         2144.93           99.89
+   200           4           60.43        16156.77        31817.00          210.87        12982.87         2720.57           99.95
+   300           4           41.76        23485.78        40661.00          310.37        18864.20         3955.63           99.99
+Done searching. Now saving results 
+Writing bin: /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-23/pq_rp_128d_a0/results/full_pq32_r3_50_idx_uint32.bin
+bin: #pts = 10000, #dims = 10, size = 400008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-23/pq_rp_128d_a0/results/full_pq32_r3_50_dists_float.bin
+bin: #pts = 10000, #dims = 10, size = 400008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-23/pq_rp_128d_a0/results/full_pq32_r3_100_idx_uint32.bin
+bin: #pts = 10000, #dims = 10, size = 400008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-23/pq_rp_128d_a0/results/full_pq32_r3_100_dists_float.bin
+bin: #pts = 10000, #dims = 10, size = 400008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-23/pq_rp_128d_a0/results/full_pq32_r3_150_idx_uint32.bin
+bin: #pts = 10000, #dims = 10, size = 400008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-23/pq_rp_128d_a0/results/full_pq32_r3_150_dists_float.bin
+bin: #pts = 10000, #dims = 10, size = 400008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-23/pq_rp_128d_a0/results/full_pq32_r3_200_idx_uint32.bin
+bin: #pts = 10000, #dims = 10, size = 400008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-23/pq_rp_128d_a0/results/full_pq32_r3_200_dists_float.bin
+bin: #pts = 10000, #dims = 10, size = 400008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-23/pq_rp_128d_a0/results/full_pq32_r3_300_idx_uint32.bin
+bin: #pts = 10000, #dims = 10, size = 400008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-23/pq_rp_128d_a0/results/full_pq32_r3_300_dists_float.bin
+bin: #pts = 10000, #dims = 10, size = 400008B
+Finished writing bin.
+Clearing scratch
