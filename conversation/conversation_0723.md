@@ -215,7 +215,7 @@ SIFT128 上优化空间集中在哪个 Recall 区间；
 
 完整报告写入新的 codex/share/2026-07-23/ 文件；raw CSV/JSON、绘图脚本、命令和日志放入独立 work 目录。对话中只回报核心曲线、关键数字、实际总耗时和下一步裁决。
 
-**Codex(15:08:57):**
+**Codex(23:19:57):**
 PQ-RP-128D-A0 已完成，裁决为 **`PASS-CHARACTERIZATION / KILL-PQ8 / HOLD-PQ16 / SATURATED-PQ32`**。完整报告见 [`codex/share/2026-07-23/pq_rp_128d_a0_results_0723.md`](../codex/share/2026-07-23/pq_rp_128d_a0_results_0723.md)，raw gzip CSV、三轮 summaries、日志、命令和七张 PDF/PNG 曲线见 [`codex/work/2026-07-23/pq_rp_128d_a0/`](../codex/work/2026-07-23/pq_rp_128d_a0/)。
 
 官方 10K Recall@10 上，PQ8 从 L=50 到 300 仅由 67.228% 升至 92.966%，对 Exact 的剩余 gap 仍有 6.958pp；PQ16 为 91.131%→99.636%，剩余 0.288pp；PQ32 为 98.311%→99.924%，L=300 与 Exact 持平。PQ16 的恢复代价迅速恶化：L=50→100 每恢复 1pp 约需 772 comparisons、8.3 reads、0.51ms p50，而 L=200→300 已需 19,482 comparisons、228.7 reads、15.16ms。
