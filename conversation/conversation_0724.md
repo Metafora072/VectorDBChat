@@ -46,7 +46,7 @@ HOLD-MEMORY-NORMALIZED-MIXED-PRECISION
 
 先回复实验计划与成本，等待审核后再运行。只有高维曲线确认“统一高精度码有效但 DRAM 昂贵”，才新立 mixed-precision candidate，并单独做 prior/novelty kill map 与 held-out Oracle gate。
 
-**Codex(16:23:40)：**
+**Codex(00:31:40)：**
 `PQ-RP-HIGHDIM-A0` 冻结计划已完成，当前状态为 **`PLAN-ONLY / DO-NOT-RUN-WITHOUT-GPT-APPROVAL`**。计划见 [`codex/work/2026-07-24/pq_rp_highdim_a0/refine-logs/EXPERIMENT_PLAN.md`](../codex/work/2026-07-24/pq_rp_highdim_a0/refine-logs/EXPERIMENT_PLAN.md)，执行 tracker 见 [`EXPERIMENT_TRACKER.md`](../codex/work/2026-07-24/pq_rp_highdim_a0/refine-logs/EXPERIMENT_TRACKER.md)。本轮没有下载、构图、训练 PQ 或运行搜索。
 
 数据选择冻结为两级门禁。主选 `Cohere-1M Wikipedia 768D`：1M 个预生成、L2-normalized float32 向量，1K queries 和 top-1000 cosine GT；下载后必须固定 revision/SHA/license，并对 6 个固定 query 用 blocked CPU exact top-100 审计，同时验证 cosine 与 squared-L2 排名等价。任一 shape/hash/license/norm/GT 条件失败即切到本地已具备 HDF5、DiskANN binary、SHA 和独立 GT audit 的 `GIST1M-960D`。GIST 只作为 dimension-stress control；若只有 GIST 为正，最高裁决是 `HOLD-DATASET-SPECIFIC`。
@@ -66,3 +66,27 @@ Full 为 20 个基础点，Recall 一次，性能三次，所有 L 在单次 ind
 mixed-precision 后续资格也已预注册。只有 Cohere 数据门禁通过，且 PQ64 在共同 Recall 目标下相对 matched-recall PQ32 **减少至少 30% reads**，并同时达到 **至少 1.5× QPS 或至少 30% p99 降低**，才裁决 `GO-MIXED-PRECISION-NOVELTY-KILL-MAP`；这只授权单独查新和 held-out Oracle gate，不授权实现 mixed precision。若 PQ64 在 QPS/p99/reads 三项均不足 10% 改善，或 larger-L PQ32 可在 10% 内匹配，则 `KILL-MIXED-PRECISION-MOTIVATION`。
 
 预算为零 GPU。Cohere 路径预留 20GB NVMe、64GiB build RAM，预计 4–9h；GIST fallback 预留 20–25GB 增量空间，预计 3–6h。数据冻结后的 hard wall 为 10h。当前机器有 139GB 可写空间和 251GiB RAM，资源充足。请先审核数据选择、`L` 粗扫和 mixed-precision GO/KILL 门槛；收到批准前保持停止状态。
+
+**PZ(00:33:02)**:
+不需要测多次，时间太久了，测一次两次就行，另外是不是要避免把数据写系统盘上？
+
+**Codex(16:34:42)：**
+同意，已把冻结计划改为 **Recall 一次、性能两次**，不再做三次。Full 从 12 个 multi-L 进程降到 8 个：`PQ16/PQ32/PQ64/Exact × 2 repeats`，共 40 个 performance observations；每个进程仍一次加载并批量跑五个 L。两次原始结果都报告，mixed-precision GO 条件必须在两次中独立成立，不能靠均值或中位数挽救某次失败。若两次 p50 漂移超过 25%，直接标记 `PERFORMANCE-UNSTABLE` 并停止，不自动补第三次。
+
+大文件也已明确禁止写系统盘。实测挂载关系为：
+
+```text
+/home/ubuntu/pz/VectorDB/data -> /dev/nvme8n1, 1.8TB, 当前约 727GB free
+/home/ubuntu/pz             -> system LV, 当前约 139GB free
+```
+
+执行时固定：
+
+```text
+DATA_ROOT=/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724
+TMPDIR=$DATA_ROOT/tmp
+```
+
+下载、converted vectors、full graph/index、PQ artifacts、未压缩 per-query 数据和构图临时文件全部放 `DATA_ROOT`。系统盘上的仓库只保存计划、脚本、manifest、日志、压缩 CSV/JSON 和图。开始前必须用 `findmnt` 确认 `DATA_ROOT` 解析到 `/dev/nvme8n1`，并确认至少 30GB 可用，否则 hard stop。
+
+缩减重复后，Cohere 路径预算调整为 3.5–7.5h，GIST fallback 为 2.5–5.5h，数据冻结后的 hard wall 从 10h 降为 8h。修订后的计划仍位于 [`EXPERIMENT_PLAN.md`](../codex/work/2026-07-24/pq_rp_highdim_a0/refine-logs/EXPERIMENT_PLAN.md)。当前仍未下载或运行实验，等待你或 Gpt 明确批准。
