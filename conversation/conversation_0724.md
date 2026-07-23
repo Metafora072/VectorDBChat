@@ -110,3 +110,118 @@ manifest 和构建目录均未删除。
 分别约为 66G、68G、1.1G 和 17G。审计报告见
 [`codex/share/2026-07-24/nvme_cleanup_0724.md`](../codex/share/2026-07-24/nvme_cleanup_0724.md)。
 被删索引无法通过 Git 恢复，如后续需要只能依靠保留的数据、配置和脚本重建。
+
+**Gpt(01:18:51)：**
+我已审核修订后的 `PQ-RP-HIGHDIM-A0` 计划，批准按当前方案运行。
+
+确认以下设置：
+
+```text
+Primary dataset:
+Cohere-1M Wikipedia, 768D
+
+Fallback:
+GIST1M, 960D
+
+Representations:
+PQ16 / PQ32 / PQ64 / EXACT-NAV
+
+L:
+{50,100,200,400,800}
+
+Search:
+W=4, K=10, one thread, zero node cache
+
+Execution:
+Recall once
+Performance exactly twice
+No automatic third repeat
+
+Hard wall:
+8 hours after the selected dataset is locally frozen
+```
+
+大文件、converted vectors、graph/index、PQ artifacts、临时文件和未压缩结果必须全部写入：
+
+```text
+DATA_ROOT=/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724
+TMPDIR=$DATA_ROOT/tmp
+```
+
+执行前必须确认 `findmnt -T "$DATA_ROOT"` 解析到 `/dev/nvme8n1`，且可用空间不少于 30GB。失败则 hard stop。
+
+补充两项结果表述纪律：
+
+1. 本轮同时改变了数据集、维度、分布和 metric。即使 Cohere-768 与 SIFT128 的曲线不同，也只能表述为 workload-specific evidence，禁止把差异单独归因于维度。
+2. `GO-MIXED-PRECISION-NOVELTY-KILL-MAP` 只表示“统一 PQ64 有效但 DRAM 昂贵”，不表示额外精度具有可选择性。通过后仍需单独验证高精度收益是否集中在少量节点、查询或 frontier 决策上。
+
+按冻结顺序执行：
+
+```text
+M0 dataset/metric audit
+→ M1 one shared graph + shared PQ training sample
+→ M2 Canary
+→ M3 full matrix
+→ M4 preregistered decision
+```
+
+Cohere 任一 revision/hash/license/shape/norm/GT 审计失败，直接切换 GIST，不得自行修复或重新归一化。Canary 任一 gate 失败则停止 Full。
+
+本轮禁止加入：
+
+```text
+OPQ / RPQ / RaBitQ / LVQ / LeanVec
+mixed precision
+selective exact
+residual refinement
+新的 L/W 点
+```
+
+完成后在对话中只回报：
+
+* 实际选择的数据集及 M0 审计结果；
+* PQ16/32/64/Exact 的核心 RP-memory 曲线；
+* matched-recall PQ32↔PQ64 对比；
+  -两次性能重复的稳定性；
+  -最终 GO/HOLD/KILL 裁决；
+  -实际时间、内存和 NVMe 占用。
+
+可以开始运行。
+
+**Codex(02:37:55)：**
+`PQ-RP-HIGHDIM-A0` 已按冻结门禁推进到 M2，并因 Canary 稳定性失败停止；
+没有运行 Full，也没有添加第三次重复。
+
+M0 首选 Cohere 镜像失败：全量 base 的最大 `|norm-1|=16.4741764`，远超
+`1e-4` 门限。未做归一化或修复，按预注册切换到 GIST1M-960D。GIST 的
+HDF5/base/query/GT 四个 SHA 均匹配，shape 为
+`1M×960 / 1K×960 / 1K×100`，GT 距离单调违规为 0，6 个固定 query 的
+独立 exact top-100 集合均 100/100 一致。
+
+M1 构建了一张 R64/L100 full-precision 图，大小 8,192,004,096B，SHA 为
+`52827694a9e8dcf64037639e594ed9855f514aa2ebbcb5a4d25f4c1921fa1c37`。
+PQ16/32/64 使用同一 100,000 行训练样本，三者 graph realpath 完全一致；
+code resident 分别为 16/32/64MB。共享样本重构 L2² median 为
+0.7959/0.6540/0.5120。
+
+Canary 中 Exact L800 Recall@10 为 99.85%，返回 IDs 和 Recall 在两次间
+完全一致。诊断性的 95.5% common-recall 对比为 PQ32 L800（95.8%）对
+PQ64 L400（97.25%）：两次分别得到 2.093×/1.875× QPS、49.29% reads
+降低、61.65%/39.04% p99 降低。但 PQ32 L200 p50 漂移 65.1%，Exact
+L200 漂移 28.1%，均违反 25% 稳定性门禁。因此这些强数值不能升级为
+GO；GIST 本来也只能支持最高 `HOLD-DATASET-SPECIFIC`。
+
+最终状态为：
+
+```text
+STOP-CANARY
+NO GO/HOLD/KILL PAPER DECISION
+NO FULL MATRIX
+NO THIRD REPEAT
+```
+
+总计使用 0 GPU；M1 53m34.67s，M2 2m16.34s，峰值 RSS 约 12.41GiB。
+本轮 NVMe 实际增量为 11.423GiB，当前约 333G used、1.4T available。
+完整结果、原始曲线与 claim 边界见
+[`EXPERIMENT_RESULTS.md`](../codex/work/2026-07-24/pq_rp_highdim_a0/EXPERIMENT_RESULTS.md)
+和 [`findings.md`](../codex/work/2026-07-24/pq_rp_highdim_a0/findings.md)。

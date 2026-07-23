@@ -9,7 +9,8 @@
 
 template <typename T>
 bool generate_pq(const std::string &data_path, const std::string &index_prefix_path, const size_t num_pq_centers,
-                 const size_t num_pq_chunks, const float sampling_rate, const bool opq)
+                 const size_t num_pq_chunks, const float sampling_rate, const bool opq,
+                 const std::string &training_data_path)
 {
     std::string pq_pivots_path = index_prefix_path + "_pq_pivots.bin";
     std::string pq_compressed_vectors_path = index_prefix_path + "_pq_compressed.bin";
@@ -17,7 +18,16 @@ bool generate_pq(const std::string &data_path, const std::string &index_prefix_p
     // generates random sample and sets it to train_data and updates train_size
     size_t train_size, train_dim;
     float *train_data;
-    gen_random_slice<T>(data_path, sampling_rate, train_data, train_size, train_dim);
+    if (training_data_path.empty())
+    {
+        gen_random_slice<T>(data_path, sampling_rate, train_data, train_size, train_dim);
+    }
+    else
+    {
+        // Experiment-only deterministic hook: the caller materializes one
+        // shared training matrix and every code width consumes all of it.
+        gen_random_slice<T>(training_data_path, 1.0, train_data, train_size, train_dim);
+    }
     std::cout << "For computing pivots, loaded sample data of size " << train_size << std::endl;
 
     if (opq)
@@ -40,13 +50,13 @@ bool generate_pq(const std::string &data_path, const std::string &index_prefix_p
 
 int main(int argc, char **argv)
 {
-    if (argc != 7)
+    if (argc != 7 && argc != 8)
     {
         std::cout << "Usage: \n"
                   << argv[0]
                   << "  <data_type[float/uint8/int8]>   <data_file[.bin]>"
                      "  <PQ_prefix_path>  <target-bytes/data-point>  "
-                     "<sampling_rate> <PQ(0)/OPQ(1)>"
+                     "<sampling_rate> <PQ(0)/OPQ(1)> [shared_training_data.bin]"
                   << std::endl;
     }
     else
@@ -57,13 +67,17 @@ int main(int argc, char **argv)
         const size_t num_pq_chunks = (size_t)atoi(argv[4]);
         const float sampling_rate = (float)atof(argv[5]);
         const bool opq = atoi(argv[6]) == 0 ? false : true;
+        const std::string training_data_path = argc == 8 ? std::string(argv[7]) : std::string();
 
         if (std::string(argv[1]) == std::string("float"))
-            generate_pq<float>(data_path, index_prefix_path, num_pq_centers, num_pq_chunks, sampling_rate, opq);
+            generate_pq<float>(data_path, index_prefix_path, num_pq_centers, num_pq_chunks, sampling_rate, opq,
+                               training_data_path);
         else if (std::string(argv[1]) == std::string("int8"))
-            generate_pq<int8_t>(data_path, index_prefix_path, num_pq_centers, num_pq_chunks, sampling_rate, opq);
+            generate_pq<int8_t>(data_path, index_prefix_path, num_pq_centers, num_pq_chunks, sampling_rate, opq,
+                                training_data_path);
         else if (std::string(argv[1]) == std::string("uint8"))
-            generate_pq<uint8_t>(data_path, index_prefix_path, num_pq_centers, num_pq_chunks, sampling_rate, opq);
+            generate_pq<uint8_t>(data_path, index_prefix_path, num_pq_centers, num_pq_chunks, sampling_rate, opq,
+                                 training_data_path);
         else
             std::cout << "Error. wrong file type" << std::endl;
     }

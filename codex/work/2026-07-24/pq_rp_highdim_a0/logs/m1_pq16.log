@@ -1,0 +1,50 @@
+Opened: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/pq_training/shared_sample.bin, size: 384000008, cache_size: 67108864
+For computing pivots, loaded sample data of size 100000
+Processing chunk 0 with dimensions [0, 60)
+Processing chunk 1 with dimensions [60, 120)
+Processing chunk 2 with dimensions [120, 180)
+Processing chunk 3 with dimensions [180, 240)
+Processing chunk 4 with dimensions [240, 300)
+Processing chunk 5 with dimensions [300, 360)
+Processing chunk 6 with dimensions [360, 420)
+Processing chunk 7 with dimensions [420, 480)
+Processing chunk 8 with dimensions [480, 540)
+Processing chunk 9 with dimensions [540, 600)
+Processing chunk 10 with dimensions [600, 660)
+Processing chunk 11 with dimensions [660, 720)
+Processing chunk 12 with dimensions [720, 780)
+Processing chunk 13 with dimensions [780, 840)
+Processing chunk 14 with dimensions [840, 900)
+Processing chunk 15 with dimensions [900, 960)
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin
+bin: #pts = 256, #dims = 960, size = 983048B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin
+bin: #pts = 960, #dims = 1, size = 3848B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin
+bin: #pts = 17, #dims = 1, size = 76B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin
+bin: #pts = 4, #dims = 1, size = 40B
+Finished writing bin.
+Saved pq pivot data to /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin of size 991068B.
+Opened: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_base.bin, size: 3840000008, cache_size: 67108864
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin... 
+Metadata: #pts = 4, #dims = 1...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin... 
+Metadata: #pts = 256, #dims = 960...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin... 
+Metadata: #pts = 960, #dims = 1...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin... 
+Metadata: #pts = 17, #dims = 1...
+done.
+Loaded PQ pivot information
+Processing points  [0, 1000000)...done.

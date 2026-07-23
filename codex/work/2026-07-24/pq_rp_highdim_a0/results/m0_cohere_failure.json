@@ -1,0 +1,9 @@
+{
+  "dataset": "Cohere-1M-wikipedia-768d",
+  "failure_gate": "base_unit_norm",
+  "max_abs_norm_error": 16.4741764,
+  "norm_tolerance": 0.0001,
+  "reason": "Downloaded base vectors are not L2-normalized as declared.",
+  "repair_attempted": false,
+  "status": "FAIL-FALLBACK-GIST"
+}

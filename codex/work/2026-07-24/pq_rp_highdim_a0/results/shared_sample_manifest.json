@@ -1,0 +1,36 @@
+{
+  "dimension": 960,
+  "first_ids": [
+    14,
+    24,
+    25,
+    39,
+    46,
+    49,
+    52,
+    59,
+    65,
+    78
+  ],
+  "fraction": 0.1,
+  "ids": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/pq_training/shared_sample_ids.bin",
+  "ids_sha256": "44b5794112f5aa4025d930d3403240de99df75a863054a9598ed02f7c157024f",
+  "last_ids": [
+    999845,
+    999847,
+    999856,
+    999860,
+    999895,
+    999905,
+    999929,
+    999963,
+    999964,
+    999988
+  ],
+  "population_rows": 1000000,
+  "sample": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/pq_training/shared_sample.bin",
+  "sample_rows": 100000,
+  "sample_sha256": "2108aa0cfac2f409c16223ebfbd74ff34fb5dbf8b2cf2f57275de7c2bf07e857",
+  "seed": 20260724,
+  "status": "PASS"
+}

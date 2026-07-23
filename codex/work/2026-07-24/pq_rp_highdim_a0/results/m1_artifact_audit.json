@@ -1,0 +1,63 @@
+{
+  "all_graph_realpaths_identical": true,
+  "artifacts": {
+    "16": {
+      "bits_per_dimension": 0.13333333333333333,
+      "code_bytes": 16,
+      "compressed_sha256": "35eb620c2e9206e71288be12c0bbf988d1891289ab16484a6aa705b3127f9792",
+      "pivots_sha256": "2aa438b6a6a0c5107d4c9abf5b3e67495b01e7e209d18985748e9091b491ba40",
+      "pq_resident_bytes": 16000000,
+      "raw_float_compression": 240.0,
+      "reconstruction_l2sq": {
+        "mean": 0.8624295410840074,
+        "median": 0.7959198756143451,
+        "p90": 1.3784564919769766,
+        "p99": 2.418328303396698
+      }
+    },
+    "32": {
+      "bits_per_dimension": 0.26666666666666666,
+      "code_bytes": 32,
+      "compressed_sha256": "90e53e98f5deed76c1eb259cfcda7dc9b5ba6197d7b52c8425103f8b91ada99e",
+      "pivots_sha256": "aa865e66765196f6c218dcdf043e6ccdd87b13049873632b8b080c93c443e1d5",
+      "pq_resident_bytes": 32000000,
+      "raw_float_compression": 120.0,
+      "reconstruction_l2sq": {
+        "mean": 0.708438507633151,
+        "median": 0.6539523478131741,
+        "p90": 1.1281585665419698,
+        "p99": 1.9798226223897624
+      }
+    },
+    "64": {
+      "bits_per_dimension": 0.5333333333333333,
+      "code_bytes": 64,
+      "compressed_sha256": "ca3fc418a05e93aa675f2726598fc3f964646aec2757c5be95450573f4833f77",
+      "pivots_sha256": "9ac5182f0bb24039ce94e5509e5db80f2434c1e54886ad5bd5e3498b38a4dd07",
+      "pq_resident_bytes": 64000000,
+      "raw_float_compression": 60.0,
+      "reconstruction_l2sq": {
+        "mean": 0.5569535349478553,
+        "median": 0.5120175965130329,
+        "p90": 0.8823145236587152,
+        "p99": 1.587412961738881
+      }
+    }
+  },
+  "exact_nav": {
+    "auxiliary_code_bytes": 16,
+    "auxiliary_pq_resident_bytes": 16000000,
+    "full_vector_resident_bytes": 3840000000
+  },
+  "graph": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_disk.index",
+  "graph_bytes": 8192004096,
+  "graph_realpaths": {
+    "16": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_disk.index",
+    "32": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_disk.index",
+    "64": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_disk.index"
+  },
+  "graph_sha256": "52827694a9e8dcf64037639e594ed9855f514aa2ebbcb5a4d25f4c1921fa1c37",
+  "shared_sample_ids_sha256": "44b5794112f5aa4025d930d3403240de99df75a863054a9598ed02f7c157024f",
+  "shared_sample_sha256": "2108aa0cfac2f409c16223ebfbd74ff34fb5dbf8b2cf2f57275de7c2bf07e857",
+  "status": "PASS"
+}

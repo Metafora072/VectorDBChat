@@ -1,0 +1,192 @@
+Starting index build: R=64 L=100 Query RAM budget: 1.07374e+08 Indexing ram budget: 64 T: 24
+Compressing 960-dimensional data into 107 bytes per vector.
+Opened: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_base.bin, size: 3840000008, cache_size: 67108864
+Training data with 256050 samples loaded.
+Processing chunk 0 with dimensions [0, 9)
+Processing chunk 1 with dimensions [9, 18)
+Processing chunk 2 with dimensions [18, 27)
+Processing chunk 3 with dimensions [27, 36)
+Processing chunk 4 with dimensions [36, 45)
+Processing chunk 5 with dimensions [45, 54)
+Processing chunk 6 with dimensions [54, 63)
+Processing chunk 7 with dimensions [63, 72)
+Processing chunk 8 with dimensions [72, 81)
+Processing chunk 9 with dimensions [81, 90)
+Processing chunk 10 with dimensions [90, 99)
+Processing chunk 11 with dimensions [99, 108)
+Processing chunk 12 with dimensions [108, 117)
+Processing chunk 13 with dimensions [117, 126)
+Processing chunk 14 with dimensions [126, 135)
+Processing chunk 15 with dimensions [135, 144)
+Processing chunk 16 with dimensions [144, 153)
+Processing chunk 17 with dimensions [153, 162)
+Processing chunk 18 with dimensions [162, 171)
+Processing chunk 19 with dimensions [171, 180)
+Processing chunk 20 with dimensions [180, 189)
+Processing chunk 21 with dimensions [189, 198)
+Processing chunk 22 with dimensions [198, 207)
+Processing chunk 23 with dimensions [207, 216)
+Processing chunk 24 with dimensions [216, 225)
+Processing chunk 25 with dimensions [225, 234)
+Processing chunk 26 with dimensions [234, 243)
+Processing chunk 27 with dimensions [243, 252)
+Processing chunk 28 with dimensions [252, 261)
+Processing chunk 29 with dimensions [261, 270)
+Processing chunk 30 with dimensions [270, 279)
+Processing chunk 31 with dimensions [279, 288)
+Processing chunk 32 with dimensions [288, 297)
+Processing chunk 33 with dimensions [297, 306)
+Processing chunk 34 with dimensions [306, 315)
+Processing chunk 35 with dimensions [315, 324)
+Processing chunk 36 with dimensions [324, 333)
+Processing chunk 37 with dimensions [333, 342)
+Processing chunk 38 with dimensions [342, 351)
+Processing chunk 39 with dimensions [351, 360)
+Processing chunk 40 with dimensions [360, 369)
+Processing chunk 41 with dimensions [369, 378)
+Processing chunk 42 with dimensions [378, 387)
+Processing chunk 43 with dimensions [387, 396)
+Processing chunk 44 with dimensions [396, 405)
+Processing chunk 45 with dimensions [405, 414)
+Processing chunk 46 with dimensions [414, 423)
+Processing chunk 47 with dimensions [423, 432)
+Processing chunk 48 with dimensions [432, 441)
+Processing chunk 49 with dimensions [441, 450)
+Processing chunk 50 with dimensions [450, 459)
+Processing chunk 51 with dimensions [459, 468)
+Processing chunk 52 with dimensions [468, 477)
+Processing chunk 53 with dimensions [477, 486)
+Processing chunk 54 with dimensions [486, 495)
+Processing chunk 55 with dimensions [495, 504)
+Processing chunk 56 with dimensions [504, 513)
+Processing chunk 57 with dimensions [513, 522)
+Processing chunk 58 with dimensions [522, 531)
+Processing chunk 59 with dimensions [531, 540)
+Processing chunk 60 with dimensions [540, 549)
+Processing chunk 61 with dimensions [549, 558)
+Processing chunk 62 with dimensions [558, 567)
+Processing chunk 63 with dimensions [567, 576)
+Processing chunk 64 with dimensions [576, 585)
+Processing chunk 65 with dimensions [585, 594)
+Processing chunk 66 with dimensions [594, 603)
+Processing chunk 67 with dimensions [603, 612)
+Processing chunk 68 with dimensions [612, 621)
+Processing chunk 69 with dimensions [621, 630)
+Processing chunk 70 with dimensions [630, 639)
+Processing chunk 71 with dimensions [639, 648)
+Processing chunk 72 with dimensions [648, 657)
+Processing chunk 73 with dimensions [657, 666)
+Processing chunk 74 with dimensions [666, 675)
+Processing chunk 75 with dimensions [675, 684)
+Processing chunk 76 with dimensions [684, 693)
+Processing chunk 77 with dimensions [693, 702)
+Processing chunk 78 with dimensions [702, 711)
+Processing chunk 79 with dimensions [711, 720)
+Processing chunk 80 with dimensions [720, 729)
+Processing chunk 81 with dimensions [729, 738)
+Processing chunk 82 with dimensions [738, 747)
+Processing chunk 83 with dimensions [747, 756)
+Processing chunk 84 with dimensions [756, 765)
+Processing chunk 85 with dimensions [765, 774)
+Processing chunk 86 with dimensions [774, 783)
+Processing chunk 87 with dimensions [783, 792)
+Processing chunk 88 with dimensions [792, 801)
+Processing chunk 89 with dimensions [801, 810)
+Processing chunk 90 with dimensions [810, 819)
+Processing chunk 91 with dimensions [819, 828)
+Processing chunk 92 with dimensions [828, 837)
+Processing chunk 93 with dimensions [837, 846)
+Processing chunk 94 with dimensions [846, 855)
+Processing chunk 95 with dimensions [855, 864)
+Processing chunk 96 with dimensions [864, 873)
+Processing chunk 97 with dimensions [873, 882)
+Processing chunk 98 with dimensions [882, 891)
+Processing chunk 99 with dimensions [891, 900)
+Processing chunk 100 with dimensions [900, 909)
+Processing chunk 101 with dimensions [909, 918)
+Processing chunk 102 with dimensions [918, 927)
+Processing chunk 103 with dimensions [927, 936)
+Processing chunk 104 with dimensions [936, 944)
+Processing chunk 105 with dimensions [944, 952)
+Processing chunk 106 with dimensions [952, 960)
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_pq_pivots.bin
+bin: #pts = 256, #dims = 960, size = 983048B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_pq_pivots.bin
+bin: #pts = 960, #dims = 1, size = 3848B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_pq_pivots.bin
+bin: #pts = 108, #dims = 1, size = 440B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_pq_pivots.bin
+bin: #pts = 4, #dims = 1, size = 40B
+Finished writing bin.
+Saved pq pivot data to /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_pq_pivots.bin of size 991432B.
+Opened: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_base.bin, size: 3840000008, cache_size: 67108864
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_pq_pivots.bin... 
+Metadata: #pts = 4, #dims = 1...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_pq_pivots.bin... 
+Metadata: #pts = 256, #dims = 960...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_pq_pivots.bin... 
+Metadata: #pts = 960, #dims = 1...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_pq_pivots.bin... 
+Metadata: #pts = 108, #dims = 1...
+done.
+Loaded PQ pivot information
+Processing points  [0, 1000000)...done.
+Time for generating quantized data: 1222.593018 seconds
+Full index fits in RAM budget, should consume at most 4.32402GiBs, so building in one shot
+L2: Using AVX2 distance computation DistanceL2Float
+Passed, empty search_params while creating index config
+Using only first 1000000 from file.. 
+Starting index build with 1000000 points... 
+0% of index build completed.10% of index build completed.20% of index build completed.30% of index build completed.40% of index build completed.50% of index build completed.60% of index build completed.70% of index build completed.80% of index build completed.90% of index build completed.Starting final cleanup..done. Link time: 244.391s
+Index built with degree: max:64  avg:64  min:64  count(deg<2):0
+Not saving tags as they are not enabled.
+Time taken for save: 2.30247s.
+Time for building merged vamana index: 250.211060 seconds
+Opened: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_base.bin, size: 3840000008, cache_size: 67108864
+Vamana index file size=260000024
+Opened: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_disk.index, cache_size: 67108864
+medoid: 356422B
+max_node_len: 4100B
+nnodes_per_sector: 0B
+# sectors: 2000000
+Sector #0written
+Sector #100000written
+Sector #200000written
+Sector #300000written
+Sector #400000written
+Sector #500000written
+Sector #600000written
+Sector #700000written
+Sector #800000written
+Sector #900000written
+Sector #1000000written
+Sector #1100000written
+Sector #1200000written
+Sector #1300000written
+Sector #1400000written
+Sector #1500000written
+Sector #1600000written
+Sector #1700000written
+Sector #1800000written
+Sector #1900000written
+Finished writing 8192004096B
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_disk.index
+bin: #pts = 9, #dims = 1, size = 80B
+Finished writing bin.
+Output disk index file written to /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_disk.index
+Finished writing 8192004096B
+Time for generating disk layout: 5.900166 seconds
+Opened: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_base.bin, size: 3840000008, cache_size: 67108864
+Loading base /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_base.bin. #points: 1000000. #dim: 960.
+Wrote 99834 points to sample file: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_sample_data.bin
+Indexing time: 1480.32

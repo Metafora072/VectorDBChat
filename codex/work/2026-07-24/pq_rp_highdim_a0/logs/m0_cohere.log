@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-24/pq_rp_highdim_a0/scripts/m0_audit_cohere.py", line 209, in <module>
+    main()
+  File "/home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-24/pq_rp_highdim_a0/scripts/m0_audit_cohere.py", line 102, in main
+    base_norms = audit_vectors(base, "base")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-24/pq_rp_highdim_a0/scripts/m0_audit_cohere.py", line 52, in audit_vectors
+    raise ValueError(f"{label}: max |norm-1|={max_error:.9g} exceeds {NORM_TOL}")
+ValueError: base: max |norm-1|=16.4741764 exceeds 0.0001

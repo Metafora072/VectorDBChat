@@ -1,0 +1,87 @@
+{
+  "dataset": "GIST1M-960D",
+  "dtype": {
+    "base": "float32",
+    "groundtruth": "uint32",
+    "query": "float32"
+  },
+  "elapsed_s": 19.88186001777649,
+  "exact_audits": {
+    "0": {
+      "exact_boundary_distance": 0.7783169746398926,
+      "tie_safe_top100": true,
+      "top100_set_overlap": 100
+    },
+    "101": {
+      "exact_boundary_distance": 1.6404666900634766,
+      "tie_safe_top100": true,
+      "top100_set_overlap": 100
+    },
+    "17": {
+      "exact_boundary_distance": 1.537252426147461,
+      "tie_safe_top100": true,
+      "top100_set_overlap": 100
+    },
+    "257": {
+      "exact_boundary_distance": 1.019127368927002,
+      "tie_safe_top100": true,
+      "top100_set_overlap": 100
+    },
+    "509": {
+      "exact_boundary_distance": 0.5965361595153809,
+      "tie_safe_top100": true,
+      "top100_set_overlap": 100
+    },
+    "997": {
+      "exact_boundary_distance": 1.461777687072754,
+      "tie_safe_top100": true,
+      "top100_set_overlap": 100
+    }
+  },
+  "gt_monotonic_distance_violations": 0,
+  "maximum_positive_verdict": "HOLD-DATASET-SPECIFIC",
+  "outputs": {
+    "converted/gist_base.bin": {
+      "bytes": 3840000008,
+      "sha256": "fd57967ae1461c453336b9be9621c74a2b5927e74cafa9f5e899a5dc5df6a5b8"
+    },
+    "converted/gist_gt100.truthset": {
+      "bytes": 800008,
+      "sha256": "b8c2cfe890e731a4af189726c8fd6d4812312e4a97db89e1c484d703e2bdbecb"
+    },
+    "converted/gist_query.bin": {
+      "bytes": 3840008,
+      "sha256": "220465f0ab851de6890d87ab1dd5081f526da8d214aa7a3849e738e63cad6775"
+    },
+    "converted/gist_query_canary200.bin": {
+      "bytes": 768008,
+      "sha256": "49016b9e6acc68cebc661c77e2bd849711c16be68354624809e84f188bb2b483"
+    },
+    "converted/gist_query_warmup900_999.bin": {
+      "bytes": 384008,
+      "sha256": "9bd4a9191298f196e0974c0c09eab09fa87905442fc546b1de92d66db8b2895f"
+    }
+  },
+  "role": "dimension-stress fallback control",
+  "shape": {
+    "base": [
+      1000000,
+      960
+    ],
+    "groundtruth": [
+      1000,
+      100
+    ],
+    "query": [
+      1000,
+      960
+    ]
+  },
+  "source_hashes": {
+    "full.bin": "fd57967ae1461c453336b9be9621c74a2b5927e74cafa9f5e899a5dc5df6a5b8",
+    "gist-960-euclidean.hdf5": "8e95831936bfdbfa0a56086942e2cf98cd703517c67f985914183eb4cdbf026a",
+    "groundtruth.bin": "bba445688df6f531ce0c2f7a041916a283176d0011b192a5f01e18be563b33f1",
+    "query.bin": "220465f0ab851de6890d87ab1dd5081f526da8d214aa7a3849e738e63cad6775"
+  },
+  "status": "PASS"
+}

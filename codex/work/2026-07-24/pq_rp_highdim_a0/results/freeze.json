@@ -1,0 +1,6 @@
+{
+  "dataset": "GIST1M-960D",
+  "freeze_time_cst": "2026-07-24T01:39:02+08:00",
+  "hard_deadline_cst": "2026-07-24T09:39:02+08:00",
+  "hard_wall_seconds": 28800
+}

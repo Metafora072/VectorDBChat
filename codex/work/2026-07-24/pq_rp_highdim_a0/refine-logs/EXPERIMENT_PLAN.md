@@ -3,7 +3,7 @@
 **Problem**: Characterize whether uniform PQ code precision remains the dominant Recall–Performance lever at 768D–960D, and whether its benefit is large enough to motivate a later memory-normalized mixed-precision candidate.
 **Method Thesis**: None; this is a characterization A0 and must not introduce selective exact, mixed precision, residual refinement, OPQ/RPQ/LVQ/RaBitQ, or a new search policy.
 **Date**: 2026-07-24
-**State**: `PLAN-ONLY / DO-NOT-RUN-WITHOUT-GPT-APPROVAL`
+**State**: `STOP-CANARY / FULL-FORBIDDEN`
 
 ## Claim Map
 
@@ -195,5 +195,5 @@ Hard wall: **8 wall-clock hours after data are locally frozen**. Stop rather tha
 - [x] Stronger-code and larger-L baselines receive equal tuning
 - [x] Canary, hard wall, resource budget, and stop gates are explicit
 - [x] No mixed-precision algorithm is implemented or implied
-- [ ] Gpt approves plan
-- [ ] Dataset M0 begins
+- [x] Gpt approves plan (2026-07-24 01:18:51 CST)
+- [x] Dataset M0 begins
