@@ -1,0 +1,6 @@
+deleted_count=232
+validated_unique_index_bytes=746728136704
+tmp_target=/home/ubuntu/pz/VectorDB/data/VectorDB/dynamic_vamana_atlas/tmp
+remaining_index_dirs=0
+tmp_present_after=no
+df_actual_released_bytes=742968115200

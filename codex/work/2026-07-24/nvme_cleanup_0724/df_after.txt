@@ -1,0 +1,2 @@
+Filesystem         1B-blocks         Used     Available Use% Mounted on
+/dev/nvme8n1   1967847137280 344624816128 1523185598464  19% /home/ubuntu/pz/VectorDB/data
