@@ -1,0 +1,426 @@
+{
+  "dataset": "GIST1M-960D",
+  "experiment": "PQ-RP-HIGHDIM-DISCOVERY",
+  "forbidden_claims": [
+    "mixed precision is feasible",
+    "the effect generalizes to high-dimensional data",
+    "precision benefits are node- or query-selective",
+    "paper-level RP superiority"
+  ],
+  "generated_at_unix": 1784834714.2828124,
+  "repeats": {
+    "exact": [
+      1,
+      2,
+      3
+    ],
+    "pq16": [
+      1,
+      2
+    ],
+    "pq32": [
+      1,
+      2
+    ],
+    "pq64": [
+      1,
+      2
+    ]
+  },
+  "scope": "idea-discovery characterization only; not a paper-level result",
+  "stability": {
+    "exact": {
+      "performance_stable": true,
+      "repeats": 3
+    },
+    "exact_L100": {
+      "pairs": [
+        {
+          "p50_drift": 0.038829210604119445,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.0845081695422998
+        },
+        {
+          "p50_drift": 0.09342672413793103,
+          "pair": [
+            1,
+            3
+          ],
+          "qps_drift": 0.2474316171733146
+        },
+        {
+          "p50_drift": 0.13588362068965518,
+          "pair": [
+            2,
+            3
+          ],
+          "qps_drift": 0.3528497797698223
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "exact_L200": {
+      "pairs": [
+        {
+          "p50_drift": 0.12642489941886456,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.2484076278568673
+        },
+        {
+          "p50_drift": 0.04502189781021898,
+          "pair": [
+            1,
+            3
+          ],
+          "qps_drift": 0.05699375115404422
+        },
+        {
+          "p50_drift": 0.17713868613138686,
+          "pair": [
+            2,
+            3
+          ],
+          "qps_drift": 0.31955906153775226
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "exact_L400": {
+      "pairs": [
+        {
+          "p50_drift": 0.01765889385846831,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.08927511137841067
+        },
+        {
+          "p50_drift": 0.027713316672616922,
+          "pair": [
+            1,
+            3
+          ],
+          "qps_drift": 0.12700778020816175
+        },
+        {
+          "p50_drift": 0.04586159704867309,
+          "pair": [
+            2,
+            3
+          ],
+          "qps_drift": 0.03464016430339871
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "exact_L50": {
+      "pairs": [
+        {
+          "p50_drift": 1.2826878834355828,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.9688008769639334
+        },
+        {
+          "p50_drift": 0.07635163021048287,
+          "pair": [
+            1,
+            3
+          ],
+          "qps_drift": 0.1385797319349457
+        },
+        {
+          "p50_drift": 1.4569748245976062,
+          "pair": [
+            2,
+            3
+          ],
+          "qps_drift": 1.2416367747268813
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "exact_L800": {
+      "pairs": [
+        {
+          "p50_drift": 0.036114597465158625,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.05980364879367225
+        },
+        {
+          "p50_drift": 0.02234732173319686,
+          "pair": [
+            1,
+            3
+          ],
+          "qps_drift": 0.038029373377938575
+        },
+        {
+          "p50_drift": 0.05926898372717428,
+          "pair": [
+            2,
+            3
+          ],
+          "qps_drift": 0.10010731746094849
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "pq16": {
+      "performance_stable": true,
+      "repeats": 2
+    },
+    "pq16_L100": {
+      "pairs": [
+        {
+          "p50_drift": 0.057870791628753415,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.0388755091725388
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "pq16_L200": {
+      "pairs": [
+        {
+          "p50_drift": 0.029979253112033196,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.10413897402659227
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "pq16_L400": {
+      "pairs": [
+        {
+          "p50_drift": 0.004238073795459964,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.002305304058450689
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "pq16_L50": {
+      "pairs": [
+        {
+          "p50_drift": 0.02759526938239159,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.07317421311102289
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "pq16_L800": {
+      "pairs": [
+        {
+          "p50_drift": 0.014430741977243306,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.03382923616820033
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "pq32": {
+      "performance_stable": true,
+      "repeats": 2
+    },
+    "pq32_L100": {
+      "pairs": [
+        {
+          "p50_drift": 0.009731913330885054,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.08463927714245371
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "pq32_L200": {
+      "pairs": [
+        {
+          "p50_drift": 0.019175408636252743,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.1501334230121519
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "pq32_L400": {
+      "pairs": [
+        {
+          "p50_drift": 0.022489217498459644,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.08690981179978957
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "pq32_L50": {
+      "pairs": [
+        {
+          "p50_drift": 0.025972006220839814,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.06898129985615271
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "pq32_L800": {
+      "pairs": [
+        {
+          "p50_drift": 0.03653014371060009,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.031736883844876815
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "pq64": {
+      "performance_stable": true,
+      "repeats": 2
+    },
+    "pq64_L100": {
+      "pairs": [
+        {
+          "p50_drift": 0.01841290532833632,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.056967338217338244
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "pq64_L200": {
+      "pairs": [
+        {
+          "p50_drift": 0.0020799221135548965,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.036475011754182135
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "pq64_L400": {
+      "pairs": [
+        {
+          "p50_drift": 0.04473354668150828,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.15524757314661164
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "pq64_L50": {
+      "pairs": [
+        {
+          "p50_drift": 0.013801585132549877,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.002311140812519099
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "pq64_L800": {
+      "pairs": [
+        {
+          "p50_drift": 0.2064639141283367,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.2269242364235004
+        }
+      ],
+      "stable_pair_exists": true
+    }
+  },
+  "threshold_comparisons": [
+    {
+      "L_reduction": 0.5,
+      "comparisons_reduction": 0.4622798729772757,
+      "extra_bytes_per_vector": 16,
+      "higher": "pq32",
+      "higher_L": 400,
+      "higher_recall": 0.8875000000000001,
+      "hops_reduction": 0.48971482115611986,
+      "lower": "pq16",
+      "lower_L": 800,
+      "lower_recall": 0.8078,
+      "p50_reduction": 0.4670869721096672,
+      "p99_reduction": 0.4509514744361648,
+      "qps_speedup": 1.8827412954568175,
+      "reads_reduction": 0.49289957476424473,
+      "target_recall": 0.805
+    },
+    {
+      "L_reduction": 0.5,
+      "comparisons_reduction": 0.46273625411061725,
+      "extra_bytes_per_vector": 32,
+      "higher": "pq64",
+      "higher_L": 400,
+      "higher_recall": 0.9682000000000001,
+      "hops_reduction": 0.4896618110738947,
+      "lower": "pq32",
+      "lower_L": 800,
+      "lower_recall": 0.9483,
+      "p50_reduction": 0.45083396654168584,
+      "p99_reduction": 0.4560433118891888,
+      "qps_speedup": 1.8387393961728034,
+      "reads_reduction": 0.4928692456269482,
+      "target_recall": 0.945
+    }
+  ],
+  "verdict": "PASS-DISCOVERY-UNIFORM-PRECISION-TRADEOFF"
+}

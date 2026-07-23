@@ -1,0 +1,82 @@
+Search parameters: #threads: 1,  beamwidth: 4.
+Reading (with alignment) bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_query.bin ...Metadata: #pts = 1000, #dims = 960, aligned_dim = 960... allocating aligned memory of 3840000 bytes... done. Copying data to mem_aligned buffer... done.
+Opened: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_gt100.truthset, size: 800008, cache_size: 800008
+Reading truthset file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_gt100.truthset ...
+Metadata: #pts = 1000, #dims = 100... 
+L2: Using AVX2 distance computation DistanceL2Float
+L2: Using AVX2 distance computation DistanceL2Float
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_compressed.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_compressed.bin... 
+Metadata: #pts = 1000000, #dims = 16...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin... 
+Metadata: #pts = 4, #dims = 1...
+done.
+Offsets: 4096 987144 990992 991068
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin... 
+Metadata: #pts = 256, #dims = 960...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin... 
+Metadata: #pts = 960, #dims = 1...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin... 
+Metadata: #pts = 17, #dims = 1...
+done.
+Loaded PQ Pivots: #ctrs: 256, #dims: 960, #chunks: 16
+Loaded PQ centroids and in-memory compressed vectors. #points: 1000000 #dim: 960 #aligned_dim: 960 #chunks: 16
+Disk-Index File Meta-data: # nodes per sector: 0, max node len (bytes): 4100, max node degree: 64
+Opened file : /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_disk.index
+Setting up thread-specific contexts for nthreads: 1
+allocating ctx: 0x7409570f6000 to thread-id:127583464234304
+Loading centroid data from medoids vector data of 1 medoid(s)
+done..
+Caching 0 nodes around medoid(s)
+Caching 0...
+Level: 1. #nodes: 0, #nodes thus far: 0
+done
+Loading the cache list into memory....done.
+Reading (with alignment) bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_query_warmup900_999.bin ...Metadata: #pts = 100, #dims = 960, aligned_dim = 960... allocating aligned memory of 384000 bytes... done. Copying data to mem_aligned buffer... done.
+Warming up index... ..done
+     L   Beamwidth             QPS    Mean Latency    99.9 Latency        Mean IOs    Mean IO (us)         CPU (s)       Recall@10
+===================================================================================================================================
+    50           4          259.22         3557.23         8718.00           67.25         2709.72          652.01           36.03
+   100           4          139.76         6789.74        12269.00          114.90         5261.15         1192.61           46.26
+   200           4           90.46        10507.21        19855.00          213.09         7902.64         2022.81           57.88
+   400           4           43.03        22312.70        38184.00          411.59        17192.61         3958.46           69.33
+   800           4           22.63        42760.60        75270.00          810.37        32815.96         7612.55           80.86
+Done searching. Now saving results 
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_pq16_r2_50_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_pq16_r2_50_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_pq16_r2_100_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_pq16_r2_100_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_pq16_r2_200_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_pq16_r2_200_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_pq16_r2_400_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_pq16_r2_400_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_pq16_r2_800_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_pq16_r2_800_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Clearing scratch

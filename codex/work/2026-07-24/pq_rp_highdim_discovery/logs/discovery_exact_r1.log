@@ -1,0 +1,87 @@
+Search parameters: #threads: 1,  beamwidth: 4.
+Reading (with alignment) bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_query.bin ...Metadata: #pts = 1000, #dims = 960, aligned_dim = 960... allocating aligned memory of 3840000 bytes... done. Copying data to mem_aligned buffer... done.
+Opened: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_gt100.truthset, size: 800008, cache_size: 800008
+Reading truthset file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_gt100.truthset ...
+Metadata: #pts = 1000, #dims = 100... 
+L2: Using AVX2 distance computation DistanceL2Float
+L2: Using AVX2 distance computation DistanceL2Float
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_compressed.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_compressed.bin... 
+Metadata: #pts = 1000000, #dims = 16...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_base.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_base.bin... 
+Metadata: #pts = 1000000, #dims = 960...
+done.
+P10: loaded 1000000 full vectors for navigation instrumentation.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin... 
+Metadata: #pts = 4, #dims = 1...
+done.
+Offsets: 4096 987144 990992 991068
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin... 
+Metadata: #pts = 256, #dims = 960...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin... 
+Metadata: #pts = 960, #dims = 1...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_pq_pivots.bin... 
+Metadata: #pts = 17, #dims = 1...
+done.
+Loaded PQ Pivots: #ctrs: 256, #dims: 960, #chunks: 16
+Loaded PQ centroids and in-memory compressed vectors. #points: 1000000 #dim: 960 #aligned_dim: 960 #chunks: 16
+Disk-Index File Meta-data: # nodes per sector: 0, max node len (bytes): 4100, max node degree: 64
+Opened file : /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/pq16/gist_pq16_disk.index
+Setting up thread-specific contexts for nthreads: 1
+allocating ctx: 0x7632afaf1000 to thread-id:129960068009280
+Loading centroid data from medoids vector data of 1 medoid(s)
+done..
+Caching 0 nodes around medoid(s)
+Caching 0...
+Level: 1. #nodes: 0, #nodes thus far: 0
+done
+Loading the cache list into memory....done.
+Reading (with alignment) bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_query_warmup900_999.bin ...Metadata: #pts = 100, #dims = 960, aligned_dim = 960... allocating aligned memory of 384000 bytes... done. Copying data to mem_aligned buffer... done.
+Warming up index... ..done
+     L   Beamwidth             QPS    Mean Latency    99.9 Latency        Mean IOs    Mean IO (us)         CPU (s)       Recall@10
+===================================================================================================================================
+    50           4          163.62         5874.20        29226.00           64.00         2385.91         3338.52           88.90
+   100           4           85.37        11411.72        18537.00          111.80         4572.31         6552.09           94.81
+   200           4           51.45        19000.51        32357.00          210.20         7268.04        11234.08           98.34
+   400           4           26.10        37594.23        77569.00          408.89        14510.70        22103.90           99.52
+   800           4           13.33        73822.29       118787.00          807.68        27787.98        44081.07           99.89
+Done searching. Now saving results 
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_exact_r1_50_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_exact_r1_50_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_exact_r1_100_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_exact_r1_100_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_exact_r1_200_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_exact_r1_200_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_exact_r1_400_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_exact_r1_400_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_exact_r1_800_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/discovery/search/discovery_exact_r1_800_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Clearing scratch
