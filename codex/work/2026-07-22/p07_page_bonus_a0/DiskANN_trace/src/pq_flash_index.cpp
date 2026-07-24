@@ -76,6 +76,10 @@ template <typename T, typename LabelT> PQFlashIndex<T, LabelT>::~PQFlashIndex()
     {
         delete[] data;
     }
+    if (_sopq_data64 != nullptr)
+    {
+        delete[] _sopq_data64;
+    }
 #endif
 
     if (_centroid_data != nullptr)
@@ -1007,6 +1011,57 @@ int PQFlashIndex<T, LabelT>::load_from_separate_paths(uint32_t num_threads, cons
     _pq_table.load_pq_centroid_bin(pq_table_bin.c_str(), nchunks_u64);
 #endif
 
+#ifndef EXEC_ENV_OLS
+    const char *sopq_secondary_pivots = std::getenv("SOPQ_SECONDARY_PIVOTS");
+    const char *sopq_secondary_codes = std::getenv("SOPQ_SECONDARY_CODES");
+    if ((sopq_secondary_pivots == nullptr) != (sopq_secondary_codes == nullptr))
+    {
+        throw diskann::ANNException("SOPQ secondary pivots/codes must be set together", -1);
+    }
+    if (sopq_secondary_pivots != nullptr && sopq_secondary_pivots[0] != '\0')
+    {
+        size_t sopq_npts = 0;
+        size_t sopq_chunks = 0;
+        diskann::load_bin<uint8_t>(sopq_secondary_codes, _sopq_data64, sopq_npts, sopq_chunks);
+        if (sopq_npts != _num_points || sopq_chunks != 64)
+        {
+            throw diskann::ANNException("SOPQ secondary codes must be 1M x 64 and match the primary index", -1);
+        }
+        _sopq_n_chunks64 = sopq_chunks;
+        _sopq_table64.load_pq_centroid_bin(sopq_secondary_pivots, sopq_chunks);
+        _sopq_enabled = true;
+
+        const char *sopq_mode_env = std::getenv("SOPQ_MODE");
+        const std::string sopq_mode = sopq_mode_env == nullptr ? "low" : std::string(sopq_mode_env);
+        if (sopq_mode != "low" && sopq_mode != "high" && sopq_mode != "mixed")
+        {
+            throw diskann::ANNException("SOPQ_MODE must be low, high, or mixed", -1);
+        }
+        if (sopq_mode == "mixed")
+        {
+            const char *selection_path = std::getenv("SOPQ_SELECTION_PATH");
+            if (selection_path == nullptr || selection_path[0] == '\0')
+            {
+                throw diskann::ANNException("SOPQ_MODE=mixed requires SOPQ_SELECTION_PATH", -1);
+            }
+            std::ifstream selection(selection_path, std::ios::binary | std::ios::ate);
+            if (!selection.is_open() || static_cast<uint64_t>(selection.tellg()) != _num_points)
+            {
+                throw diskann::ANNException("SOPQ selection must contain exactly one byte per node", -1);
+            }
+            selection.seekg(0);
+            _sopq_selected.resize(_num_points);
+            selection.read(reinterpret_cast<char *>(_sopq_selected.data()),
+                           static_cast<std::streamsize>(_num_points));
+            if (!selection)
+            {
+                throw diskann::ANNException("Failed to read SOPQ selection", -1);
+            }
+        }
+        diskann::cout << "SOPQ Stage A dual-dense adapter enabled in mode " << sopq_mode << std::endl;
+    }
+#endif
+
     diskann::cout << "Loaded PQ centroids and in-memory compressed vectors. #points: " << _num_points
                   << " #dim: " << _data_dim << " #aligned_dim: " << _aligned_dim << " #chunks: " << _n_chunks
                   << std::endl;
@@ -1311,8 +1366,11 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
     // The vector stays empty and no file is opened in normal builds/runs.
     const char *p07_trace_path = std::getenv("P07_TRACE_PATH");
     const char *p10_trace_path = std::getenv("P10_TRACE_PATH");
+    const char *sopq_trace_path = std::getenv("SOPQ_TRACE_PATH");
     std::vector<uint32_t> p07_expanded_nodes;
     std::vector<float> p10_expanded_scores;
+    std::vector<uint32_t> sopq_trace_nodes;
+    std::vector<uint64_t> sopq_boundary_pairs;
 
     const char *p10_mode_env = std::getenv("P10_NAV_MODE");
     const std::string p10_mode = p10_mode_env == nullptr ? "pq" : std::string(p10_mode_env);
@@ -1389,22 +1447,65 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
         _nnodes_per_sector > 0 ? 1 : DIV_ROUND_UP(_max_node_len, defaults::SECTOR_LEN);
 
     // query <-> PQ chunk centers distances
+    thread_local std::vector<float> sopq_query64;
+    thread_local std::vector<float> sopq_dists64;
+    if (_sopq_enabled)
+    {
+        sopq_query64.assign(query_rotated, query_rotated + this->_data_dim);
+        sopq_dists64.resize(256 * _sopq_n_chunks64);
+    }
     const float rotation_us = _pq_table.preprocess_query(query_rotated); // center the query and rotate if
                                                                          // we have a rotation matrix
     if (stats != nullptr)
         stats->rotation_us += rotation_us;
     float *pq_dists = pq_query_scratch->aligned_pqtable_dist_scratch;
     _pq_table.populate_chunk_distances(query_rotated, pq_dists);
+    if (_sopq_enabled)
+    {
+        _sopq_table64.preprocess_query(sopq_query64.data());
+        _sopq_table64.populate_chunk_distances(sopq_query64.data(), sopq_dists64.data());
+    }
 
     // query <-> neighbor list
     float *dist_scratch = pq_query_scratch->aligned_dist_scratch;
     uint8_t *pq_coord_scratch = pq_query_scratch->aligned_pq_coord_scratch;
 
     // lambda to batch compute query<-> node distances in PQ space
-    auto compute_dists = [this, pq_coord_scratch, pq_dists](const uint32_t *ids, const uint64_t n_ids,
-                                                            float *dists_out) {
-        diskann::aggregate_coords(ids, n_ids, this->data, this->_n_chunks, pq_coord_scratch);
-        diskann::pq_dist_lookup(pq_coord_scratch, n_ids, this->_n_chunks, pq_dists, dists_out);
+    const char *sopq_mode_env = std::getenv("SOPQ_MODE");
+    const std::string sopq_mode = sopq_mode_env == nullptr ? "low" : std::string(sopq_mode_env);
+    auto compute_dists = [this, pq_coord_scratch, pq_dists, &sopq_mode](
+                             const uint32_t *ids, const uint64_t n_ids, float *dists_out) {
+        if (!_sopq_enabled || sopq_mode == "low")
+        {
+            diskann::aggregate_coords(ids, n_ids, this->data, this->_n_chunks, pq_coord_scratch);
+            diskann::pq_dist_lookup(pq_coord_scratch, n_ids, this->_n_chunks, pq_dists, dists_out);
+            return;
+        }
+
+        std::memset(dists_out, 0, n_ids * sizeof(float));
+        for (size_t chunk = 0; chunk < this->_n_chunks; ++chunk)
+        {
+            const float *chunk_dists = pq_dists + 256 * chunk;
+            for (size_t idx = 0; idx < n_ids; ++idx)
+            {
+                const uint32_t id = ids[idx];
+                const bool high = sopq_mode == "high" || this->_sopq_selected[id] != 0;
+                if (!high)
+                    dists_out[idx] += chunk_dists[this->data[(size_t)id * this->_n_chunks + chunk]];
+            }
+        }
+        for (size_t chunk = 0; chunk < this->_sopq_n_chunks64; ++chunk)
+        {
+            const float *chunk_dists = sopq_dists64.data() + 256 * chunk;
+            for (size_t idx = 0; idx < n_ids; ++idx)
+            {
+                const uint32_t id = ids[idx];
+                const bool high = sopq_mode == "high" || this->_sopq_selected[id] != 0;
+                if (high)
+                    dists_out[idx] +=
+                        chunk_dists[this->_sopq_data64[(size_t)id * this->_sopq_n_chunks64 + chunk]];
+            }
+        }
     };
     auto use_exact_navigation = [p10_mode, p10_early_blocks, p10_late_start](uint32_t block) {
         if (p10_mode == "exact")
@@ -1479,6 +1580,8 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
     compute_nav_dists(&best_medoid, 1, dist_scratch, 0);
     retset.insert(Neighbor(best_medoid, dist_scratch[0]));
     visited.insert(best_medoid);
+    if (sopq_trace_path != nullptr && sopq_trace_path[0] != '\0')
+        sopq_trace_nodes.push_back(best_medoid);
 
     uint32_t cmps = 0;
     uint32_t hops = 0;
@@ -1615,6 +1718,13 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
                         continue;
                     cmps++;
                     float dist = dist_scratch[m];
+                    if (sopq_trace_path != nullptr && sopq_trace_path[0] != '\0')
+                    {
+                        sopq_trace_nodes.push_back(id);
+                        if (retset.size() == retset.capacity() && retset.size() != 0)
+                            sopq_boundary_pairs.push_back((static_cast<uint64_t>(id) << 32) |
+                                                          static_cast<uint64_t>(retset[retset.size() - 1].id));
+                    }
                     Neighbor nn(id, dist);
                     retset.insert(nn);
                 }
@@ -1683,6 +1793,13 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
                         stats->n_cmps++;
                     }
 
+                    if (sopq_trace_path != nullptr && sopq_trace_path[0] != '\0')
+                    {
+                        sopq_trace_nodes.push_back(id);
+                        if (retset.size() == retset.capacity() && retset.size() != 0)
+                            sopq_boundary_pairs.push_back((static_cast<uint64_t>(id) << 32) |
+                                                          static_cast<uint64_t>(retset[retset.size() - 1].id));
+                    }
                     Neighbor nn(id, dist);
                     retset.insert(nn);
                 }
@@ -1815,6 +1932,23 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
             first = false;
         }
         trace << '\n';
+    }
+    if (sopq_trace_path != nullptr && sopq_trace_path[0] != '\0')
+    {
+        std::lock_guard<std::mutex> lock(p07_trace_mutex);
+        std::ofstream trace(sopq_trace_path, std::ios::binary | std::ios::app);
+        const uint64_t qid = p07_trace_query_id;
+        const uint32_t search_l = static_cast<uint32_t>(l_search);
+        const uint32_t node_count = static_cast<uint32_t>(sopq_trace_nodes.size());
+        const uint32_t pair_count = static_cast<uint32_t>(sopq_boundary_pairs.size());
+        trace.write(reinterpret_cast<const char *>(&qid), sizeof(qid));
+        trace.write(reinterpret_cast<const char *>(&search_l), sizeof(search_l));
+        trace.write(reinterpret_cast<const char *>(&node_count), sizeof(node_count));
+        trace.write(reinterpret_cast<const char *>(&pair_count), sizeof(pair_count));
+        trace.write(reinterpret_cast<const char *>(sopq_trace_nodes.data()),
+                    static_cast<std::streamsize>(node_count * sizeof(uint32_t)));
+        trace.write(reinterpret_cast<const char *>(sopq_boundary_pairs.data()),
+                    static_cast<std::streamsize>(pair_count * sizeof(uint64_t)));
     }
 }
 

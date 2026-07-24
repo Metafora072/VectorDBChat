@@ -9,10 +9,10 @@ comparisons before compact-layout and dual-preprocessing system costs are
 considered.
 **Date**: 2026-07-24
 **Revision**: 2, incorporating GPT's oracle/decision-logic review
-**Status**: `PLAN-ONLY / WAITING-FOR-GPT-APPROVAL`
+**Status**: `APPROVED-STAGE-A / STAGE-B-BLOCKED`
 
-No coding, OPQ training, trace generation, or search is authorized by this
-revision.
+Stage A is authorized. Stage B remains blocked pending a separate result
+review and explicit approval.
 
 ## Accepted Audit Findings
 
@@ -296,24 +296,24 @@ Mixed:
 
 - A selector family that fails every budget/L receives its selector-specific
   KILL label.
-- If either routing-relevant selector passes the matched-payload
-  Algorithmic-Selectivity gate at any budget/L:
+- If either routing-relevant selector shows a strict positive
+  Algorithmic-Selectivity signal at any budget/L:
 
   ```text
-  PASS-ALGORITHMIC-SELECTIVITY-SCALE
-  GO-STAGE-B
+  PASS-ALGORITHMIC-SELECTIVITY-SIGNAL
+  HOLD-STAGE-B-FOR-REVIEW
   ```
 
 - If both independent routing-relevant selectors fail at all three budgets and
   all five per-L hindsight gates, despite test leakage:
 
   ```text
-  KILL-SELECTIVE-OPQ-STATIC-NODE-A0
+  KILL-TESTED-STATIC-SELECTORS-ON-GIST-A0
   ```
 
-  This is scoped to static OPQ32/64 node allocation on the frozen GIST1M graph;
-  it is not a universal theorem about every adaptive or query-dependent mixed
-  quantizer.
+  This is scoped to GIST1M-960D, the frozen graph, OPQ32/64, and the tested
+  per-L selectors. It is not a universal claim about every static, adaptive,
+  or query-dependent selective OPQ method.
 
 Random or visit-frequency success without either routing-relevant selector
 does not establish a precision-specific mechanism; verdict:
@@ -325,6 +325,10 @@ HOLD-HOTNESS-ONLY
 ## Stage B: Actual Memory and System Gate
 
 Stage B is forbidden unless Stage A returns `GO-STAGE-B`.
+
+After the Stage-A approval revision, even a positive Stage A returns
+`HOLD-STAGE-B-FOR-REVIEW`, not `GO-STAGE-B`. Stage B requires a separate GPT
+review and explicit approval.
 
 ### Scope
 
@@ -424,6 +428,25 @@ selector gate.
 
 Any mismatch is `INVALID`, never PASS.
 
+## Required Stage-A Reporting
+
+For every selector, budget, and L, report:
+
+1. Recall@10 and the signed delta from uniform OPQ40/48/56;
+2. reads/query absolute and percentage reduction;
+3. comparisons/query absolute and percentage reduction;
+4. total recovered or lost top-k hits over 1K×10 result positions;
+5. within-selector selected-set Jaccard across the five L values;
+6. at each budget/L, Jaccard among routing-aware, distance-regret, and
+   visit-frequency sets;
+7. score distributions including count, min, p25, median, p75, p90, p95, p99,
+   max, mean, standard deviation, zero fraction, and positive fraction;
+8. high-precision-node access coverage: selected visits / all trace visits and
+   unique selected visited nodes / all unique visited nodes.
+
+Strict improvement is a signal, not an automatic Stage-B recommendation.
+Effect size and selector agreement must be included in the review packet.
+
 ## Expected Implementation Scope After Approval
 
 Stage A only:
@@ -510,5 +533,7 @@ not start automatically.
 - [x] Scale-normalized and 1M actual-memory views separated
 - [x] Algorithmic and system gates separated
 - [x] Stage A and conditional Stage B budgets frozen
-- [ ] GPT approval for Stage A received
-- [ ] Any coding or experiment authorized
+- [x] GPT approval for Stage A received
+- [x] Stage-A coding and experiment authorized
+- [ ] Stage-A result review completed
+- [ ] Stage B approved

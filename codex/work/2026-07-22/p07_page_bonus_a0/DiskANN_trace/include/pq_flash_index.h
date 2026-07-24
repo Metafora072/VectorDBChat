@@ -186,6 +186,14 @@ template <typename T, typename LabelT = uint32_t> class PQFlashIndex
     // chunk_size = chunk size of each dimension chunk
     // pq_tables = float* [[2^8 * [chunk_size]] * _n_chunks]
     uint8_t *data = nullptr;
+    // SELECTIVE-OPQ Stage A: optional dense OPQ64 endpoint/adapter. This is
+    // enabled only by SOPQ_SECONDARY_* environment variables and is not a
+    // compact-layout implementation.
+    uint8_t *_sopq_data64 = nullptr;
+    uint64_t _sopq_n_chunks64 = 0;
+    FixedChunkPQTable _sopq_table64;
+    std::vector<uint8_t> _sopq_selected;
+    bool _sopq_enabled = false;
     // P10 A0 optional navigation oracle. Loaded only when P10_FULL_DATA is set.
     T *_p10_full_data = nullptr;
     size_t _p10_full_num = 0;

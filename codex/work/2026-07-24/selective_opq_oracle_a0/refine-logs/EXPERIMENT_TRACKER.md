@@ -1,21 +1,21 @@
 # Experiment Tracker
 
-**Status:** `PLAN-ONLY / WAITING-FOR-GPT-APPROVAL`
+**Status:** `APPROVED-STAGE-A / STAGE-B-BLOCKED`
 
-No row may leave `BLOCKED` before explicit approval. Stage B additionally
-requires a positive Stage-A verdict and a second approval.
+Stage A is approved. Stage B requires Stage-A result review and a second
+explicit approval.
 
 | Run ID | Stage | Purpose | System / Variant | Metrics | Status | Notes |
 |---|---|---|---|---|---|---|
-| A001 | A | frozen artifact audit | OPQ32/64 + graph/query/GT/train IDs | hashes, shapes | BLOCKED | no training/search |
-| A002 | A | trace instrumentation canary | per-L node + boundary events | parity, event schema | BLOCKED | no cross-L scores |
-| A003 | A | uniform payload controls | OPQ40/48/56 | artifact audit | BLOCKED | only Stage-A training |
-| A004 | A | build per-L controls | RANDOM/VISIT-FREQUENCY | cardinality, ties | BLOCKED | seed 20260724 |
-| A005 | A | build distance selector | DISTANCE-REGRET × 5 L | score, exact top-H | BLOCKED | surrogate-specific |
-| A006 | A | build routing selector | ROUTING-AWARE × 5 L | inversion score, top-H | BLOCKED | frozen boundary pairs |
-| A007 | A | uniform algorithmic frontier | OPQ40/48/56 × 5 L | Recall, reads, comparisons | BLOCKED | one deterministic pass |
-| A008 | A | mixed algorithmic gate | 3 budgets × 4 selectors × 5 L | Recall, reads, comparisons | BLOCKED | dual-dense adapter; no system claim |
-| A009 | A | Stage-A verdict | selector-specific + combined gate | GO/HOLD/KILL | BLOCKED | Stage B never auto-starts |
+| A001 | A | frozen artifact audit | OPQ32/64 + graph/query/GT/train IDs | hashes, shapes | DONE | all frozen hashes/shapes pass |
+| A002 | A | trace instrumentation canary | per-L node + boundary events | parity, event schema | DONE | endpoint parity passed; 1K records at every L |
+| A003 | A | uniform payload controls | OPQ40/48/56 | artifact audit | DONE | chunks, rotations, codes, graph links and RAM cap pass |
+| A004 | A | build per-L controls | RANDOM/VISIT-FREQUENCY | cardinality, ties | DONE | exact H at all 15 budget/L pairs; seed 20260724 |
+| A005 | A | build distance selector | DISTANCE-REGRET × 5 L | score, exact top-H | DONE | independent frozen trace per L |
+| A006 | A | build routing selector | ROUTING-AWARE × 5 L | inversion score, top-H | DONE | independent frozen boundary pairs per L |
+| A007 | A | uniform algorithmic frontier | OPQ40/48/56 × 5 L | Recall, reads, comparisons | IN-PROGRESS | one deterministic pass |
+| A008 | A | mixed algorithmic gate | 3 budgets × 4 selectors × 5 L | Recall, reads, comparisons | TODO | dual-dense adapter; no system claim |
+| A009 | A | Stage-A verdict | selector-specific + combined gate | PASS/HOLD/KILL | TODO | Stage B never auto-starts |
 | B001 | B | actual-memory guards | OPQ45/53/61 | artifact audit | BLOCKED-STAGE-A | needs second approval |
 | B002 | B | compact layout | low/high/tag/rank | bytes, rank parity | BLOCKED-STAGE-A | exhaustive 1M audit |
 | B003 | B | endpoint correctness | all-low/all-high compact | ADC/search parity | BLOCKED-STAGE-A | abs error ≤1e-5 |

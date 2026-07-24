@@ -1,0 +1,177 @@
+{
+  "available_nvme_bytes": 1510792220672,
+  "gpu": 0,
+  "inputs": {
+    "base": {
+      "bytes": 3840000008,
+      "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_base.bin",
+      "sha256": "fd57967ae1461c453336b9be9621c74a2b5927e74cafa9f5e899a5dc5df6a5b8",
+      "shape": [
+        1000000,
+        960
+      ]
+    },
+    "graph": {
+      "bytes": 8192004096,
+      "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_disk.index",
+      "sha256": "52827694a9e8dcf64037639e594ed9855f514aa2ebbcb5a4d25f4c1921fa1c37",
+      "shape": null
+    },
+    "gt": {
+      "bytes": 800008,
+      "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_gt100.truthset",
+      "sha256": "b8c2cfe890e731a4af189726c8fd6d4812312e4a97db89e1c484d703e2bdbecb",
+      "shape": [
+        1000,
+        100
+      ]
+    },
+    "query": {
+      "bytes": 3840008,
+      "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_query.bin",
+      "sha256": "220465f0ab851de6890d87ab1dd5081f526da8d214aa7a3849e738e63cad6775",
+      "shape": [
+        1000,
+        960
+      ]
+    },
+    "training": {
+      "bytes": 384000008,
+      "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/pq_training/shared_sample.bin",
+      "sha256": "2108aa0cfac2f409c16223ebfbd74ff34fb5dbf8b2cf2f57275de7c2bf07e857",
+      "shape": [
+        100000,
+        960
+      ]
+    },
+    "training_ids": {
+      "bytes": 400008,
+      "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/pq_training/shared_sample_ids.bin",
+      "sha256": "44b5794112f5aa4025d930d3403240de99df75a863054a9598ed02f7c157024f",
+      "shape": [
+        100000,
+        1
+      ]
+    }
+  },
+  "opq": {
+    "opq32": {
+      "chunk_widths": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "codes": "/home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq32/gist_opq32_pq_compressed.bin",
+      "codes_sha256": "134448fe6da3687052f97835bf80bba6f5d947ceee81ef2d00e843545f7034e5",
+      "pivots": "/home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq32/gist_opq32_pq_pivots.bin",
+      "pivots_sha256": "dbc93a951a1fcddace99f626ed00bf74067d85dfb45f8928b0109aa1727de7f6",
+      "rotation": "/home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq32/gist_opq32_pq_pivots.bin_rotation_matrix.bin",
+      "rotation_sha256": "119f57dfb6612b4bd65555386a0b18b77eb355aa65786a520010579a44f6cd89"
+    },
+    "opq64": {
+      "chunk_widths": [
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15
+      ],
+      "codes": "/home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq64/gist_opq64_pq_compressed.bin",
+      "codes_sha256": "e13d9dbc4a3f24f321209c774b4736a15505ab052c878c1b1059f5b892629239",
+      "pivots": "/home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq64/gist_opq64_pq_pivots.bin",
+      "pivots_sha256": "3e4561c2d563e49295f50fe2ec00403022ce6280b6ac2b36ff1efdb3d157e0e1",
+      "rotation": "/home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq64/gist_opq64_pq_pivots.bin_rotation_matrix.bin",
+      "rotation_sha256": "a6509a8a1cc662c6f99970036282c7279c8709894e1ca858d761347f3b6f6d17"
+    }
+  },
+  "passed": true,
+  "stage": "SELECTIVE-OPQ-ORACLE-A0-STAGE-A"
+}

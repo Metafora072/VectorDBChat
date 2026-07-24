@@ -1,0 +1,84 @@
+Search parameters: #threads: 1,  beamwidth: 4.
+Reading (with alignment) bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_query.bin ...Metadata: #pts = 1000, #dims = 960, aligned_dim = 960... allocating aligned memory of 3840000 bytes... done. Copying data to mem_aligned buffer... done.
+Opened: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_gt100.truthset, size: 800008, cache_size: 800008
+Reading truthset file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_gt100.truthset ...
+Metadata: #pts = 1000, #dims = 100... 
+L2: Using AVX2 distance computation DistanceL2Float
+L2: Using AVX2 distance computation DistanceL2Float
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/index/opq40/gist_opq40_pq_compressed.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/index/opq40/gist_opq40_pq_compressed.bin... 
+Metadata: #pts = 1000000, #dims = 40...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/index/opq40/gist_opq40_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/index/opq40/gist_opq40_pq_pivots.bin... 
+Metadata: #pts = 4, #dims = 1...
+done.
+Offsets: 4096 987144 990992 991164
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/index/opq40/gist_opq40_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/index/opq40/gist_opq40_pq_pivots.bin... 
+Metadata: #pts = 256, #dims = 960...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/index/opq40/gist_opq40_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/index/opq40/gist_opq40_pq_pivots.bin... 
+Metadata: #pts = 960, #dims = 1...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/index/opq40/gist_opq40_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/index/opq40/gist_opq40_pq_pivots.bin... 
+Metadata: #pts = 41, #dims = 1...
+done.
+Loaded PQ Pivots: #ctrs: 256, #dims: 960, #chunks: 40
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/index/opq40/gist_opq40_pq_pivots.bin_rotation_matrix.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/index/opq40/gist_opq40_pq_pivots.bin_rotation_matrix.bin... 
+Metadata: #pts = 960, #dims = 960...
+done.
+Loaded PQ centroids and in-memory compressed vectors. #points: 1000000 #dim: 960 #aligned_dim: 960 #chunks: 40
+Disk-Index File Meta-data: # nodes per sector: 0, max node len (bytes): 4100, max node degree: 64
+Opened file : /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/index/opq40/gist_opq40_disk.index
+Setting up thread-specific contexts for nthreads: 1
+allocating ctx: 0x7e1954c3a000 to thread-id:138647274741504
+Loading centroid data from medoids vector data of 1 medoid(s)
+done..
+Caching 0 nodes around medoid(s)
+Caching 0...
+Level: 1. #nodes: 0, #nodes thus far: 0
+done
+Loading the cache list into memory....done.
+     L   Beamwidth             QPS    Mean Latency    99.9 Latency        Mean IOs    Mean IO (us)         CPU (s)       Recall@10
+===================================================================================================================================
+    50           4          162.23         3812.32         9354.00           65.42         2779.25          847.67           81.68
+   100           4          103.29         6934.41        12487.00          113.34         4898.98         1700.17           91.45
+   200           4           65.15        12406.24        21715.00          211.52         8756.79         3038.62           96.89
+   400           4           34.10        25995.94        63387.00          410.11        18823.13         5964.55           99.05
+   800           4           20.69        44448.55        80641.00          808.80        31127.42        11029.57           99.77
+Done searching. Now saving results 
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/results/search/uniform_opq40_50_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/results/search/uniform_opq40_50_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/results/search/uniform_opq40_100_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/results/search/uniform_opq40_100_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/results/search/uniform_opq40_200_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/results/search/uniform_opq40_200_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/results/search/uniform_opq40_400_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/results/search/uniform_opq40_400_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/results/search/uniform_opq40_800_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/results/search/uniform_opq40_800_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Clearing scratch
