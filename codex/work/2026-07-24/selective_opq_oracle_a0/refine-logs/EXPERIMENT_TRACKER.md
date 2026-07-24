@@ -1,6 +1,6 @@
 # Experiment Tracker
 
-**Status:** `APPROVED-STAGE-A / STAGE-B-BLOCKED`
+**Status:** `STAGE-A-COMPLETE / HOLD-STAGE-B-FOR-REVIEW`
 
 Stage A is approved. Stage B requires Stage-A result review and a second
 explicit approval.
@@ -13,9 +13,9 @@ explicit approval.
 | A004 | A | build per-L controls | RANDOM/VISIT-FREQUENCY | cardinality, ties | DONE | exact H at all 15 budget/L pairs; seed 20260724 |
 | A005 | A | build distance selector | DISTANCE-REGRET × 5 L | score, exact top-H | DONE | independent frozen trace per L |
 | A006 | A | build routing selector | ROUTING-AWARE × 5 L | inversion score, top-H | DONE | independent frozen boundary pairs per L |
-| A007 | A | uniform algorithmic frontier | OPQ40/48/56 × 5 L | Recall, reads, comparisons | IN-PROGRESS | one deterministic pass |
-| A008 | A | mixed algorithmic gate | 3 budgets × 4 selectors × 5 L | Recall, reads, comparisons | TODO | dual-dense adapter; no system claim |
-| A009 | A | Stage-A verdict | selector-specific + combined gate | PASS/HOLD/KILL | TODO | Stage B never auto-starts |
+| A007 | A | uniform algorithmic frontier | OPQ40/48/56 × 5 L | Recall, reads, comparisons | DONE | one deterministic pass; 15,000 query-L rows |
+| A008 | A | mixed algorithmic gate | 3 budgets × 4 selectors × 5 L | Recall, reads, comparisons | DONE | 60,000 query rows; dual-dense adapter; no system claim |
+| A009 | A | Stage-A verdict | selector-specific + combined gate | PASS/HOLD/KILL | DONE | PASS signal; partial claim support; Stage B remains blocked |
 | B001 | B | actual-memory guards | OPQ45/53/61 | artifact audit | BLOCKED-STAGE-A | needs second approval |
 | B002 | B | compact layout | low/high/tag/rank | bytes, rank parity | BLOCKED-STAGE-A | exhaustive 1M audit |
 | B003 | B | endpoint correctness | all-low/all-high compact | ADC/search parity | BLOCKED-STAGE-A | abs error ≤1e-5 |

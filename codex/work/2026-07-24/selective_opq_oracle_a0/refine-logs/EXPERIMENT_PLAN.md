@@ -9,10 +9,10 @@ comparisons before compact-layout and dual-preprocessing system costs are
 considered.
 **Date**: 2026-07-24
 **Revision**: 2, incorporating GPT's oracle/decision-logic review
-**Status**: `APPROVED-STAGE-A / STAGE-B-BLOCKED`
+**Status**: `STAGE-A-COMPLETE / HOLD-STAGE-B-FOR-REVIEW`
 
-Stage A is authorized. Stage B remains blocked pending a separate result
-review and explicit approval.
+Stage A is complete. Stage B remains blocked pending a separate result review
+and explicit approval.
 
 ## Accepted Audit Findings
 
@@ -535,5 +535,24 @@ not start automatically.
 - [x] Stage A and conditional Stage B budgets frozen
 - [x] GPT approval for Stage A received
 - [x] Stage-A coding and experiment authorized
-- [ ] Stage-A result review completed
+- [x] Stage-A result review completed
 - [ ] Stage B approved
+
+## Stage-A Outcome
+
+```text
+PASS-ALGORITHMIC-SELECTIVITY-SIGNAL
+HOLD-STAGE-B-FOR-REVIEW
+result-to-claim: partial
+confidence: high
+```
+
+Five of 60 mixed points met the strict same-budget, same-L algorithmic gate.
+The only routing-relevant point with favorable paired-bootstrap intervals for
+all three metrics was `DISTANCE-REGRET, L=50, budget=56`: +127 top-k hits,
+-0.631% reads, and -0.539% comparisons versus uniform OPQ56.
+
+This is not sufficient to enter Stage B automatically. The point allocates
+OPQ64 to 75% of nodes, visit-frequency nearly matches it, all work reductions
+are below 1%, and the selector uses test-trace hindsight. Stage B remains
+blocked pending review; a held-out Stage A.5 is recommended first.

@@ -110,6 +110,16 @@ with comparison_path.open("w", newline="") as handle:
     writer.writeheader()
     writer.writerows(rows_out)
 
+with (WORK / "results/uniform_summary.csv").open("w", newline="") as handle:
+    fieldnames = ("budget", "L", "hits", "recall", "reads", "comparisons")
+    writer = csv.DictWriter(handle, fieldnames=fieldnames)
+    writer.writeheader()
+    for budget in BUDGETS:
+        for search_l in LS:
+            writer.writerow(
+                {"budget": budget, "L": search_l, **uniform[budget][search_l]}
+            )
+
 
 def load_selection(search_l: int, budget: int, selector: str) -> np.ndarray:
     return np.memmap(
@@ -166,6 +176,46 @@ selector_reports = {
     str(search_l): json.loads((WORK / f"results/selector_L{search_l}.json").read_text())
     for search_l in LS
 }
+
+for filename, records in (
+    ("within_selector_L_jaccard.csv", within_l),
+    ("cross_selector_jaccard.csv", cross_selector),
+):
+    with (WORK / f"results/{filename}").open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(records[0]))
+        writer.writeheader()
+        writer.writerows(records)
+
+score_rows: list[dict[str, object]] = []
+coverage_rows: list[dict[str, object]] = []
+for search_l in LS:
+    report = selector_reports[str(search_l)]
+    for selector, stats in report["score_distributions"].items():
+        score_rows.append({"L": search_l, "selector": selector, **stats})
+    for budget in BUDGETS:
+        for selector, stats in report["selectors"][str(budget)].items():
+            coverage_rows.append(
+                {
+                    "L": search_l,
+                    "budget": budget,
+                    "selector": selector,
+                    "selected_nodes": stats["selected_nodes"],
+                    "selected_trace_visits": stats["selected_trace_visits"],
+                    "all_trace_visits": stats["all_trace_visits"],
+                    "visit_coverage": stats["visit_coverage"],
+                    "selected_unique_visited": stats["selected_unique_visited"],
+                    "all_unique_visited": stats["all_unique_visited"],
+                    "selected_score_sum": stats["selected_score_sum"],
+                }
+            )
+for filename, records in (
+    ("selector_score_distributions.csv", score_rows),
+    ("selector_visit_coverage.csv", coverage_rows),
+):
+    with (WORK / f"results/{filename}").open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(records[0]))
+        writer.writeheader()
+        writer.writerows(records)
 
 if positive_routing:
     verdict = [

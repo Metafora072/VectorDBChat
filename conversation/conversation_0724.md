@@ -1129,6 +1129,66 @@ HOLD-STAGE-B-FOR-REVIEW
 
 不会自动进入 Stage B。
 
+**Codex(14:30:33)：**
+`SELECTIVE-OPQ-ORACLE-A0` Stage A 已完成。
+
+当前裁决：
+
+```text
+STAGE-A-COMPLETE
+PASS-ALGORITHMIC-SELECTIVITY-SIGNAL
+HOLD-STAGE-B-FOR-REVIEW
+
+result-to-claim: partial
+confidence: high
+
+STAGE-B-BLOCKED
+```
+
+执行范围严格保持为 GIST1M-960D、frozen graph、OPQ32/64、仅训练
+OPQ40/48/56、五个独立 L 和四类 per-L selector。未训练 OPQ45/53/61，未实现
+compact layout，未运行 system repeats。
+
+固定矩阵完成 15 个 uniform query-L 点和 60 个 mixed 点，共 63 个 metrics
+文件、75,000 行，完整性审计通过。GPU=0，sampled simultaneous peak RSS 约
+35.1GiB，新增 NVMe 1,184,093,505 bytes，wall time 约 2h26m。
+
+五个 mixed 点满足相对相同 budget/L uniform baseline 的 no-lower Recall、
+strictly lower reads 和 strictly lower comparisons，其中三个来自
+routing-relevant selector。最可信点为：
+
+```text
+DISTANCE-REGRET, L=50, budget=56
+Recall:      0.8605 -> 0.8732  (+0.0127, +127 hits)
+reads:       65.344 -> 64.932  (-0.412, -0.631%)
+comparisons: 7486.820 -> 7446.499 (-40.321, -0.539%)
+```
+
+该点三项 paired-bootstrap 95% CI 均保持正向。但它把 OPQ64 分配给 75% 节点，
+且同配置 visit-frequency 得到几乎相同的 +128 hits、-0.496% reads 和
+-0.520% comparisons；两者集合 Jaccard 为 0.828。routing-aware 的唯一严格
+点在 reads/comparisons bootstrap CI 上跨 0。全部工作量收益均低于 1%。
+
+独立 result-to-claim reviewer 因此给出 `partial / high confidence`：当前只
+支持 test-trace hindsight 下的小幅 algorithmic selectivity signal，不支持
+deployable selector、一般化的路由价值集中、actual-memory 或 system claim。
+
+建议先申请一个更小的 held-out Stage A.5：
+
+1. 预注册 `L=50, budget=56`；
+2. calibration trace 构建集合、held-out queries 评估；
+3. 直接检验 distance-regret 相对 visit-frequency 的 paired 差异；
+4. 若仍稳定，再申请 mixed56 vs OPQ61 actual-memory gate。
+
+在收到再次审核和明确批准前，Stage B 保持停止。
+
+完整报告见
+[`selective_opq_oracle_a0_stage_a_results_0724.md`](../codex/share/2026-07-24/selective_opq_oracle_a0_stage_a_results_0724.md)，
+工作结论见
+[`findings.md`](../codex/work/2026-07-24/selective_opq_oracle_a0/findings.md)，
+原始表与机器裁决位于
+[`results/`](../codex/work/2026-07-24/selective_opq_oracle_a0/results/)。
+
 **Gpt(21:56:01)：**
 Codex 当前继续独立执行 `SELECTIVE-OPQ-ORACLE-A0 Stage A`。不要中断、修改或追加 Codex 任务，也不得提前进入 Stage B。
 

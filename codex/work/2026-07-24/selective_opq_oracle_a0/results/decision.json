@@ -1,0 +1,2230 @@
+{
+  "cross_selector_jaccard": [
+    {
+      "L": 50,
+      "budget": 40,
+      "jaccard": 0.2647181575585881,
+      "left_selector": "visit_frequency",
+      "right_selector": "distance_regret"
+    },
+    {
+      "L": 50,
+      "budget": 40,
+      "jaccard": 0.1949601361298587,
+      "left_selector": "visit_frequency",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 50,
+      "budget": 40,
+      "jaccard": 0.13124987273438932,
+      "left_selector": "distance_regret",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 50,
+      "budget": 48,
+      "jaccard": 0.5088144942755578,
+      "left_selector": "visit_frequency",
+      "right_selector": "distance_regret"
+    },
+    {
+      "L": 50,
+      "budget": 48,
+      "jaccard": 0.267981563548066,
+      "left_selector": "visit_frequency",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 50,
+      "budget": 48,
+      "jaccard": 0.27966421610969283,
+      "left_selector": "distance_regret",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 50,
+      "budget": 56,
+      "jaccard": 0.8282025843471732,
+      "left_selector": "visit_frequency",
+      "right_selector": "distance_regret"
+    },
+    {
+      "L": 50,
+      "budget": 56,
+      "jaccard": 0.569283883454517,
+      "left_selector": "visit_frequency",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 50,
+      "budget": 56,
+      "jaccard": 0.5584707038677087,
+      "left_selector": "distance_regret",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 100,
+      "budget": 40,
+      "jaccard": 0.2386999596183813,
+      "left_selector": "visit_frequency",
+      "right_selector": "distance_regret"
+    },
+    {
+      "L": 100,
+      "budget": 40,
+      "jaccard": 0.20045136971501284,
+      "left_selector": "visit_frequency",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 100,
+      "budget": 40,
+      "jaccard": 0.14353934575826952,
+      "left_selector": "distance_regret",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 100,
+      "budget": 48,
+      "jaccard": 0.45687221191080446,
+      "left_selector": "visit_frequency",
+      "right_selector": "distance_regret"
+    },
+    {
+      "L": 100,
+      "budget": 48,
+      "jaccard": 0.2817817792156521,
+      "left_selector": "visit_frequency",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 100,
+      "budget": 48,
+      "jaccard": 0.28830617369201494,
+      "left_selector": "distance_regret",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 100,
+      "budget": 56,
+      "jaccard": 0.7306088166443033,
+      "left_selector": "visit_frequency",
+      "right_selector": "distance_regret"
+    },
+    {
+      "L": 100,
+      "budget": 56,
+      "jaccard": 0.553335321602545,
+      "left_selector": "visit_frequency",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 100,
+      "budget": 56,
+      "jaccard": 0.5706559582833778,
+      "left_selector": "distance_regret",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 200,
+      "budget": 40,
+      "jaccard": 0.21599766528448267,
+      "left_selector": "visit_frequency",
+      "right_selector": "distance_regret"
+    },
+    {
+      "L": 200,
+      "budget": 40,
+      "jaccard": 0.21887600130663507,
+      "left_selector": "visit_frequency",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 200,
+      "budget": 40,
+      "jaccard": 0.16167225043795044,
+      "left_selector": "distance_regret",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 200,
+      "budget": 48,
+      "jaccard": 0.4290654769220216,
+      "left_selector": "visit_frequency",
+      "right_selector": "distance_regret"
+    },
+    {
+      "L": 200,
+      "budget": 48,
+      "jaccard": 0.2791780513513237,
+      "left_selector": "visit_frequency",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 200,
+      "budget": 48,
+      "jaccard": 0.2988261209518837,
+      "left_selector": "distance_regret",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 200,
+      "budget": 56,
+      "jaccard": 0.6819424416870555,
+      "left_selector": "visit_frequency",
+      "right_selector": "distance_regret"
+    },
+    {
+      "L": 200,
+      "budget": 56,
+      "jaccard": 0.5448691804777971,
+      "left_selector": "visit_frequency",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 200,
+      "budget": 56,
+      "jaccard": 0.5801416228265152,
+      "left_selector": "distance_regret",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 400,
+      "budget": 40,
+      "jaccard": 0.20206755619665825,
+      "left_selector": "visit_frequency",
+      "right_selector": "distance_regret"
+    },
+    {
+      "L": 400,
+      "budget": 40,
+      "jaccard": 0.22354691568293494,
+      "left_selector": "visit_frequency",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 400,
+      "budget": 40,
+      "jaccard": 0.1898755866086642,
+      "left_selector": "distance_regret",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 400,
+      "budget": 48,
+      "jaccard": 0.40983273744402965,
+      "left_selector": "visit_frequency",
+      "right_selector": "distance_regret"
+    },
+    {
+      "L": 400,
+      "budget": 48,
+      "jaccard": 0.28323745410822054,
+      "left_selector": "visit_frequency",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 400,
+      "budget": 48,
+      "jaccard": 0.31215514922484433,
+      "left_selector": "distance_regret",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 400,
+      "budget": 56,
+      "jaccard": 0.6591910890377245,
+      "left_selector": "visit_frequency",
+      "right_selector": "distance_regret"
+    },
+    {
+      "L": 400,
+      "budget": 56,
+      "jaccard": 0.5365168596873291,
+      "left_selector": "visit_frequency",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 400,
+      "budget": 56,
+      "jaccard": 0.5859891602927525,
+      "left_selector": "distance_regret",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 800,
+      "budget": 40,
+      "jaccard": 0.19232144986288302,
+      "left_selector": "visit_frequency",
+      "right_selector": "distance_regret"
+    },
+    {
+      "L": 800,
+      "budget": 40,
+      "jaccard": 0.18003011436851868,
+      "left_selector": "visit_frequency",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 800,
+      "budget": 40,
+      "jaccard": 0.18048423463304647,
+      "left_selector": "distance_regret",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 800,
+      "budget": 48,
+      "jaccard": 0.40026801129736234,
+      "left_selector": "visit_frequency",
+      "right_selector": "distance_regret"
+    },
+    {
+      "L": 800,
+      "budget": 48,
+      "jaccard": 0.2849869830818614,
+      "left_selector": "visit_frequency",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 800,
+      "budget": 48,
+      "jaccard": 0.3272967875435851,
+      "left_selector": "distance_regret",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 800,
+      "budget": 56,
+      "jaccard": 0.6482085621138385,
+      "left_selector": "visit_frequency",
+      "right_selector": "distance_regret"
+    },
+    {
+      "L": 800,
+      "budget": 56,
+      "jaccard": 0.5319081141087716,
+      "left_selector": "visit_frequency",
+      "right_selector": "routing_aware"
+    },
+    {
+      "L": 800,
+      "budget": 56,
+      "jaccard": 0.5900509452322853,
+      "left_selector": "distance_regret",
+      "right_selector": "routing_aware"
+    }
+  ],
+  "experiment": "SELECTIVE-OPQ-ORACLE-A0-STAGE-A",
+  "positive_control_signals": [
+    {
+      "L": 50,
+      "baseline_comparisons": 7486.82,
+      "baseline_hits": 8605,
+      "baseline_reads": 65.344,
+      "baseline_recall": 0.8605,
+      "budget": 56,
+      "comparisons_reduction_abs": 38.91100000000006,
+      "comparisons_reduction_pct": 0.519726666328295,
+      "hits_delta": 128,
+      "mixed_comparisons": 7447.909,
+      "mixed_hits": 8733,
+      "mixed_reads": 65.02,
+      "mixed_recall": 0.8733,
+      "reads_reduction_abs": 0.32399999999999807,
+      "reads_reduction_pct": 0.49583741429970324,
+      "recall_delta": 0.012799999999999923,
+      "selector": "visit_frequency",
+      "strict_signal": true
+    },
+    {
+      "L": 200,
+      "baseline_comparisons": 22241.333,
+      "baseline_hits": 9782,
+      "baseline_reads": 211.353,
+      "baseline_recall": 0.9782,
+      "budget": 56,
+      "comparisons_reduction_abs": 33.086999999999534,
+      "comparisons_reduction_pct": 0.14876356556506545,
+      "hits_delta": 29,
+      "mixed_comparisons": 22208.246,
+      "mixed_hits": 9811,
+      "mixed_reads": 211.29,
+      "mixed_recall": 0.9811,
+      "reads_reduction_abs": 0.0630000000000166,
+      "reads_reduction_pct": 0.029807951625960644,
+      "recall_delta": 0.0029000000000000137,
+      "selector": "visit_frequency",
+      "strict_signal": true
+    }
+  ],
+  "positive_routing_signals": [
+    {
+      "L": 50,
+      "baseline_comparisons": 7488.92,
+      "baseline_hits": 8159,
+      "baseline_reads": 65.417,
+      "baseline_recall": 0.8159,
+      "budget": 40,
+      "comparisons_reduction_abs": 15.5,
+      "comparisons_reduction_pct": 0.2069724339424109,
+      "hits_delta": 151,
+      "mixed_comparisons": 7473.42,
+      "mixed_hits": 8310,
+      "mixed_reads": 65.166,
+      "mixed_recall": 0.831,
+      "reads_reduction_abs": 0.2510000000000048,
+      "reads_reduction_pct": 0.3836923123958677,
+      "recall_delta": 0.015100000000000002,
+      "selector": "routing_aware",
+      "strict_signal": true
+    },
+    {
+      "L": 50,
+      "baseline_comparisons": 7486.82,
+      "baseline_hits": 8605,
+      "baseline_reads": 65.344,
+      "baseline_recall": 0.8605,
+      "budget": 56,
+      "comparisons_reduction_abs": 40.32099999999991,
+      "comparisons_reduction_pct": 0.538559762355712,
+      "hits_delta": 127,
+      "mixed_comparisons": 7446.499,
+      "mixed_hits": 8732,
+      "mixed_reads": 64.932,
+      "mixed_recall": 0.8732,
+      "reads_reduction_abs": 0.41199999999999193,
+      "reads_reduction_pct": 0.6305093046033178,
+      "recall_delta": 0.012699999999999934,
+      "selector": "distance_regret",
+      "strict_signal": true
+    },
+    {
+      "L": 200,
+      "baseline_comparisons": 22241.333,
+      "baseline_hits": 9782,
+      "baseline_reads": 211.353,
+      "baseline_recall": 0.9782,
+      "budget": 56,
+      "comparisons_reduction_abs": 11.919999999998254,
+      "comparisons_reduction_pct": 0.053593910041265305,
+      "hits_delta": 9,
+      "mixed_comparisons": 22229.413,
+      "mixed_hits": 9791,
+      "mixed_reads": 211.139,
+      "mixed_recall": 0.9791,
+      "reads_reduction_abs": 0.21399999999999864,
+      "reads_reduction_pct": 0.10125240711037867,
+      "recall_delta": 0.0009000000000000119,
+      "selector": "distance_regret",
+      "strict_signal": true
+    }
+  ],
+  "scope": [
+    "GIST1M-960D",
+    "frozen graph",
+    "OPQ32/64",
+    "tested per-L selectors"
+  ],
+  "selector_reports": {
+    "100": {
+      "L": 100,
+      "score_distributions": {
+        "distance_regret": {
+          "count": 1000000,
+          "max": 171.1163845045653,
+          "mean": 0.34306825906470995,
+          "median": 0.1294382140491308,
+          "min": -36.87146630140842,
+          "p25": 0.016822264043635515,
+          "p75": 0.3922724950928611,
+          "p90": 0.8544308671816306,
+          "p95": 1.3098933887130086,
+          "p99": 3.0297821570496652,
+          "positive_fraction": 0.838381,
+          "std": 0.9270703591236145,
+          "zero_fraction": 0.086061
+        },
+        "routing_aware": {
+          "count": 1000000,
+          "max": 246.0,
+          "mean": -0.084941,
+          "median": 0.0,
+          "min": -235.0,
+          "p25": 0.0,
+          "p75": 0.0,
+          "p90": 1.0,
+          "p95": 2.0,
+          "p99": 5.0,
+          "positive_fraction": 0.132381,
+          "std": 2.5531474744947653,
+          "zero_fraction": 0.765108
+        },
+        "visit_frequency": {
+          "count": 1000000,
+          "max": 1000.0,
+          "mean": 7.189741,
+          "median": 4.0,
+          "min": 0.0,
+          "p25": 2.0,
+          "p75": 9.0,
+          "p90": 15.0,
+          "p95": 22.0,
+          "p99": 46.0,
+          "positive_fraction": 0.913939,
+          "std": 13.997086959539796,
+          "zero_fraction": 0.086061
+        }
+      },
+      "selectors": {
+        "40": {
+          "distance_regret": {
+            "all_trace_visits": 7189741,
+            "all_unique_visited": 913939,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L100/distance_regret_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 271105.61867548,
+            "selected_trace_visits": 2845323,
+            "selected_unique_visited": 250000,
+            "visit_coverage": 0.3957476354155178
+          },
+          "random": {
+            "all_trace_visits": 7189741,
+            "all_unique_visited": 913939,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L100/random_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 0.0,
+            "selected_trace_visits": 1788427,
+            "selected_unique_visited": 228422,
+            "visit_coverage": 0.24874706891388718
+          },
+          "routing_aware": {
+            "all_trace_visits": 7189741,
+            "all_unique_visited": 913939,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L100/routing_aware_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 275305.0,
+            "selected_trace_visits": 2123271,
+            "selected_unique_visited": 221070,
+            "visit_coverage": 0.2953195393269382
+          },
+          "visit_frequency": {
+            "all_trace_visits": 7189741,
+            "all_unique_visited": 913939,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L100/visit_frequency_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 4679413.0,
+            "selected_trace_visits": 4679413,
+            "selected_unique_visited": 250000,
+            "visit_coverage": 0.6508458371448985
+          }
+        },
+        "48": {
+          "distance_regret": {
+            "all_trace_visits": 7189741,
+            "all_unique_visited": 913939,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L100/distance_regret_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 331021.04242986685,
+            "selected_trace_visits": 4770991,
+            "selected_unique_visited": 500000,
+            "visit_coverage": 0.6635831527171842
+          },
+          "random": {
+            "all_trace_visits": 7189741,
+            "all_unique_visited": 913939,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L100/random_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 0.0,
+            "selected_trace_visits": 3583327,
+            "selected_unique_visited": 456755,
+            "visit_coverage": 0.4983944484231073
+          },
+          "routing_aware": {
+            "all_trace_visits": 7189741,
+            "all_unique_visited": 913939,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L100/routing_aware_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 275305.0,
+            "selected_trace_visits": 3093187,
+            "selected_unique_visited": 437341,
+            "visit_coverage": 0.4302223125979086
+          },
+          "visit_frequency": {
+            "all_trace_visits": 7189741,
+            "all_unique_visited": 913939,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L100/visit_frequency_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 6220903.0,
+            "selected_trace_visits": 6220903,
+            "selected_unique_visited": 500000,
+            "visit_coverage": 0.8652471625890279
+          }
+        },
+        "56": {
+          "distance_regret": {
+            "all_trace_visits": 7189741,
+            "all_unique_visited": 913939,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L100/distance_regret_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 347486.57133462594,
+            "selected_trace_visits": 6305789,
+            "selected_unique_visited": 750000,
+            "visit_coverage": 0.8770537074979474
+          },
+          "random": {
+            "all_trace_visits": 7189741,
+            "all_unique_visited": 913939,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L100/random_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 0.0,
+            "selected_trace_visits": 5385071,
+            "selected_unique_visited": 685338,
+            "visit_coverage": 0.7489937398301274
+          },
+          "routing_aware": {
+            "all_trace_visits": 7189741,
+            "all_unique_visited": 913939,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L100/routing_aware_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 275305.0,
+            "selected_trace_visits": 4320312,
+            "selected_unique_visited": 670521,
+            "visit_coverage": 0.6008995317077486
+          },
+          "visit_frequency": {
+            "all_trace_visits": 7189741,
+            "all_unique_visited": 913939,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L100/visit_frequency_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 6977917.0,
+            "selected_trace_visits": 6977917,
+            "selected_unique_visited": 750000,
+            "visit_coverage": 0.970538020771541
+          }
+        }
+      },
+      "timing": {
+        "adc_and_lookup_seconds": 9.280336651951075,
+        "exact_distance_seconds": 17.90895079029724,
+        "score_accumulation_seconds": 4.2039353447034955,
+        "selection_and_write_seconds": 0.7517977119423449,
+        "total_seconds": 33.236059011891484
+      },
+      "trace": {
+        "queries": 1000,
+        "union_boundary_events": 10225849,
+        "union_node_events": 7189741
+      }
+    },
+    "200": {
+      "L": 200,
+      "score_distributions": {
+        "distance_regret": {
+          "count": 1000000,
+          "max": 262.61297417284004,
+          "mean": 0.5996166478953212,
+          "median": 0.260931693939213,
+          "min": -45.61893656426446,
+          "p25": 0.05672580999938859,
+          "p75": 0.7112483740713209,
+          "p90": 1.4671381763339624,
+          "p95": 2.195268047424281,
+          "p99": 4.880695631841284,
+          "positive_fraction": 0.899415,
+          "std": 1.3947314458950326,
+          "zero_fraction": 0.034928
+        },
+        "routing_aware": {
+          "count": 1000000,
+          "max": 135.0,
+          "mean": -0.143423,
+          "median": 0.0,
+          "min": -182.0,
+          "p25": 0.0,
+          "p75": 0.0,
+          "p90": 1.0,
+          "p95": 2.0,
+          "p99": 6.0,
+          "positive_fraction": 0.185411,
+          "std": 3.2093623732870995,
+          "zero_fraction": 0.673549
+        },
+        "visit_frequency": {
+          "count": 1000000,
+          "max": 1000.0,
+          "mean": 11.658574,
+          "median": 8.0,
+          "min": 0.0,
+          "p25": 4.0,
+          "p75": 14.0,
+          "p90": 25.0,
+          "p95": 34.0,
+          "p99": 68.0,
+          "positive_fraction": 0.965072,
+          "std": 16.93351901662865,
+          "zero_fraction": 0.034928
+        }
+      },
+      "selectors": {
+        "40": {
+          "distance_regret": {
+            "all_trace_visits": 11658574,
+            "all_unique_visited": 965072,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L200/distance_regret_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 453506.5358638427,
+            "selected_trace_visits": 4118765,
+            "selected_unique_visited": 250000,
+            "visit_coverage": 0.3532820566220191
+          },
+          "random": {
+            "all_trace_visits": 11658574,
+            "all_unique_visited": 965072,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L200/random_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 0.0,
+            "selected_trace_visits": 2909350,
+            "selected_unique_visited": 241411,
+            "visit_coverage": 0.24954595647803926
+          },
+          "routing_aware": {
+            "all_trace_visits": 11658574,
+            "all_unique_visited": 965072,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L200/routing_aware_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 413506.0,
+            "selected_trace_visits": 3498461,
+            "selected_unique_visited": 240017,
+            "visit_coverage": 0.3000762357386075
+          },
+          "visit_frequency": {
+            "all_trace_visits": 11658574,
+            "all_unique_visited": 965072,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L200/visit_frequency_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 7146422.0,
+            "selected_trace_visits": 7146422,
+            "selected_unique_visited": 250000,
+            "visit_coverage": 0.6129756520823215
+          }
+        },
+        "48": {
+          "distance_regret": {
+            "all_trace_visits": 11658574,
+            "all_unique_visited": 965072,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L200/distance_regret_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 566354.3881690209,
+            "selected_trace_visits": 7271720,
+            "selected_unique_visited": 500000,
+            "visit_coverage": 0.6237229355837172
+          },
+          "random": {
+            "all_trace_visits": 11658574,
+            "all_unique_visited": 965072,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L200/random_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 0.0,
+            "selected_trace_visits": 5829612,
+            "selected_unique_visited": 482507,
+            "visit_coverage": 0.5000278764795764
+          },
+          "routing_aware": {
+            "all_trace_visits": 11658574,
+            "all_unique_visited": 965072,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L200/routing_aware_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 413506.0,
+            "selected_trace_visits": 5001942,
+            "selected_unique_visited": 473980,
+            "visit_coverage": 0.42903548924594037
+          },
+          "visit_frequency": {
+            "all_trace_visits": 11658574,
+            "all_unique_visited": 965072,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L200/visit_frequency_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 9785448.0,
+            "selected_trace_visits": 9785448,
+            "selected_unique_visited": 500000,
+            "visit_coverage": 0.8393348963603954
+          }
+        },
+        "56": {
+          "distance_regret": {
+            "all_trace_visits": 11658574,
+            "all_unique_visited": 965072,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L200/distance_regret_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 603115.0192233121,
+            "selected_trace_visits": 9799771,
+            "selected_unique_visited": 750000,
+            "visit_coverage": 0.8405634342587696
+          },
+          "random": {
+            "all_trace_visits": 11658574,
+            "all_unique_visited": 965072,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L200/random_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 0.0,
+            "selected_trace_visits": 8745298,
+            "selected_unique_visited": 723693,
+            "visit_coverage": 0.7501172956486788
+          },
+          "routing_aware": {
+            "all_trace_visits": 11658574,
+            "all_unique_visited": 965072,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L200/routing_aware_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 413506.0,
+            "selected_trace_visits": 6979810,
+            "selected_unique_visited": 717349,
+            "visit_coverage": 0.5986847104971843
+          },
+          "visit_frequency": {
+            "all_trace_visits": 11658574,
+            "all_unique_visited": 965072,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L200/visit_frequency_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 11180267.0,
+            "selected_trace_visits": 11180267,
+            "selected_unique_visited": 750000,
+            "visit_coverage": 0.958973799025507
+          }
+        }
+      },
+      "timing": {
+        "adc_and_lookup_seconds": 11.621742022689432,
+        "exact_distance_seconds": 24.960533923469484,
+        "score_accumulation_seconds": 6.8614937430247664,
+        "selection_and_write_seconds": 0.7654000138863921,
+        "total_seconds": 45.82871056813747
+      },
+      "trace": {
+        "queries": 1000,
+        "union_boundary_events": 17014361,
+        "union_node_events": 11658574
+      }
+    },
+    "400": {
+      "L": 400,
+      "score_distributions": {
+        "distance_regret": {
+          "count": 1000000,
+          "max": 262.61297417284004,
+          "mean": 1.0459905376091048,
+          "median": 0.49762077261543425,
+          "min": -50.871223767178435,
+          "p25": 0.12722054486692969,
+          "p75": 1.2755729851520563,
+          "p90": 2.529557754821377,
+          "p95": 3.702947282605494,
+          "p99": 8.0416199276407,
+          "positive_fraction": 0.93016,
+          "std": 2.1238353207123115,
+          "zero_fraction": 0.012652
+        },
+        "routing_aware": {
+          "count": 1000000,
+          "max": 725.0,
+          "mean": -0.251394,
+          "median": 0.0,
+          "min": -243.0,
+          "p25": 0.0,
+          "p75": 0.0,
+          "p90": 2.0,
+          "p95": 3.0,
+          "p99": 8.0,
+          "positive_fraction": 0.246645,
+          "std": 4.404944614494488,
+          "zero_fraction": 0.564759
+        },
+        "visit_frequency": {
+          "count": 1000000,
+          "max": 1000.0,
+          "mean": 19.192867,
+          "median": 13.0,
+          "min": 0.0,
+          "p25": 7.0,
+          "p75": 24.0,
+          "p90": 40.0,
+          "p95": 55.0,
+          "p99": 101.0,
+          "positive_fraction": 0.987348,
+          "std": 22.362719452703217,
+          "zero_fraction": 0.012652
+        }
+      },
+      "selectors": {
+        "40": {
+          "distance_regret": {
+            "all_trace_visits": 19192867,
+            "all_unique_visited": 987348,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L400/distance_regret_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 766056.0091261768,
+            "selected_trace_visits": 6215601,
+            "selected_unique_visited": 250000,
+            "visit_coverage": 0.32384953222465407
+          },
+          "random": {
+            "all_trace_visits": 19192867,
+            "all_unique_visited": 987348,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L400/random_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 0.0,
+            "selected_trace_visits": 4781976,
+            "selected_unique_visited": 246873,
+            "visit_coverage": 0.24915381323696975
+          },
+          "routing_aware": {
+            "all_trace_visits": 19192867,
+            "all_unique_visited": 987348,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L400/routing_aware_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 617258.0,
+            "selected_trace_visits": 5878292,
+            "selected_unique_visited": 249724,
+            "visit_coverage": 0.30627482595487165
+          },
+          "visit_frequency": {
+            "all_trace_visits": 19192867,
+            "all_unique_visited": 987348,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L400/visit_frequency_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 11217725.0,
+            "selected_trace_visits": 11217725,
+            "selected_unique_visited": 250000,
+            "visit_coverage": 0.5844736484653387
+          }
+        },
+        "48": {
+          "distance_regret": {
+            "all_trace_visits": 19192867,
+            "all_unique_visited": 987348,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L400/distance_regret_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 973547.1348033244,
+            "selected_trace_visits": 11446729,
+            "selected_unique_visited": 500000,
+            "visit_coverage": 0.5964053728919186
+          },
+          "random": {
+            "all_trace_visits": 19192867,
+            "all_unique_visited": 987348,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L400/random_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 0.0,
+            "selected_trace_visits": 9580112,
+            "selected_unique_visited": 493683,
+            "visit_coverage": 0.4991496059447502
+          },
+          "routing_aware": {
+            "all_trace_visits": 19192867,
+            "all_unique_visited": 987348,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L400/routing_aware_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 617258.0,
+            "selected_trace_visits": 8162965,
+            "selected_unique_visited": 491070,
+            "visit_coverage": 0.42531243508330463
+          },
+          "visit_frequency": {
+            "all_trace_visits": 19192867,
+            "all_unique_visited": 987348,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L400/visit_frequency_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 15725363.0,
+            "selected_trace_visits": 15725363,
+            "selected_unique_visited": 500000,
+            "visit_coverage": 0.8193337139261164
+          }
+        },
+        "56": {
+          "distance_regret": {
+            "all_trace_visits": 19192867,
+            "all_unique_visited": 987348,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L400/distance_regret_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 1046772.1730166281,
+            "selected_trace_visits": 15773833,
+            "selected_unique_visited": 750000,
+            "visit_coverage": 0.8218591313116482
+          },
+          "random": {
+            "all_trace_visits": 19192867,
+            "all_unique_visited": 987348,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L400/random_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 0.0,
+            "selected_trace_visits": 14392045,
+            "selected_unique_visited": 740553,
+            "visit_coverage": 0.7498642594668113
+          },
+          "routing_aware": {
+            "all_trace_visits": 19192867,
+            "all_unique_visited": 987348,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L400/routing_aware_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 617258.0,
+            "selected_trace_visits": 11412954,
+            "selected_unique_visited": 738111,
+            "visit_coverage": 0.5946456045363103
+          },
+          "visit_frequency": {
+            "all_trace_visits": 19192867,
+            "all_unique_visited": 987348,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L400/visit_frequency_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 18223284.0,
+            "selected_trace_visits": 18223284,
+            "selected_unique_visited": 750000,
+            "visit_coverage": 0.9494821174970889
+          }
+        }
+      },
+      "timing": {
+        "adc_and_lookup_seconds": 16.53358753491193,
+        "exact_distance_seconds": 38.74134148657322,
+        "score_accumulation_seconds": 11.29829748114571,
+        "selection_and_write_seconds": 0.8217554427683353,
+        "total_seconds": 70.0456653079018
+      },
+      "trace": {
+        "queries": 1000,
+        "union_boundary_events": 28713225,
+        "union_node_events": 19192867
+      }
+    },
+    "50": {
+      "L": 50,
+      "score_distributions": {
+        "distance_regret": {
+          "count": 1000000,
+          "max": 161.84599139584975,
+          "mean": 0.2041941221371172,
+          "median": 0.05949941741645404,
+          "min": -36.375052036371244,
+          "p25": 0.0,
+          "p75": 0.2229819757789855,
+          "p90": 0.5212250666361683,
+          "p95": 0.8226208405442258,
+          "p99": 1.9856194225742398,
+          "positive_fraction": 0.745374,
+          "std": 0.6496538877462588,
+          "zero_fraction": 0.172401
+        },
+        "routing_aware": {
+          "count": 1000000,
+          "max": 202.0,
+          "mean": -0.053333,
+          "median": 0.0,
+          "min": -261.0,
+          "p25": 0.0,
+          "p75": 0.0,
+          "p90": 0.0,
+          "p95": 1.0,
+          "p99": 3.0,
+          "positive_fraction": 0.091605,
+          "std": 2.072855660944823,
+          "zero_fraction": 0.837275
+        },
+        "visit_frequency": {
+          "count": 1000000,
+          "max": 1000.0,
+          "mean": 4.681745,
+          "median": 2.0,
+          "min": 0.0,
+          "p25": 1.0,
+          "p75": 5.0,
+          "p90": 10.0,
+          "p95": 15.0,
+          "p99": 34.0,
+          "positive_fraction": 0.827599,
+          "std": 12.600163441597692,
+          "zero_fraction": 0.172401
+        }
+      },
+      "selectors": {
+        "40": {
+          "distance_regret": {
+            "all_trace_visits": 4681745,
+            "all_unique_visited": 827599,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L50/distance_regret_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 170383.8052369419,
+            "selected_trace_visits": 2119274,
+            "selected_unique_visited": 250000,
+            "visit_coverage": 0.45266754169652557
+          },
+          "random": {
+            "all_trace_visits": 4681745,
+            "all_unique_visited": 827599,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L50/random_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 0.0,
+            "selected_trace_visits": 1169729,
+            "selected_unique_visited": 206678,
+            "visit_coverage": 0.24984893453188928
+          },
+          "routing_aware": {
+            "all_trace_visits": 4681745,
+            "all_unique_visited": 827599,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L50/routing_aware_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 179933.0,
+            "selected_trace_visits": 1381983,
+            "selected_unique_visited": 194049,
+            "visit_coverage": 0.295185449015271
+          },
+          "visit_frequency": {
+            "all_trace_visits": 4681745,
+            "all_unique_visited": 827599,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L50/visit_frequency_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 3268395.0,
+            "selected_trace_visits": 3268395,
+            "selected_unique_visited": 250000,
+            "visit_coverage": 0.6981146986860668
+          }
+        },
+        "48": {
+          "distance_regret": {
+            "all_trace_visits": 4681745,
+            "all_unique_visited": 827599,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L50/distance_regret_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 202224.18505809025,
+            "selected_trace_visits": 3377286,
+            "selected_unique_visited": 500000,
+            "visit_coverage": 0.7213733340880377
+          },
+          "random": {
+            "all_trace_visits": 4681745,
+            "all_unique_visited": 827599,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L50/random_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 0.0,
+            "selected_trace_visits": 2348022,
+            "selected_unique_visited": 413786,
+            "visit_coverage": 0.5015271015401309
+          },
+          "routing_aware": {
+            "all_trace_visits": 4681745,
+            "all_unique_visited": 827599,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L50/routing_aware_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 179933.0,
+            "selected_trace_visits": 2020507,
+            "selected_unique_visited": 382282,
+            "visit_coverage": 0.4315713478628161
+          },
+          "visit_frequency": {
+            "all_trace_visits": 4681745,
+            "all_unique_visited": 827599,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L50/visit_frequency_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 4206913.0,
+            "selected_trace_visits": 4206913,
+            "selected_unique_visited": 500000,
+            "visit_coverage": 0.8985779874811636
+          }
+        },
+        "56": {
+          "distance_regret": {
+            "all_trace_visits": 4681745,
+            "all_unique_visited": 827599,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L50/distance_regret_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 207971.4288643611,
+            "selected_trace_visits": 4354352,
+            "selected_unique_visited": 745374,
+            "visit_coverage": 0.9300703049824371
+          },
+          "random": {
+            "all_trace_visits": 4681745,
+            "all_unique_visited": 827599,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L50/random_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 0.0,
+            "selected_trace_visits": 3511217,
+            "selected_unique_visited": 620517,
+            "visit_coverage": 0.7499804026062932
+          },
+          "routing_aware": {
+            "all_trace_visits": 4681745,
+            "all_unique_visited": 827599,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L50/routing_aware_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 179933.0,
+            "selected_trace_visits": 2817332,
+            "selected_unique_visited": 594819,
+            "visit_coverage": 0.6017696393118378
+          },
+          "visit_frequency": {
+            "all_trace_visits": 4681745,
+            "all_unique_visited": 827599,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L50/visit_frequency_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 4604146.0,
+            "selected_trace_visits": 4604146,
+            "selected_unique_visited": 750000,
+            "visit_coverage": 0.983425197228811
+          }
+        }
+      },
+      "timing": {
+        "adc_and_lookup_seconds": 7.91801593080163,
+        "exact_distance_seconds": 11.672393597196788,
+        "score_accumulation_seconds": 2.83122671674937,
+        "selection_and_write_seconds": 0.7202565493062139,
+        "total_seconds": 23.88223723275587
+      },
+      "trace": {
+        "queries": 1000,
+        "union_boundary_events": 6494676,
+        "union_node_events": 4681745
+      }
+    },
+    "800": {
+      "L": 800,
+      "score_distributions": {
+        "distance_regret": {
+          "count": 1000000,
+          "max": 266.4863194513348,
+          "mean": 1.7932088546656786,
+          "median": 0.9103319115297097,
+          "min": -64.07107621044815,
+          "p25": 0.24812995189229525,
+          "p75": 2.239519409834635,
+          "p90": 4.30888524832955,
+          "p95": 6.214098168228123,
+          "p99": 13.120288302436846,
+          "positive_fraction": 0.943444,
+          "std": 3.282483677122893,
+          "zero_fraction": 0.00479
+        },
+        "routing_aware": {
+          "count": 1000000,
+          "max": 352.0,
+          "mean": -0.434012,
+          "median": 0.0,
+          "min": -313.0,
+          "p25": 0.0,
+          "p75": 1.0,
+          "p90": 3.0,
+          "p95": 4.0,
+          "p99": 11.0,
+          "positive_fraction": 0.313074,
+          "std": 5.932339301140488,
+          "zero_fraction": 0.446519
+        },
+        "visit_frequency": {
+          "count": 1000000,
+          "max": 1000.0,
+          "mean": 31.35644,
+          "median": 23.0,
+          "min": 0.0,
+          "p25": 12.0,
+          "p75": 40.0,
+          "p90": 65.0,
+          "p95": 86.0,
+          "p99": 149.0,
+          "positive_fraction": 0.99521,
+          "std": 31.206415214285666,
+          "zero_fraction": 0.00479
+        }
+      },
+      "selectors": {
+        "40": {
+          "distance_regret": {
+            "all_trace_visits": 31356440,
+            "all_unique_visited": 995210,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L800/distance_regret_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 1281844.9697583753,
+            "selected_trace_visits": 9488299,
+            "selected_unique_visited": 250000,
+            "visit_coverage": 0.30259490554412427
+          },
+          "random": {
+            "all_trace_visits": 31356440,
+            "all_unique_visited": 995210,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L800/random_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 0.0,
+            "selected_trace_visits": 7846243,
+            "selected_unique_visited": 248794,
+            "visit_coverage": 0.2502274811808994
+          },
+          "routing_aware": {
+            "all_trace_visits": 31356440,
+            "all_unique_visited": 995210,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L800/routing_aware_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 852974.0,
+            "selected_trace_visits": 8632911,
+            "selected_unique_visited": 250000,
+            "visit_coverage": 0.2753154057029433
+          },
+          "visit_frequency": {
+            "all_trace_visits": 31356440,
+            "all_unique_visited": 995210,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L800/visit_frequency_b40.u8",
+            "selected_nodes": 250000,
+            "selected_score_sum": 17600285.0,
+            "selected_trace_visits": 17600285,
+            "selected_unique_visited": 250000,
+            "visit_coverage": 0.5612972965043226
+          }
+        },
+        "48": {
+          "distance_regret": {
+            "all_trace_visits": 31356440,
+            "all_unique_visited": 995210,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L800/distance_regret_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 1652401.3349427618,
+            "selected_trace_visits": 18117896,
+            "selected_unique_visited": 500000,
+            "visit_coverage": 0.5778046232289125
+          },
+          "random": {
+            "all_trace_visits": 31356440,
+            "all_unique_visited": 995210,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L800/random_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 0.0,
+            "selected_trace_visits": 15699736,
+            "selected_unique_visited": 497593,
+            "visit_coverage": 0.5006861748336227
+          },
+          "routing_aware": {
+            "all_trace_visits": 31356440,
+            "all_unique_visited": 995210,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L800/routing_aware_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 916048.0,
+            "selected_trace_visits": 13297375,
+            "selected_unique_visited": 497169,
+            "visit_coverage": 0.42407157827865666
+          },
+          "visit_frequency": {
+            "all_trace_visits": 31356440,
+            "all_unique_visited": 995210,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L800/visit_frequency_b48.u8",
+            "selected_nodes": 500000,
+            "selected_score_sum": 25209377.0,
+            "selected_trace_visits": 25209377,
+            "selected_unique_visited": 500000,
+            "visit_coverage": 0.8039617061120459
+          }
+        },
+        "56": {
+          "distance_regret": {
+            "all_trace_visits": 31356440,
+            "all_unique_visited": 995210,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L800/distance_regret_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 1788999.9031262968,
+            "selected_trace_visits": 25450345,
+            "selected_unique_visited": 750000,
+            "visit_coverage": 0.8116465070652154
+          },
+          "random": {
+            "all_trace_visits": 31356440,
+            "all_unique_visited": 995210,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L800/random_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 0.0,
+            "selected_trace_visits": 23547639,
+            "selected_unique_visited": 746366,
+            "visit_coverage": 0.7509665956977258
+          },
+          "routing_aware": {
+            "all_trace_visits": 31356440,
+            "all_unique_visited": 995210,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L800/routing_aware_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 916048.0,
+            "selected_trace_visits": 18660084,
+            "selected_unique_visited": 745342,
+            "visit_coverage": 0.595095744287298
+          },
+          "visit_frequency": {
+            "all_trace_visits": 31356440,
+            "all_unique_visited": 995210,
+            "path": "/home/ubuntu/pz/VectorDB/data/VectorDB/selective_opq_oracle_a0_0724/selectors/L800/visit_frequency_b56.u8",
+            "selected_nodes": 750000,
+            "selected_score_sum": 29557589.0,
+            "selected_trace_visits": 29557589,
+            "selected_unique_visited": 750000,
+            "visit_coverage": 0.9426321674271697
+          }
+        }
+      },
+      "timing": {
+        "adc_and_lookup_seconds": 23.733221732079983,
+        "exact_distance_seconds": 57.09743736917153,
+        "score_accumulation_seconds": 17.12812400329858,
+        "selection_and_write_seconds": 0.8719229493290186,
+        "total_seconds": 103.12702009500936
+      },
+      "trace": {
+        "queries": 1000,
+        "union_boundary_events": 48068448,
+        "union_node_events": 31356440
+      }
+    }
+  },
+  "stage_b_authorized": false,
+  "system_claim_authorized": false,
+  "verdict": [
+    "PASS-ALGORITHMIC-SELECTIVITY-SIGNAL",
+    "HOLD-STAGE-B-FOR-REVIEW"
+  ],
+  "within_selector_L_jaccard": [
+    {
+      "budget": 40,
+      "jaccard": 0.1432517280249869,
+      "left_L": 50,
+      "right_L": 100,
+      "selector": "random"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.14263253394761258,
+      "left_L": 50,
+      "right_L": 200,
+      "selector": "random"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.14237147178570939,
+      "left_L": 50,
+      "right_L": 400,
+      "selector": "random"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.14194097992239368,
+      "left_L": 50,
+      "right_L": 800,
+      "selector": "random"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.14339290410363714,
+      "left_L": 100,
+      "right_L": 200,
+      "selector": "random"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.14396842647142938,
+      "left_L": 100,
+      "right_L": 400,
+      "selector": "random"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.14280751235946323,
+      "left_L": 100,
+      "right_L": 800,
+      "selector": "random"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.14283885743542388,
+      "left_L": 200,
+      "right_L": 400,
+      "selector": "random"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.14249676673415015,
+      "left_L": 200,
+      "right_L": 800,
+      "selector": "random"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.1421053112465394,
+      "left_L": 400,
+      "right_L": 800,
+      "selector": "random"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.762654981439243,
+      "left_L": 50,
+      "right_L": 100,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.6894174888498446,
+      "left_L": 50,
+      "right_L": 200,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.6376797353509548,
+      "left_L": 50,
+      "right_L": 400,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.5965973317665392,
+      "left_L": 50,
+      "right_L": 800,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.7799421874777507,
+      "left_L": 100,
+      "right_L": 200,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.7095536697279075,
+      "left_L": 100,
+      "right_L": 400,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.6571820613356224,
+      "left_L": 100,
+      "right_L": 800,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.8067957200622983,
+      "left_L": 200,
+      "right_L": 400,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.7371244336974346,
+      "left_L": 200,
+      "right_L": 800,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.833261225058481,
+      "left_L": 400,
+      "right_L": 800,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.6992930940728657,
+      "left_L": 50,
+      "right_L": 100,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.6082755426321681,
+      "left_L": 50,
+      "right_L": 200,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.5582926099531266,
+      "left_L": 50,
+      "right_L": 400,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.5224083281825185,
+      "left_L": 50,
+      "right_L": 800,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.7293976853741378,
+      "left_L": 100,
+      "right_L": 200,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.6530073162103815,
+      "left_L": 100,
+      "right_L": 400,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.6061676839061998,
+      "left_L": 100,
+      "right_L": 800,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.770569592237823,
+      "left_L": 200,
+      "right_L": 400,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.7025275724340355,
+      "left_L": 200,
+      "right_L": 800,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.809011773048619,
+      "left_L": 400,
+      "right_L": 800,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.5117295092623667,
+      "left_L": 50,
+      "right_L": 100,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.32435245786572653,
+      "left_L": 50,
+      "right_L": 200,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.16270146709671118,
+      "left_L": 50,
+      "right_L": 400,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.16732153404726718,
+      "left_L": 50,
+      "right_L": 800,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.3833248489409265,
+      "left_L": 100,
+      "right_L": 200,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.19653578958200218,
+      "left_L": 100,
+      "right_L": 400,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.18259783631899867,
+      "left_L": 100,
+      "right_L": 800,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.26468936699767803,
+      "left_L": 200,
+      "right_L": 400,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.21587642804686474,
+      "left_L": 200,
+      "right_L": 800,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 40,
+      "jaccard": 0.2836772732640832,
+      "left_L": 400,
+      "right_L": 800,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.3331893488836539,
+      "left_L": 50,
+      "right_L": 100,
+      "selector": "random"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.3337903788364813,
+      "left_L": 50,
+      "right_L": 200,
+      "selector": "random"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.3327327151230512,
+      "left_L": 50,
+      "right_L": 400,
+      "selector": "random"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.33301874091047845,
+      "left_L": 50,
+      "right_L": 800,
+      "selector": "random"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.33348801794341476,
+      "left_L": 100,
+      "right_L": 200,
+      "selector": "random"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.3334471208209767,
+      "left_L": 100,
+      "right_L": 400,
+      "selector": "random"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.33390068575834253,
+      "left_L": 100,
+      "right_L": 800,
+      "selector": "random"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.33319112627986347,
+      "left_L": 200,
+      "right_L": 400,
+      "selector": "random"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.33381528525640597,
+      "left_L": 200,
+      "right_L": 800,
+      "selector": "random"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.33261194606652933,
+      "left_L": 400,
+      "right_L": 800,
+      "selector": "random"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.8003064121513481,
+      "left_L": 50,
+      "right_L": 100,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.7396447645390811,
+      "left_L": 50,
+      "right_L": 200,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.70213635133456,
+      "left_L": 50,
+      "right_L": 400,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.6695299104631109,
+      "left_L": 50,
+      "right_L": 800,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.8130558149232624,
+      "left_L": 100,
+      "right_L": 200,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.7602379841754605,
+      "left_L": 100,
+      "right_L": 400,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.71650245459851,
+      "left_L": 100,
+      "right_L": 800,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.8423704675383535,
+      "left_L": 200,
+      "right_L": 400,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.7869715478390154,
+      "left_L": 200,
+      "right_L": 800,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.8638877343139868,
+      "left_L": 400,
+      "right_L": 800,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.7720536506963285,
+      "left_L": 50,
+      "right_L": 100,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.6972914622844865,
+      "left_L": 50,
+      "right_L": 200,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.6589883157452922,
+      "left_L": 50,
+      "right_L": 400,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.6342512922842094,
+      "left_L": 50,
+      "right_L": 800,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.8070993705872892,
+      "left_L": 100,
+      "right_L": 200,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.7522095362251799,
+      "left_L": 100,
+      "right_L": 400,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.7202199817312638,
+      "left_L": 100,
+      "right_L": 800,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.8461595266446974,
+      "left_L": 200,
+      "right_L": 400,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.8007797376263922,
+      "left_L": 200,
+      "right_L": 800,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.8781035661430514,
+      "left_L": 400,
+      "right_L": 800,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.7647640157558131,
+      "left_L": 50,
+      "right_L": 100,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.6691119156230544,
+      "left_L": 50,
+      "right_L": 200,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.5785768182837081,
+      "left_L": 50,
+      "right_L": 400,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.49795454307143594,
+      "left_L": 50,
+      "right_L": 800,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.690748562018348,
+      "left_L": 100,
+      "right_L": 200,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.5912139530369114,
+      "left_L": 100,
+      "right_L": 400,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.506484663232886,
+      "left_L": 100,
+      "right_L": 800,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.6187437577193843,
+      "left_L": 200,
+      "right_L": 400,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.5230761263909492,
+      "left_L": 200,
+      "right_L": 800,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 48,
+      "jaccard": 0.5544097828334092,
+      "left_L": 400,
+      "right_L": 800,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.5997286860148519,
+      "left_L": 50,
+      "right_L": 100,
+      "selector": "random"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.5999846401474546,
+      "left_L": 50,
+      "right_L": 200,
+      "selector": "random"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.5999692805898127,
+      "left_L": 50,
+      "right_L": 400,
+      "selector": "random"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.5996246214221729,
+      "left_L": 50,
+      "right_L": 800,
+      "selector": "random"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.5993824251329086,
+      "left_L": 100,
+      "right_L": 200,
+      "selector": "random"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.5995393326721904,
+      "left_L": 100,
+      "right_L": 400,
+      "selector": "random"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.6003021370434738,
+      "left_L": 100,
+      "right_L": 800,
+      "selector": "random"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.6002748205291789,
+      "left_L": 200,
+      "right_L": 400,
+      "selector": "random"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.5997030951055484,
+      "left_L": 200,
+      "right_L": 800,
+      "selector": "random"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.5992204333460915,
+      "left_L": 400,
+      "right_L": 800,
+      "selector": "random"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.8560428424182506,
+      "left_L": 50,
+      "right_L": 100,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.7988027169116236,
+      "left_L": 50,
+      "right_L": 200,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.7771459036786921,
+      "left_L": 50,
+      "right_L": 400,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.7563066042982677,
+      "left_L": 50,
+      "right_L": 800,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.8667605854658998,
+      "left_L": 100,
+      "right_L": 200,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.8304938306256262,
+      "left_L": 100,
+      "right_L": 400,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.8041358009100061,
+      "left_L": 100,
+      "right_L": 800,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.8926991024820856,
+      "left_L": 200,
+      "right_L": 400,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.8584182630479547,
+      "left_L": 200,
+      "right_L": 800,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.9111810461805047,
+      "left_L": 400,
+      "right_L": 800,
+      "selector": "visit_frequency"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.8082376072435588,
+      "left_L": 50,
+      "right_L": 100,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.7349745421402183,
+      "left_L": 50,
+      "right_L": 200,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.7036510377506354,
+      "left_L": 50,
+      "right_L": 400,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.6879023537235689,
+      "left_L": 50,
+      "right_L": 800,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.864400880991563,
+      "left_L": 100,
+      "right_L": 200,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.8213609208800816,
+      "left_L": 100,
+      "right_L": 400,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.80103163091819,
+      "left_L": 100,
+      "right_L": 800,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.9051852792684089,
+      "left_L": 200,
+      "right_L": 400,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.8772621008315019,
+      "left_L": 200,
+      "right_L": 800,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.9302559905494666,
+      "left_L": 400,
+      "right_L": 800,
+      "selector": "distance_regret"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.8479665591971448,
+      "left_L": 50,
+      "right_L": 100,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.7802632890720318,
+      "left_L": 50,
+      "right_L": 200,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.7074811579454221,
+      "left_L": 50,
+      "right_L": 400,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.6367380029832278,
+      "left_L": 50,
+      "right_L": 800,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.7995364394132072,
+      "left_L": 100,
+      "right_L": 200,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.7221525069374044,
+      "left_L": 100,
+      "right_L": 400,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.6501014812410963,
+      "left_L": 100,
+      "right_L": 800,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.7476691918544635,
+      "left_L": 200,
+      "right_L": 400,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.6698969896210336,
+      "left_L": 200,
+      "right_L": 800,
+      "selector": "routing_aware"
+    },
+    {
+      "budget": 56,
+      "jaccard": 0.7046674932409934,
+      "left_L": 400,
+      "right_L": 800,
+      "selector": "routing_aware"
+    }
+  ]
+}

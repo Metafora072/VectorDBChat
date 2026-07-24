@@ -1,0 +1,207 @@
+{
+  "bootstrap_resamples": 10000,
+  "bootstrap_seed": 20260724,
+  "diagnostic_only": true,
+  "points": [
+    {
+      "L": 50,
+      "budget": 40,
+      "metrics": {
+        "comparisons_reduction": {
+          "bootstrap_95_ci": [
+            -14.23935,
+            15.609,
+            44.794124999999994
+          ],
+          "mean": 15.5,
+          "negative_query_fraction": 0.485,
+          "positive_query_fraction": 0.511,
+          "zero_query_fraction": 0.004
+        },
+        "hits_delta": {
+          "bootstrap_95_ci": [
+            0.063,
+            0.151,
+            0.24
+          ],
+          "mean": 0.151,
+          "negative_query_fraction": 0.265,
+          "positive_query_fraction": 0.366,
+          "zero_query_fraction": 0.369
+        },
+        "reads_reduction": {
+          "bootstrap_95_ci": [
+            -0.014,
+            0.249,
+            0.5150249999999996
+          ],
+          "mean": 0.251,
+          "negative_query_fraction": 0.399,
+          "positive_query_fraction": 0.444,
+          "zero_query_fraction": 0.157
+        }
+      },
+      "selector": "routing_aware"
+    },
+    {
+      "L": 50,
+      "budget": 56,
+      "metrics": {
+        "comparisons_reduction": {
+          "bootstrap_95_ci": [
+            9.369425,
+            39.0845,
+            69.07954999999998
+          ],
+          "mean": 38.911,
+          "negative_query_fraction": 0.471,
+          "positive_query_fraction": 0.528,
+          "zero_query_fraction": 0.001
+        },
+        "hits_delta": {
+          "bootstrap_95_ci": [
+            0.058,
+            0.128,
+            0.20002499999999965
+          ],
+          "mean": 0.128,
+          "negative_query_fraction": 0.202,
+          "positive_query_fraction": 0.271,
+          "zero_query_fraction": 0.527
+        },
+        "reads_reduction": {
+          "bootstrap_95_ci": [
+            0.07,
+            0.322,
+            0.587
+          ],
+          "mean": 0.324,
+          "negative_query_fraction": 0.386,
+          "positive_query_fraction": 0.427,
+          "zero_query_fraction": 0.187
+        }
+      },
+      "selector": "visit_frequency"
+    },
+    {
+      "L": 50,
+      "budget": 56,
+      "metrics": {
+        "comparisons_reduction": {
+          "bootstrap_95_ci": [
+            11.302725,
+            40.3875,
+            69.96682499999999
+          ],
+          "mean": 40.321,
+          "negative_query_fraction": 0.456,
+          "positive_query_fraction": 0.543,
+          "zero_query_fraction": 0.001
+        },
+        "hits_delta": {
+          "bootstrap_95_ci": [
+            0.056,
+            0.127,
+            0.197
+          ],
+          "mean": 0.127,
+          "negative_query_fraction": 0.202,
+          "positive_query_fraction": 0.265,
+          "zero_query_fraction": 0.533
+        },
+        "reads_reduction": {
+          "bootstrap_95_ci": [
+            0.154,
+            0.41,
+            0.668
+          ],
+          "mean": 0.412,
+          "negative_query_fraction": 0.368,
+          "positive_query_fraction": 0.464,
+          "zero_query_fraction": 0.168
+        }
+      },
+      "selector": "distance_regret"
+    },
+    {
+      "L": 200,
+      "budget": 56,
+      "metrics": {
+        "comparisons_reduction": {
+          "bootstrap_95_ci": [
+            14.235700000000001,
+            32.8485,
+            51.597175
+          ],
+          "mean": 33.087,
+          "negative_query_fraction": 0.443,
+          "positive_query_fraction": 0.557,
+          "zero_query_fraction": 0.0
+        },
+        "hits_delta": {
+          "bootstrap_95_ci": [
+            0.002,
+            0.029,
+            0.057
+          ],
+          "mean": 0.029,
+          "negative_query_fraction": 0.058,
+          "positive_query_fraction": 0.087,
+          "zero_query_fraction": 0.855
+        },
+        "reads_reduction": {
+          "bootstrap_95_ci": [
+            -0.082,
+            0.065,
+            0.209
+          ],
+          "mean": 0.063,
+          "negative_query_fraction": 0.37,
+          "positive_query_fraction": 0.405,
+          "zero_query_fraction": 0.225
+        }
+      },
+      "selector": "visit_frequency"
+    },
+    {
+      "L": 200,
+      "budget": 56,
+      "metrics": {
+        "comparisons_reduction": {
+          "bootstrap_95_ci": [
+            -5.8972,
+            11.965,
+            29.80259999999999
+          ],
+          "mean": 11.92,
+          "negative_query_fraction": 0.505,
+          "positive_query_fraction": 0.495,
+          "zero_query_fraction": 0.0
+        },
+        "hits_delta": {
+          "bootstrap_95_ci": [
+            -0.019,
+            0.009,
+            0.037
+          ],
+          "mean": 0.009,
+          "negative_query_fraction": 0.075,
+          "positive_query_fraction": 0.086,
+          "zero_query_fraction": 0.839
+        },
+        "reads_reduction": {
+          "bootstrap_95_ci": [
+            0.063,
+            0.215,
+            0.362
+          ],
+          "mean": 0.214,
+          "negative_query_fraction": 0.353,
+          "positive_query_fraction": 0.423,
+          "zero_query_fraction": 0.224
+        }
+      },
+      "selector": "distance_regret"
+    }
+  ]
+}

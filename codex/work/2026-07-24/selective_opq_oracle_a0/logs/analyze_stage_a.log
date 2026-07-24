@@ -1,0 +1,7 @@
+{
+  "verdict": [
+    "PASS-ALGORITHMIC-SELECTIVITY-SIGNAL",
+    "HOLD-STAGE-B-FOR-REVIEW"
+  ],
+  "positive_routing": 3
+}
