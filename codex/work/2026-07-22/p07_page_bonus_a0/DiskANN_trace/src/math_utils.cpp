@@ -1,12 +1,31 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+#include <atomic>
+#include <cstdlib>
 #include <limits>
 #include <malloc.h>
 #include <math_utils.h>
 #include <mkl.h>
 #include "logger.h"
 #include "utils.h"
+
+namespace
+{
+std::mt19937 make_pivot_generator()
+{
+    const char *seed_text = std::getenv("PQR_KMEANS_SEED");
+    if (seed_text != nullptr && seed_text[0] != '\0')
+    {
+        static std::atomic<uint32_t> call_id{0};
+        const uint64_t base_seed = std::strtoull(seed_text, nullptr, 10);
+        return std::mt19937(static_cast<uint32_t>(base_seed + call_id.fetch_add(1)));
+    }
+
+    std::random_device rd;
+    return std::mt19937(rd());
+}
+} // namespace
 
 namespace math_utils
 {
@@ -361,9 +380,7 @@ void selecting_pivots(float *data, size_t num_points, size_t dim, float *pivot_d
     //	pivot_data = new float[num_centers * dim];
 
     std::vector<size_t> picked;
-    std::random_device rd;
-    auto x = rd();
-    std::mt19937 generator(x);
+    std::mt19937 generator = make_pivot_generator();
     std::uniform_int_distribution<size_t> distribution(0, num_points - 1);
 
     size_t tmp_pivot;
@@ -391,9 +408,7 @@ void kmeanspp_selecting_pivots(float *data, size_t num_points, size_t dim, float
     }
 
     std::vector<size_t> picked;
-    std::random_device rd;
-    auto x = rd();
-    std::mt19937 generator(x);
+    std::mt19937 generator = make_pivot_generator();
     std::uniform_real_distribution<> distribution(0, 1);
     std::uniform_int_distribution<size_t> int_dist(0, num_points - 1);
     size_t init_id = int_dist(generator);

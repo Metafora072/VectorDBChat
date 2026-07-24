@@ -1,0 +1,500 @@
+{
+  "allowed_verdicts": [
+    "OPQ32-CLOSES-PQ64-GAP",
+    "OPQ32-PARTIALLY-NARROWS-GAP",
+    "OPQ32-DOES-NOT-NARROW-GAP",
+    "OPQ-A0-INCOMPATIBLE"
+  ],
+  "artifact_audit_passed": true,
+  "dataset": "GIST1M-960D",
+  "experiment": "OPQ-A0",
+  "frontier_evidence": {
+    "high_common_opq32_vs_pq64": {
+      "opq32": {
+        "L": 800,
+        "mean_comparisons": 76581.727,
+        "mean_ios": 809.034,
+        "p99_us": 73436.31,
+        "qps": 20.7519,
+        "recall_at_10": 0.9962000000000001
+      },
+      "pq64": {
+        "L": 800,
+        "mean_comparisons": 75712.277,
+        "mean_ios": 809.382,
+        "p99_us": 79294.495,
+        "qps": 18.836550000000003,
+        "recall_at_10": 0.9908
+      },
+      "ratios_b_over_a": {
+        "comparisons": 0.9886467694832738,
+        "p99": 1.0797723224383142,
+        "qps": 0.9077024272476257,
+        "reads": 1.0004301426145255
+      },
+      "target_recall": 0.99
+    },
+    "high_common_pq32_vs_opq32": {
+      "opq32": {
+        "L": 200,
+        "mean_comparisons": 22257.731,
+        "mean_ios": 211.664,
+        "p99_us": 19811.079999999998,
+        "qps": 59.6715,
+        "recall_at_10": 0.9575
+      },
+      "pq32": {
+        "L": 800,
+        "mean_comparisons": 75496.57,
+        "mean_ios": 809.732,
+        "p99_us": 75275.405,
+        "qps": 20.62345,
+        "recall_at_10": 0.9483
+      },
+      "ratios_b_over_a": {
+        "comparisons": 0.2948177778142768,
+        "p99": 0.26318131400289374,
+        "qps": 2.8933810783355844,
+        "reads": 0.2614000681707034
+      },
+      "target_recall": 0.945
+    },
+    "high_common_pq64_vs_opq64": {
+      "opq64": {
+        "L": 400,
+        "mean_comparisons": 40999.637,
+        "mean_ios": 409.755,
+        "p99_us": 42190.62,
+        "qps": 30.9741,
+        "recall_at_10": 0.9945
+      },
+      "pq64": {
+        "L": 800,
+        "mean_comparisons": 75712.277,
+        "mean_ios": 809.382,
+        "p99_us": 79294.495,
+        "qps": 18.836550000000003,
+        "recall_at_10": 0.9908
+      },
+      "ratios_b_over_a": {
+        "comparisons": 0.54151900622405,
+        "p99": 0.5320750198358664,
+        "qps": 1.6443616267310095,
+        "reads": 0.5062566254253246
+      },
+      "target_recall": 0.99
+    },
+    "max_recall": {
+      "opq32": 0.9962000000000001,
+      "opq64": 0.9983,
+      "pq32": 0.9483,
+      "pq64": 0.9908
+    },
+    "same_l_pq32_to_opq32": [
+      {
+        "L": 50,
+        "p99_ratio_b_over_a": 1.0317797208126127,
+        "qps_ratio_b_over_a": 0.5653343551496381,
+        "recall_a": 0.5441999999999999,
+        "recall_b": 0.7912,
+        "recall_delta_b_minus_a": 0.2470000000000001
+      },
+      {
+        "L": 100,
+        "p99_ratio_b_over_a": 1.2059879723104419,
+        "qps_ratio_b_over_a": 0.5055377861784689,
+        "recall_a": 0.6695,
+        "recall_b": 0.8951000000000001,
+        "recall_delta_b_minus_a": 0.22560000000000013
+      },
+      {
+        "L": 200,
+        "p99_ratio_b_over_a": 1.0300282891388113,
+        "qps_ratio_b_over_a": 0.7151747591724221,
+        "recall_a": 0.7921000000000001,
+        "recall_b": 0.9575,
+        "recall_delta_b_minus_a": 0.16539999999999988
+      },
+      {
+        "L": 400,
+        "p99_ratio_b_over_a": 0.9766488489878473,
+        "qps_ratio_b_over_a": 0.8387979214327431,
+        "recall_a": 0.8875000000000001,
+        "recall_b": 0.9867,
+        "recall_delta_b_minus_a": 0.09919999999999995
+      },
+      {
+        "L": 800,
+        "p99_ratio_b_over_a": 0.9755684476224339,
+        "qps_ratio_b_over_a": 1.0062283468575821,
+        "recall_a": 0.9483,
+        "recall_b": 0.9962000000000001,
+        "recall_delta_b_minus_a": 0.047900000000000054
+      }
+    ],
+    "same_l_pq64_to_opq64": [
+      {
+        "L": 50,
+        "p99_ratio_b_over_a": 1.0937484537156401,
+        "qps_ratio_b_over_a": 0.4739786860244661,
+        "recall_a": 0.6938,
+        "recall_b": 0.8722000000000001,
+        "recall_delta_b_minus_a": 0.17840000000000011
+      },
+      {
+        "L": 100,
+        "p99_ratio_b_over_a": 1.035436473638721,
+        "qps_ratio_b_over_a": 0.6263213934593482,
+        "recall_a": 0.8178000000000001,
+        "recall_b": 0.9455,
+        "recall_delta_b_minus_a": 0.12769999999999992
+      },
+      {
+        "L": 200,
+        "p99_ratio_b_over_a": 1.0057868141384991,
+        "qps_ratio_b_over_a": 0.7556482870076664,
+        "recall_a": 0.9105000000000001,
+        "recall_b": 0.9811,
+        "recall_delta_b_minus_a": 0.07059999999999989
+      },
+      {
+        "L": 400,
+        "p99_ratio_b_over_a": 1.0303825278607044,
+        "qps_ratio_b_over_a": 0.8168027604648066,
+        "recall_a": 0.9682000000000001,
+        "recall_b": 0.9945,
+        "recall_delta_b_minus_a": 0.02629999999999999
+      },
+      {
+        "L": 800,
+        "p99_ratio_b_over_a": 0.9943318259357097,
+        "qps_ratio_b_over_a": 0.9917845890038248,
+        "recall_a": 0.9908,
+        "recall_b": 0.9983,
+        "recall_delta_b_minus_a": 0.007499999999999951
+      }
+    ]
+  },
+  "generated_at_unix": 1784880547.3839686,
+  "performance_caveat": "OPQ32 L=100 has no pair of three runs within the 25% p50/QPS stability gate; report its performance range rather than a stable center.",
+  "repeats": {
+    "opq32": [
+      1,
+      2,
+      3
+    ],
+    "opq64": [
+      1,
+      2,
+      3
+    ]
+  },
+  "scope": "controlled frozen-graph uniform-quantizer baseline",
+  "stability": {
+    "opq32": {
+      "performance_stable": false,
+      "repeats": 3
+    },
+    "opq32_L100": {
+      "pairs": [
+        {
+          "p50_drift": 0.26302786999150773,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.03763739804932055
+        },
+        {
+          "p50_drift": 0.3067998385794996,
+          "pair": [
+            1,
+            3
+          ],
+          "qps_drift": 0.299797709649408
+        },
+        {
+          "p50_drift": 0.6505246166263116,
+          "pair": [
+            2,
+            3
+          ],
+          "qps_drift": 0.3487187134310779
+        }
+      ],
+      "stable_pair_exists": false
+    },
+    "opq32_L200": {
+      "pairs": [
+        {
+          "p50_drift": 0.027612189422480806,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.05905874460234389
+        },
+        {
+          "p50_drift": 0.011041465766634522,
+          "pair": [
+            1,
+            3
+          ],
+          "qps_drift": 0.02700451639392333
+        },
+        {
+          "p50_drift": 0.038958534233365476,
+          "pair": [
+            2,
+            3
+          ],
+          "qps_drift": 0.08765811383308575
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "opq32_L400": {
+      "pairs": [
+        {
+          "p50_drift": 0.012754214111680175,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.03241751134571618
+        },
+        {
+          "p50_drift": 0.2453909414508408,
+          "pair": [
+            1,
+            3
+          ],
+          "qps_drift": 0.22656598117716945
+        },
+        {
+          "p50_drift": 0.2612749241708518,
+          "pair": [
+            2,
+            3
+          ],
+          "qps_drift": 0.26632819778824984
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "opq32_L50": {
+      "pairs": [
+        {
+          "p50_drift": 0.056098514464425334,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.18187281201305297
+        },
+        {
+          "p50_drift": 0.6221657544956998,
+          "pair": [
+            1,
+            3
+          ],
+          "qps_drift": 0.44711670088980165
+        },
+        {
+          "p50_drift": 0.5359985193411068,
+          "pair": [
+            2,
+            3
+          ],
+          "qps_drift": 0.22442676249144417
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "opq32_L800": {
+      "pairs": [
+        {
+          "p50_drift": 0.10834423294264055,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.24591791185038986
+        },
+        {
+          "p50_drift": 0.0047492666573543795,
+          "pair": [
+            1,
+            3
+          ],
+          "qps_drift": 0.022195557997099036
+        },
+        {
+          "p50_drift": 0.10310529176092918,
+          "pair": [
+            2,
+            3
+          ],
+          "qps_drift": 0.21886453340851414
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "opq64": {
+      "performance_stable": true,
+      "repeats": 3
+    },
+    "opq64_L100": {
+      "pairs": [
+        {
+          "p50_drift": 0.8013188883655205,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.3963047420975277
+        },
+        {
+          "p50_drift": 0.6189145711624756,
+          "pair": [
+            1,
+            3
+          ],
+          "qps_drift": 0.15193162449148925
+        },
+        {
+          "p50_drift": 0.11267074894017899,
+          "pair": [
+            2,
+            3
+          ],
+          "qps_drift": 0.21214203378947505
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "opq64_L200": {
+      "pairs": [
+        {
+          "p50_drift": 0.0439061657379112,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.14906333973128594
+        },
+        {
+          "p50_drift": 0.035899036746343205,
+          "pair": [
+            1,
+            3
+          ],
+          "qps_drift": 0.09623608445297503
+        },
+        {
+          "p50_drift": 0.007729642279345677,
+          "pair": [
+            2,
+            3
+          ],
+          "qps_drift": 0.04818967011533091
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "opq64_L400": {
+      "pairs": [
+        {
+          "p50_drift": 0.07762105830563291,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.0794814156516284
+        },
+        {
+          "p50_drift": 0.011633190947923294,
+          "pair": [
+            1,
+            3
+          ],
+          "qps_drift": 0.03530691771512335
+        },
+        {
+          "p50_drift": 0.09015722984640552,
+          "pair": [
+            2,
+            3
+          ],
+          "qps_drift": 0.11759457716904533
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "opq64_L50": {
+      "pairs": [
+        {
+          "p50_drift": 1.451869068371102,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.9160868437061862
+        },
+        {
+          "p50_drift": 0.1293603354447319,
+          "pair": [
+            1,
+            3
+          ],
+          "qps_drift": 0.11476460750473709
+        },
+        {
+          "p50_drift": 1.1710245981018788,
+          "pair": [
+            2,
+            3
+          ],
+          "qps_drift": 0.7188264058679706
+        }
+      ],
+      "stable_pair_exists": true
+    },
+    "opq64_L800": {
+      "pairs": [
+        {
+          "p50_drift": 0.00460042519081309,
+          "pair": [
+            1,
+            2
+          ],
+          "qps_drift": 0.04503797242823107
+        },
+        {
+          "p50_drift": 0.008269593431178475,
+          "pair": [
+            1,
+            3
+          ],
+          "qps_drift": 0.004683702855185374
+        },
+        {
+          "p50_drift": 0.012908062267930141,
+          "pair": [
+            2,
+            3
+          ],
+          "qps_drift": 0.04016614329302238
+        }
+      ],
+      "stable_pair_exists": true
+    }
+  },
+  "verdict": "OPQ32-CLOSES-PQ64-GAP",
+  "verdict_rationale": [
+    "At L=800 OPQ32 has higher Recall@10 than PQ64 with effectively identical reads, higher QPS, and lower p99.",
+    "At L=400 OPQ32 has higher Recall@10 with effectively identical reads and lower p99; QPS is slightly lower.",
+    "OPQ32 uses fewer resident representation bytes than PQ64 even after its rotation and codebook are included.",
+    "The verdict is restricted to the high-recall GIST1M-960D frozen-graph frontier."
+  ]
+}

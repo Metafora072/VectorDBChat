@@ -1,0 +1,23 @@
+	Command being timed: "/home/ubuntu/pz/VectorDB/chat/codex/work/2026-07-22/p07_page_bonus_a0/trace_build/apps/utils/generate_pq float /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_base.bin /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq64/gist_opq64 64 1.0 1 /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/pq_training/shared_sample.bin"
+	User time (seconds): 18645.51
+	System time (seconds): 405.76
+	Percent of CPU this job got: 278%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:54:02
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 13003932
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 296314002
+	Voluntary context switches: 342961
+	Involuntary context switches: 33565
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 137120
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

@@ -1,0 +1,78 @@
+{
+  "frozen_graph": {
+    "expected_sha256": "52827694a9e8dcf64037639e594ed9855f514aa2ebbcb5a4d25f4c1921fa1c37",
+    "sha256": "52827694a9e8dcf64037639e594ed9855f514aa2ebbcb5a4d25f4c1921fa1c37",
+    "source_realpath": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_disk.index"
+  },
+  "passed": true,
+  "representations": {
+    "opq32": {
+      "canary_recall_at_10": {
+        "100": 0.916,
+        "200": 0.9710000000000001,
+        "400": 0.991,
+        "800": 0.998
+      },
+      "code_file_bytes": 32000008,
+      "code_generation_seconds": 673.105,
+      "code_shape": [
+        1000000,
+        32
+      ],
+      "graph_realpath": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_disk.index",
+      "graph_sha256": "52827694a9e8dcf64037639e594ed9855f514aa2ebbcb5a4d25f4c1921fa1c37",
+      "pivot_file_bytes": 991132,
+      "reconstruction_l2_sq": {
+        "median": 0.32779717445373535,
+        "p90": 0.6651488304138182,
+        "p99": 1.6871824610233304,
+        "sample_rows": 2048
+      },
+      "resident_bytes": 36677548,
+      "rotation_file_bytes": 3686408,
+      "rotation_orthogonality_max_abs": 1.5727075599603069e-06,
+      "rotation_shape": [
+        960,
+        960
+      ],
+      "training_seconds": 5937.47
+    },
+    "opq64": {
+      "canary_recall_at_10": {
+        "100": 0.9695,
+        "200": 0.9904999999999999,
+        "400": 0.9975,
+        "800": 0.9995
+      },
+      "code_file_bytes": 64000008,
+      "code_generation_seconds": 676.299,
+      "code_shape": [
+        1000000,
+        64
+      ],
+      "graph_realpath": "/home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/index/shared/gist_shared_disk.index",
+      "graph_sha256": "52827694a9e8dcf64037639e594ed9855f514aa2ebbcb5a4d25f4c1921fa1c37",
+      "pivot_file_bytes": 991260,
+      "reconstruction_l2_sq": {
+        "median": 0.19355398416519165,
+        "p90": 0.41687512993812537,
+        "p99": 1.1487357831001277,
+        "sample_rows": 2048
+      },
+      "resident_bytes": 68677676,
+      "rotation_file_bytes": 3686408,
+      "rotation_orthogonality_max_abs": 1.7772705296348335e-06,
+      "rotation_shape": [
+        960,
+        960
+      ],
+      "training_seconds": 6165.51
+    }
+  },
+  "shared_training": {
+    "dimension": 960,
+    "ids_sha256": "44b5794112f5aa4025d930d3403240de99df75a863054a9598ed02f7c157024f",
+    "rows": 100000,
+    "sha256": "2108aa0cfac2f409c16223ebfbd74ff34fb5dbf8b2cf2f57275de7c2bf07e857"
+  }
+}

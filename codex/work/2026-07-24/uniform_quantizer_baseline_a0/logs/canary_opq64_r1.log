@@ -1,0 +1,80 @@
+Search parameters: #threads: 1,  beamwidth: 4.
+Reading (with alignment) bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_query_canary200.bin ...Metadata: #pts = 200, #dims = 960, aligned_dim = 960... allocating aligned memory of 768000 bytes... done. Copying data to mem_aligned buffer... done.
+Opened: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_gt100.truthset, size: 800008, cache_size: 800008
+Reading truthset file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_gt100.truthset ...
+Metadata: #pts = 1000, #dims = 100... 
+Error. Mismatch in number of queries and ground truth data
+L2: Using AVX2 distance computation DistanceL2Float
+L2: Using AVX2 distance computation DistanceL2Float
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq64/gist_opq64_pq_compressed.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq64/gist_opq64_pq_compressed.bin... 
+Metadata: #pts = 1000000, #dims = 64...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq64/gist_opq64_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq64/gist_opq64_pq_pivots.bin... 
+Metadata: #pts = 4, #dims = 1...
+done.
+Offsets: 4096 987144 990992 991260
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq64/gist_opq64_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq64/gist_opq64_pq_pivots.bin... 
+Metadata: #pts = 256, #dims = 960...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq64/gist_opq64_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq64/gist_opq64_pq_pivots.bin... 
+Metadata: #pts = 960, #dims = 1...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq64/gist_opq64_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq64/gist_opq64_pq_pivots.bin... 
+Metadata: #pts = 65, #dims = 1...
+done.
+Loaded PQ Pivots: #ctrs: 256, #dims: 960, #chunks: 64
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq64/gist_opq64_pq_pivots.bin_rotation_matrix.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq64/gist_opq64_pq_pivots.bin_rotation_matrix.bin... 
+Metadata: #pts = 960, #dims = 960...
+done.
+Loaded PQ centroids and in-memory compressed vectors. #points: 1000000 #dim: 960 #aligned_dim: 960 #chunks: 64
+Disk-Index File Meta-data: # nodes per sector: 0, max node len (bytes): 4100, max node degree: 64
+Opened file : /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq64/gist_opq64_disk.index
+Setting up thread-specific contexts for nthreads: 1
+allocating ctx: 0x73c9fc0fd000 to thread-id:127311354596672
+Loading centroid data from medoids vector data of 1 medoid(s)
+done..
+Caching 0 nodes around medoid(s)
+Caching 0...
+Level: 1. #nodes: 0, #nodes thus far: 0
+done
+Loading the cache list into memory....done.
+Reading (with alignment) bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_query_warmup900_999.bin ...Metadata: #pts = 100, #dims = 960, aligned_dim = 960... allocating aligned memory of 384000 bytes... done. Copying data to mem_aligned buffer... done.
+Warming up index... ..done
+     L   Beamwidth             QPS    Mean Latency    99.9 Latency        Mean IOs    Mean IO (us)         CPU (s)       Recall@10
+===================================================================================================================================
+   100           4           90.95         6589.06        13181.00          112.55         4504.52         1783.47           97.00
+   200           4           59.17        11611.18        25821.00          210.91         7498.32         3531.83           99.10
+   400           4           35.55        22316.81        29734.00          409.48        14282.31         6893.31           99.80
+   800           4           19.80        44242.79        55256.00          808.29        28394.74        13596.55          100.00
+Done searching. Now saving results 
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/results/search/canary_opq64_r1_100_idx_uint32.bin
+bin: #pts = 200, #dims = 10, size = 8008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/results/search/canary_opq64_r1_100_dists_float.bin
+bin: #pts = 200, #dims = 10, size = 8008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/results/search/canary_opq64_r1_200_idx_uint32.bin
+bin: #pts = 200, #dims = 10, size = 8008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/results/search/canary_opq64_r1_200_dists_float.bin
+bin: #pts = 200, #dims = 10, size = 8008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/results/search/canary_opq64_r1_400_idx_uint32.bin
+bin: #pts = 200, #dims = 10, size = 8008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/results/search/canary_opq64_r1_400_dists_float.bin
+bin: #pts = 200, #dims = 10, size = 8008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/results/search/canary_opq64_r1_800_idx_uint32.bin
+bin: #pts = 200, #dims = 10, size = 8008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/results/search/canary_opq64_r1_800_dists_float.bin
+bin: #pts = 200, #dims = 10, size = 8008B
+Finished writing bin.
+Clearing scratch

@@ -1,0 +1,34 @@
+{
+  "automated_pipeline_limit_seconds": 7200,
+  "automated_pipeline_exit_code": 124,
+  "completed_before_limit": [
+    "opq32_training_and_coding",
+    "opq64_training_and_coding",
+    "opq32_canary",
+    "opq64_canary",
+    "artifact_audit",
+    "rotation_benchmark",
+    "opq32_full_repeat_1",
+    "opq64_full_repeat_1"
+  ],
+  "interrupted_run": {
+    "label": "opq32",
+    "repeat": 2,
+    "completed_L": [50, 100, 200],
+    "included_in_analysis": false,
+    "archived_metrics": "/home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/results/interrupted_120m/full_opq32_r2.csv",
+    "archived_log": "logs/interrupted_120m/full_opq32_r2.log"
+  },
+  "recovery": {
+    "scope": "search only",
+    "retrained": false,
+    "changed_search_parameters": false,
+    "completed": [
+      "opq32_full_repeat_2",
+      "opq64_full_repeat_2",
+      "opq32_full_repeat_3",
+      "opq64_full_repeat_3"
+    ],
+    "reason_for_repeat_3": "pre-registered 25% p50/QPS drift gate"
+  }
+}
