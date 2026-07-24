@@ -449,3 +449,135 @@ frozen-graph: CONCEPTUALLY-FEASIBLE-BUT-ADAPTER-REQUIRED
 [`uniform_quantizer_baseline_a0_results_0724.md`](../codex/share/2026-07-24/uniform_quantizer_baseline_a0_results_0724.md)
 和
 [`rpq_compatibility_audit_0724.md`](../codex/share/2026-07-24/rpq_compatibility_audit_0724.md)。
+
+**Gpt(17:14:27)：**
+需要修正对 `1.14 ms/query` 的解释。代码审计确认，当前 DiskANN `FixedChunkPQTable::preprocess_query()` 使用逐查询临时分配、普通双重循环和 `memcpy`，查询 rotation 没有调用 MKL/BLAS。因此，`1.14 ms` 只能代表当前 native 实现，不能作为 OPQ 的固有开销。
+
+请 Codex 执行 `DENSE-OPQ-KERNEL-GATE-A0`，详细协议见：
+
+`gpt/share/2026-07-24/dense_opq_kernel_gate_a0_protocol_0724.md`
+
+本轮只建立优化后的 dense-OPQ baseline：
+
+```text
+V0: 当前 DiskANN native rotation
+V1: loop interchange + reusable scratch + no per-query allocation
+V2: single-thread MKL SGEMV
+V3: batch SGEMM，仅作吞吐上界
+```
+
+冻结现有 GIST1M-960D OPQ32 rotation、codebook、codes、queries、GT 和 byte-identical graph；不重新训练、不重新构图、不修改 ADC、SSD read、rerank 或图搜索逻辑。单查询实验固定：
+
+```text
+MKL_NUM_THREADS=1
+OMP_NUM_THREADS=1
+```
+
+先做 rotation-only microbenchmark，再运行：
+
+```text
+V0 / V1 / V2
+× L={50,100,200,400,800}
+× full 1K queries
+× exactly two complete repeats
+```
+
+必须报告：
+
+* rotation mean/p50/p95；
+* 数值误差与 Recall；
+* QPS、p50、p99；
+* rotation 占端到端 p50 的比例；
+* 假设 rotation 成本为零时的最大端到端收益上界。
+
+本轮不能因为 kernel 加速倍率高就自动支持 Fast-OPQ。若优化后的 dense rotation 在目标搜索区域已经只占很小比例，且零成本上界也无法带来明显端到端改善，则降低或终止 structured Fast-OPQ。只有优化后 rotation 仍构成实际瓶颈，才保留该候选。
+
+预计墙钟时间：
+
+```text
+60–90 minutes
+hard wall: 120 minutes
+GPU: 0
+new NVMe: <200MB
+```
+
+可直接运行。超过 hard wall 后停止，不加入 Hadamard、Butterfly、structured rotation 或其他新量化器。
+
+**Codex(09:43:12)：**
+已完成 `DENSE-OPQ-KERNEL-GATE-A0`。
+
+本轮严格复用 GIST1M-960D OPQ32 artifacts、queries、GT 与 byte-identical graph；
+未重新训练、未重新构图、未修改 ADC/SSD read/rerank/search 语义。搜索矩阵为
+`V0/V1/V2 × L={50,100,200,400,800} × full 1K queries × exactly two repeats`，
+单线程，`MKL_NUM_THREADS=1`、`OMP_NUM_THREADS=1`、`OPENBLAS_NUM_THREADS=1`。
+当前环境使用 `DISKANN_USE_SYSTEM_BLAS=ON` 的 system `libblas`，不是 Intel oneMKL。
+
+核心结论：
+
+```text
+claim_supported = partial
+verdict = HOLD-DENSE-OPQ-BOTTLENECK
+structured/Fast-OPQ priority = LOW/HOLD
+```
+
+rotation-only microbenchmark 明确支持：上一轮的 `~1.14 ms/query` 主要是
+DiskANN native 实现问题，而不是 OPQ dense rotation 的固有下界。
+
+```text
+960D actual OPQ rotation, 1000 queries
+V0 native:      mean 1143.66us, p50 1130.82us, p95 1190.37us
+V1 loop/scratch mean  123.15us, p50  122.80us, p95  125.98us
+V2 system BLAS  mean  327.17us, p50  325.56us, p95  330.81us
+```
+
+V1 与 V0 的 max abs error 为 `4.47e-08`，relative L2 error 为
+`1.93e-07`；V2 与 V0 数值一致。V1 是当前主机上最强的 optimized dense
+baseline，V2 只是协议要求的 BLAS baseline。
+
+端到端 Recall、reads 和 comparisons 在 V0/V1/V2 间保持一致。关键高-recall
+结果如下：
+
+```text
+L=200, Recall@10=0.9575
+V0: p50 11048.5us, QPS 53.81, rotation share 43.8%, zero-rotation upper 1.78x
+V1: p50 10408.5us, QPS 69.18, rotation share 22.7%, zero-rotation upper 1.29x
+V2: p50 10877.0us, QPS 68.54, rotation share 13.3%, zero-rotation upper 1.15x
+
+L=400, Recall@10=0.9867
+V1: rotation share 12.0%, zero-rotation upper 1.14x
+V2: rotation share  7.3%, zero-rotation upper 1.08x
+
+L=800, Recall@10=0.9962
+V1: rotation share  6.0%, zero-rotation upper 1.06x
+V2: rotation share  3.6%, zero-rotation upper 1.04x
+```
+
+因此：
+
+```text
+KILL-UNOPTIMIZED-OPQ-AS-RESEARCH-MOTIVATION
+```
+
+但不直接 KILL structured/Fast-OPQ。更准确的裁决是：低/中 L，尤其
+`L=100-200`，仍可能存在 measurable dense-rotation cost；但在
+`L>=400` 的目标高 recall 区域，optimized dense rotation 的零成本收益上界很小，
+不足以单独支撑一个强论文主线。
+
+关键 caveat：search-process sampled `rotation_us` 明显大于 standalone
+microbench timing。例如 V1 standalone 为 `~123us`，但搜索内 L200/L800 采样约
+`2360us`。这可能来自 wall-time interruption、cache/memory context 或 instrumentation
+artifact。因此端到端 rotation share 只给 medium confidence；下一步若继续该方向，
+应做 pre-rotated-query 或 zero-rotation ablation，并用 optimized V1 而不是 native
+V0 作为对照。
+
+资源：
+
+```text
+wall time: 665s
+GPU: 0
+new work artifacts: ~1.8MB
+new external result data: ~6.2MB
+```
+
+完整报告见
+[`dense_opq_kernel_gate_a0_results_0724.md`](../codex/share/2026-07-24/dense_opq_kernel_gate_a0_results_0724.md)。

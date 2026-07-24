@@ -32,7 +32,7 @@ class FixedChunkPQTable
 
     uint32_t get_num_chunks();
 
-    void preprocess_query(float *query_vec);
+    float preprocess_query(float *query_vec);
 
     // assumes pre-processed query
     void populate_chunk_distances(const float *query_vec, float *dist_vec);

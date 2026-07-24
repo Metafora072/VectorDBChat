@@ -1,0 +1,86 @@
+Search parameters: #threads: 1,  beamwidth: 4.
+Reading (with alignment) bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_query.bin ...Metadata: #pts = 1000, #dims = 960, aligned_dim = 960... allocating aligned memory of 3840000 bytes... done. Copying data to mem_aligned buffer... done.
+Opened: /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_gt100.truthset, size: 800008, cache_size: 800008
+Reading truthset file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_gt100.truthset ...
+Metadata: #pts = 1000, #dims = 100... 
+L2: Using AVX2 distance computation DistanceL2Float
+L2: Using AVX2 distance computation DistanceL2Float
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq32/gist_opq32_pq_compressed.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq32/gist_opq32_pq_compressed.bin... 
+Metadata: #pts = 1000000, #dims = 32...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq32/gist_opq32_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq32/gist_opq32_pq_pivots.bin... 
+Metadata: #pts = 4, #dims = 1...
+done.
+Offsets: 4096 987144 990992 991132
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq32/gist_opq32_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq32/gist_opq32_pq_pivots.bin... 
+Metadata: #pts = 256, #dims = 960...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq32/gist_opq32_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq32/gist_opq32_pq_pivots.bin... 
+Metadata: #pts = 960, #dims = 1...
+done.
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq32/gist_opq32_pq_pivots.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq32/gist_opq32_pq_pivots.bin... 
+Metadata: #pts = 33, #dims = 1...
+done.
+Loaded PQ Pivots: #ctrs: 256, #dims: 960, #chunks: 32
+Reading bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq32/gist_opq32_pq_pivots.bin_rotation_matrix.bin ...
+Opening bin file /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq32/gist_opq32_pq_pivots.bin_rotation_matrix.bin... 
+Metadata: #pts = 960, #dims = 960...
+done.
+Loaded PQ centroids and in-memory compressed vectors. #points: 1000000 #dim: 960 #aligned_dim: 960 #chunks: 32
+Disk-Index File Meta-data: # nodes per sector: 0, max node len (bytes): 4100, max node degree: 64
+Opened file : /home/ubuntu/pz/VectorDB/data/VectorDB/uniform_quantizer_baseline_a0_0724/index/opq32/gist_opq32_disk.index
+Setting up thread-specific contexts for nthreads: 1
+allocating ctx: 0x76a1824f8000 to thread-id:130436048141696
+Loading centroid data from medoids vector data of 1 medoid(s)
+done..
+Caching 0 nodes around medoid(s)
+Caching 0...
+Level: 1. #nodes: 0, #nodes thus far: 0
+done
+Loading the cache list into memory....done.
+Reading (with alignment) bin file /home/ubuntu/pz/VectorDB/data/VectorDB/pq_rp_highdim_a0_0724/converted/gist_query_warmup900_999.bin ...Metadata: #pts = 100, #dims = 960, aligned_dim = 960... allocating aligned memory of 384000 bytes... done. Copying data to mem_aligned buffer... done.
+Warming up index... ..done
+     L   Beamwidth             QPS    Mean Latency    99.9 Latency        Mean IOs    Mean IO (us)         CPU (s)       Recall@10
+===================================================================================================================================
+    50           4          141.42         4469.72         8587.00           65.69         3404.65          863.89           79.20
+   100           4           99.47         7386.41        12601.00          113.36         5548.83         1503.93           89.60
+   200           4           64.62        12575.33        22199.00          211.66         9225.13         2739.11           95.83
+   400           4           38.11        22947.22        40395.00          410.33        16628.11         5141.75           98.76
+   800           4           20.49        44971.11        76272.00          809.03        32712.36         9956.79           99.70
+Done searching. Now saving results 
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/dense_opq_kernel_gate_a0_0724/results/search/full_v1_r2_50_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/dense_opq_kernel_gate_a0_0724/results/search/full_v1_r2_50_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/dense_opq_kernel_gate_a0_0724/results/search/full_v1_r2_100_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/dense_opq_kernel_gate_a0_0724/results/search/full_v1_r2_100_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/dense_opq_kernel_gate_a0_0724/results/search/full_v1_r2_200_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/dense_opq_kernel_gate_a0_0724/results/search/full_v1_r2_200_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/dense_opq_kernel_gate_a0_0724/results/search/full_v1_r2_400_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/dense_opq_kernel_gate_a0_0724/results/search/full_v1_r2_400_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/dense_opq_kernel_gate_a0_0724/results/search/full_v1_r2_800_idx_uint32.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Writing bin: /home/ubuntu/pz/VectorDB/data/VectorDB/dense_opq_kernel_gate_a0_0724/results/search/full_v1_r2_800_dists_float.bin
+bin: #pts = 1000, #dims = 10, size = 40008B
+Finished writing bin.
+Clearing scratch

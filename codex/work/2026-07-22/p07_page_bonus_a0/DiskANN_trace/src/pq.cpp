@@ -10,6 +10,9 @@
 #include "math_utils.h"
 #include "tsl/robin_map.h"
 
+#include <chrono>
+#include <cstdlib>
+
 // block size for reading/processing large files and matrices in blocks
 #define BLOCK_SIZE 5000000
 
@@ -168,24 +171,57 @@ uint32_t FixedChunkPQTable::get_num_chunks()
     return static_cast<uint32_t>(n_chunks);
 }
 
-void FixedChunkPQTable::preprocess_query(float *query_vec)
+float FixedChunkPQTable::preprocess_query(float *query_vec)
 {
     for (uint32_t d = 0; d < ndims; d++)
     {
         query_vec[d] -= centroid[d];
     }
-    std::vector<float> tmp(ndims, 0);
+    float rotation_us = 0.0f;
     if (use_rotation)
     {
-        for (uint32_t d = 0; d < ndims; d++)
+        const char *impl_env = std::getenv("PQR_OPQ_ROTATION_IMPL");
+        const std::string impl = impl_env == nullptr || impl_env[0] == '\0' ? "v0" : std::string(impl_env);
+        const auto start = std::chrono::steady_clock::now();
+        if (impl == "v1")
         {
+            thread_local std::vector<float> tmp;
+            tmp.assign(ndims, 0.0f);
             for (uint32_t d1 = 0; d1 < ndims; d1++)
             {
-                tmp[d] += query_vec[d1] * rotmat_tr[d1 * ndims + d];
+                const float q = query_vec[d1];
+                const float *rot_row = rotmat_tr + static_cast<size_t>(d1) * ndims;
+                for (uint32_t d = 0; d < ndims; d++)
+                {
+                    tmp[d] += q * rot_row[d];
+                }
             }
+            std::memcpy(query_vec, tmp.data(), ndims * sizeof(float));
         }
-        std::memcpy(query_vec, tmp.data(), ndims * sizeof(float));
+        else if (impl == "v2")
+        {
+            thread_local std::vector<float> tmp;
+            tmp.assign(ndims, 0.0f);
+            cblas_sgemv(CblasRowMajor, CblasTrans, static_cast<int>(ndims), static_cast<int>(ndims), 1.0f, rotmat_tr,
+                        static_cast<int>(ndims), query_vec, 1, 0.0f, tmp.data(), 1);
+            std::memcpy(query_vec, tmp.data(), ndims * sizeof(float));
+        }
+        else
+        {
+            std::vector<float> tmp(ndims, 0);
+            for (uint32_t d = 0; d < ndims; d++)
+            {
+                for (uint32_t d1 = 0; d1 < ndims; d1++)
+                {
+                    tmp[d] += query_vec[d1] * rotmat_tr[d1 * ndims + d];
+                }
+            }
+            std::memcpy(query_vec, tmp.data(), ndims * sizeof(float));
+        }
+        const auto end = std::chrono::steady_clock::now();
+        rotation_us = static_cast<float>(std::chrono::duration<double, std::micro>(end - start).count());
     }
+    return rotation_us;
 }
 
 // assumes pre-processed query
