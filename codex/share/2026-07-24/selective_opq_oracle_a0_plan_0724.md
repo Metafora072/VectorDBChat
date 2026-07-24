@@ -1,185 +1,249 @@
-# SELECTIVE-OPQ-ORACLE-A0 Plan Response
+# SELECTIVE-OPQ-ORACLE-A0 Revised Plan Response
 
 ## Status
 
 ```text
+PASS-COMPATIBILITY-AND-LAYOUT-AUDIT
 PLAN-ONLY
 WAITING-FOR-GPT-APPROVAL
 ```
 
-本轮只完成源码兼容性、表示布局、数学目标与资源预算审计。没有 coding、训练、
-trace generation 或 search。
+已按评审修订 oracle 边界、per-L selector、决策逻辑、内存口径与阶段预算。本轮
+没有 coding、训练、trace generation 或 search。
 
-## 1. OPQ40/48/56 兼容性
+## 1. Oracle 边界与 per-L score
 
-当前 `generate_pq` 实际调用 native `generate_opq_pivots()` 与
-`generate_pq_data_from_pivots()`，不经过要求 `dim % chunks == 0` 的
-`*_simplified` helper。native pivots 文件保存显式 `chunk_offsets`，encoder 与
-ADC search 均按 offsets 工作，因此：
+Distance-regret 仍定义为：
 
 ```text
-OPQ40: 40 × 24D
-OPQ48: 48 × 20D
-OPQ56: 8 × 18D + 48 × 17D
+delta_DR(q,L,v) = (d32-d*)² - (d64-d*)²
+s_DR,L(v)       = Σ delta_DR(q,L,v)
 ```
 
-OPQ56 不补零、不丢维，属于 DiskANN native uneven-chunk path。正式 artifact gate
-必须验证 57 个 offsets、前 8 个 chunk 宽 18、后 48 个宽 17、总宽 960。三个
-uniform baseline 都独立训练 rotation/codebook。
-
-## 2. Mixed layout 与精确内存
-
-使用 compact two-array layout：
+但现在为五个 `L` 分别构造 `s_DR,L`。top-H 只对这个 modular surrogate 精确，
+不再视为 selective OPQ 全局 oracle。因此它单独失败时只判：
 
 ```text
-low_codes[(N-H)][32]
-high_codes[H][64]
-high_tag[ceil(N/64)]                 // bitset
-rank1_prefix[ceil(N/64)+1]           // uint32 per 64-node word
+KILL-DISTANCE-REGRET-SELECTOR
 ```
 
-由 tag、word-prefix 和一次 popcount 得到 node ID 在 low/high dense array 中的
-rank，O(1) random access；不存在为 low node 预留 64B 的空洞。
+Primary gate 禁止直接汇总五个嵌套 trace。可选 aggregate-L 只作为显式
+uniform-over-L workload 的附加诊断，不改变任何裁决。
 
-在 `N=1,000,000` 时，tag+rank 包含 64B alignment/padding 后为 187,584B。
-OPQ32 与 OPQ64 的独立 codebook、centroid、rotation、offset arrays 共
-9,347,072B。因此三档 mixed 实际 allocation 为：
+## 2. Routing-aware selector
 
-| Payload mix | Total bytes | Effective bytes/vector |
-|---|---:|---:|
-| 75% OPQ32 + 25% OPQ64 | 49,534,656 | 49.534656 |
-| 50% OPQ32 + 50% OPQ64 | 57,534,656 | 57.534656 |
-| 25% OPQ32 + 75% OPQ64 | 65,534,656 | 65.534656 |
-
-OPQ40/48/56 的实际 allocation 分别只有 44.673472/52.673536/60.673536
-B/vector，所以它们只是同 payload 对照。最终 no-free-memory gate 必须增加最近的
-更强 uniform OPQ45/53/61，其实际占用为
-49.673472/57.673536/65.673536 B/vector。
-
-当前 native loader 同时保留 row-major 与 transposed codebook。正式实现必须让
-uniform/mixed 共同只保留一个在线 transposed copy，或把重复 allocation 对所有方法
-如实计费；不能只优化 selective 一侧。最终同时报告 serialized bytes 和 allocator
-capacity，以较大实测值为准。
-
-## 3. 双 query preprocessing
-
-OPQ32/64 是独立模型，mixed search 每个 query 必须执行两次 centering、两次
-960×960 V1 rotation，并生成 256×32 与 256×64 两张 ADC table。两张 ADC table
-需 98,304B scratch，两份 query buffer 需 7,680B。已测 V1 rotation-only
-`~123.15us`，所以两次 rotation 的最低经验估计约 246us；这不包含 ADC，也不能
-代替正式的 in-search 计时。最终 QPS、p50、p99 必须包含完整双 preprocessing。
-
-## 4. Selection objective
-
-对每个 official test query 与每个 frozen L，取 deterministic OPQ32 和 OPQ64
-search 的 node-distance event union；同一 `(q,L,node)` 去重。令 `d*` 为 exact
-squared-L2，`d32/d64` 为两套 ADC estimate：
+每个 `L` 独立记录 frozen OPQ32/64 candidate-list boundary event union。
+对事件 `e=(q,L,a,b)`，`a` 是 incoming/evaluated candidate，`b` 是当前最差
+retained candidate：
 
 ```text
-delta(q,L,v) = (d32-d*)^2 - (d64-d*)^2
-s_v          = sum delta(q,L,v)
-J(S)         = sum_{v in S} s_v,  |S|=H
+y_e    = 1[d*(a) < d*(b)]
+y_0    = 1[d32(a) < d32(b)]
+y_a    = 1[d64(a) < d32(b)]
+y_b    = 1[d32(a) < d64(b)]
+
+delta_RA(e,a) = 1[y_0 != y_e] - 1[y_a != y_e]
+delta_RA(e,b) = 1[y_0 != y_e] - 1[y_b != y_e]
+s_RA,L(v)     = Σ delta_RA(e,v)
 ```
 
-无阈值、无中心性权重、无调参系数。`J` 是 modular objective，因此 top-H
-`s_v` 是该目标的精确最优解；交换任一 selected low-score node 与 unselected
-high-score node 不会降低目标。ties 在运行前固定按 node ID 升序。
-
-名称固定为 `TRACE-CONDITIONED-SELECTOR`，不称 global oracle：它没有优化 mixed
-search 改变后产生的非加性后续轨迹，而且显式使用 test queries 与 exact distance。
-其 PASS 只能支持 hindsight selectivity。
-
-同预算加入：
+它直接衡量单节点升精度能否纠正 frozen beam-boundary ranking inversion，与
+squared distance-regret 独立。top-H 对这个 single-node modular
+counterfactual 精确，但仍不称 global oracle。单独失败只判：
 
 ```text
-RANDOM-NODE(seed=20260724)
-VISIT-FREQUENCY(top-H on the same trace)
-TRACE-CONDITIONED-SELECTOR(top-H by s_v)
+KILL-ROUTING-AWARE-SELECTOR
 ```
 
-trace generation、exact-distance evaluation、selection/sort 与 online search
-时间分开报告。
-
-## 5. 实现范围
-
-收到批准后，预计只改：
-
-- `include/pq_flash_index.h`、`src/pq_flash_index.cpp`：双表、compact accessor、
-  trace hook、mixed distance dispatch；
-- `include/pq_scratch.h`：双 query/ADC scratch；
-- `include/pq.h`、`src/pq.cpp`：compact table ownership 与 preprocessing 计时；
-- `include/percentile_stats.h`、`apps/search_disk_index.cpp`：双 preprocessing
-  与实际 bytes 输出；
-- `codex/work/2026-07-24/selective_opq_oracle_a0/` 下新增 work-local
-  train/pack/trace/audit/run/analyze 脚本。
-
-不实现新图、完整 VectorDB、SSD redesign、deployable selector、RPQ 或 structured
-OPQ。
-
-## 6. 正确性门禁
-
-1. graph/query/GT/training-row SHA 全部复核；
-2. 所有 uniform chunk offsets、rotation orthogonality、codes shape 通过；
-3. 对 1M node 穷举验证 tag/rank、slot 唯一性和 low/high cardinality；
-4. all-low mixed 与 OPQ32、all-high mixed 与 OPQ64 的 ADC 和 search 完全对齐；
-5. 抽样 mixed node distance 与对应 standalone model 的 absolute error ≤ `1e-5`；
-6. 双 rotation/ADC 必须位于 query timer 内；
-7. actual allocated capacity 与 layout model 对账；
-8. selector score 可从 raw trace 重算，top-H 与 tie-break 完全确定；
-9. full performance 恰好两个 interleaved repeats，报告 raw repeats，不补第三次。
-
-任何 hidden dense 64B allocation、内存计费不一致、endpoint parity 失败、遗漏双
-preprocessing 或 frozen artifact mismatch，均标记 `INVALID`，不能判 PASS。
-
-## 7. Search matrix 与生死门
-
-Uniform：
+每个 L、每档预算的完整 selector 对照为：
 
 ```text
-OPQ32/40/45/48/53/56/61/64
-× L={50,100,200,400,800}
-× 1K queries × exactly 2 interleaved repeats
+RANDOM
+VISIT-FREQUENCY
+DISTANCE-REGRET
+ROUTING-AWARE
 ```
 
-Mixed：
+## 3. 两种内存口径
+
+### 1M actual resident
 
 ```text
+mixed40 vs OPQ45
+mixed48 vs OPQ53
+mixed56 vs OPQ61
+```
+
+三档 mixed 实际为 49.534656/57.534656/65.534656 B/vector。
+
+### Scale-normalized / variable bytes
+
+```text
+mixed40 vs OPQ40
+mixed48 vs OPQ48
+mixed56 vs OPQ56
+```
+
+这称为 matched-code-payload diagnostic，不声称 total bytes 完全相等。一般形式：
+
+```text
+B_mix(N,c) =
+  c + aligned_tag_rank(N)/N + 9,347,072/N
+```
+
+在 1B nodes 上，两模型固定开销约 0.009347 B/vector，但 tag+rank 仍约
+0.1875 B/vector，所以 mixed40 实际约 40.196847 B/vector。所有报告保留这部分，
+不把它四舍五入为 40。
+
+若只超过 OPQ40/48/56、但输给 1M actual-memory OPQ45/53/61：
+
+```text
+HOLD-SCALE-DEPENDENT
+```
+
+不能直接 KILL。
+
+## 4. 拆分后的门禁
+
+### ALGORITHMIC-SELECTIVITY
+
+```text
+no-lower Recall
+strictly lower reads/query
+strictly lower comparisons/query
+```
+
+Stage A 只使用这三个确定性指标；每点一个完整 run，不用性能重复决定算法门禁。
+
+### SYSTEM-PARETO
+
+```text
+QPS
+p50
+p99
+dual preprocessing time
+compact accessor time
+actual allocated bytes/vector
+```
+
+只在 Stage B 使用最终 compact layout，恰好两个 interleaved raw repeats，不补
+第三次。两个 repeat 同方向可支持强 PASS；系统性能失败只能产生
+`HOLD-SYSTEM-OVERHEAD` 或 `KILL-CURRENT-SYSTEM-REALIZATION`，不能单独 KILL
+算法选择性或方向。
+
+## 5. Stage A
+
+只训练：
+
+```text
+OPQ40 / OPQ48 / OPQ56
+```
+
+复用 audited OPQ32/64，不训练 OPQ45/53/61，不实现最终 compact layout。允许
+dual-dense experimental adapter 只用于正确 dispatch OPQ32/64 distance；其内存
+和 QPS 不形成 claim。
+
+矩阵：
+
+```text
+OPQ40/48/56 × 5 L × full 1K queries
+
 3 payload budgets
-× {random, visit-frequency, trace-conditioned}
-× L={50,100,200,400,800}
-× 1K queries × exactly 2 interleaved repeats
+× 4 per-L selectors
+× 5 L
+× full 1K queries
 ```
 
-至少一个 budget 必须在两个 raw repeats 中都相对 actual-memory guard
-OPQ45/53/61 达成：Recall 不低、reads 严格更低、QPS 严格更高、p99 严格更低。
-均值不能挽救某一次失败。否则：
+决策：
 
-```text
-KILL-SELECTIVE-OPQ
-```
+- 任一 routing-relevant selector 在任一预算/L 通过：
 
-通过时也只给：
+  ```text
+  PASS-ALGORITHMIC-SELECTIVITY-SCALE
+  GO-STAGE-B
+  ```
 
-```text
-PASS-HINDSIGHT-SELECTIVITY
-HOLD-DEPLOYABLE-SELECTOR
-```
+- distance-regret 单独失败：`KILL-DISTANCE-REGRET-SELECTOR`。
+- routing-aware 单独失败：`KILL-ROUTING-AWARE-SELECTOR`。
+- 两个独立 routing-relevant selector 在全部三个预算和五个 per-L hindsight
+  gates 都失败：
 
-## 8. 资源与 hard wall
+  ```text
+  KILL-SELECTIVE-OPQ-STATIC-NODE-A0
+  ```
+
+  该 KILL 仅限 frozen GIST1M graph 上的 static OPQ32/64 node allocation。
+- 只有 random/visit-frequency 为正：
+
+  ```text
+  HOLD-HOTNESS-ONLY
+  ```
+
+Stage A 预算：
 
 ```text
 GPU: 0
-CPU: OPQ build 最多 3-way parallel × 24 threads；search 1 thread
-RAM: 预计 ~13GiB/build，并发 cap 48GiB
-NVMe: 在 /dev/nvme8n1 预留 2GiB；禁止大文件写 system LV
-expected wall: 7–13h
-hard wall: 16h
+CPU: 最多 3 concurrent builds × 24 threads；search 1 thread
+RAM cap: 48GiB
+new NVMe: ≤2GiB on /dev/nvme8n1
+expected wall: 5–9h
+hard wall: 10h
 ```
 
-当前主机为 112 logical CPUs、242GiB available RAM，data NVMe 约 1.4TiB
-available。达到 hard wall 即停在当前 phase，不增加模型、L 或 repeat。
+达到 hard wall 即停，不训练 OPQ45/53/61，不自动进入 Stage B。
 
-详细计划与 tracker：
+## 6. Stage B
+
+Stage B 只有在 Stage A 为正且再次获得 GPT 批准后才执行：
+
+```text
+train OPQ45/53/61
+implement accepted compact low/high/tag/rank layout
+run 1M actual-memory algorithmic gate
+run exactly two end-to-end system repeats
+```
+
+只携带 Stage-A-positive selector/budget/L 配置。
+
+裁决：
+
+```text
+scale pass + actual-memory fail
+→ HOLD-SCALE-DEPENDENT
+
+actual-memory algorithmic pass + system fail
+→ PASS-ALGORITHMIC-SELECTIVITY
+  HOLD-SYSTEM-OVERHEAD
+
+actual-memory algorithmic pass + both raw system repeats favorable
+→ PASS-HINDSIGHT-SELECTIVITY
+  HOLD-DEPLOYABLE-SELECTOR
+```
+
+Stage B 预算：
+
+```text
+GPU: 0
+CPU: 最多 3 concurrent builds × 24 threads；search 1 thread
+RAM cap: 48GiB
+additional NVMe: ≤2GiB on /dev/nvme8n1
+expected wall: 6–10h
+hard wall: 11h
+combined maximum after two separate approvals: 21h
+```
+
+## 7. 正确性与实施边界
+
+保留此前全部 frozen hash、OPQ offsets/orthogonality、endpoint parity、ADC
+`abs error ≤1e-5`、1M tag/rank 穷举和 allocator-capacity 门禁，并新增：
+
+- 每个 L 使用独立 raw trace/score 文件；
+- distance-regret 和 boundary-inversion score 均可从 raw event 重算；
+- Stage A dual-dense adapter 不得产生 system/memory claim；
+- Stage B 双 rotation/ADC 与 compact accessor 必须位于 query timer 内；
+- Stage B 只有两个完整 performance repeats。
+
+详细修订计划与 tracker：
 
 - `codex/work/2026-07-24/selective_opq_oracle_a0/refine-logs/EXPERIMENT_PLAN.md`
 - `codex/work/2026-07-24/selective_opq_oracle_a0/refine-logs/EXPERIMENT_TRACKER.md`

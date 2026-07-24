@@ -1,318 +1,514 @@
 # Experiment Plan
 
-**Problem**: Determine whether OPQ64's routing value is concentrated on a static subset of graph nodes under equal actual resident-representation memory.
-**Method Thesis**: A trace-conditioned, per-node allocation of OPQ64 codes may reduce routing-distance error enough to move the Recall–reads–QPS–p99 frontier beyond the strongest equal-memory uniform OPQ baseline.
+**Problem**: Determine whether OPQ64's routing value is concentrated on a
+static subset of graph nodes, first at matched code payload and then under
+actual 1M-node resident memory.
+**Method Thesis**: If higher precision has genuine node-level selectivity,
+multiple independent test-trace selectors should improve Recall–reads–
+comparisons before compact-layout and dual-preprocessing system costs are
+considered.
 **Date**: 2026-07-24
+**Revision**: 2, incorporating GPT's oracle/decision-logic review
 **Status**: `PLAN-ONLY / WAITING-FOR-GPT-APPROVAL`
 
-No coding, training, trace generation, or search is authorized by this plan.
+No coding, OPQ training, trace generation, or search is authorized by this
+revision.
+
+## Accepted Audit Findings
+
+The following findings have passed review and remain frozen:
+
+- Native DiskANN supports OPQ40=`40×24D`, OPQ48=`48×20D`, and native uneven
+  OPQ56=`8×18D + 48×17D` at 960D.
+- OPQ32 and OPQ64 have independent codebooks, centroids, and rotations.
+- A mixed query must execute both centering/rotation paths and build both ADC
+  tables.
+- The compact low/high arrays plus bit tag and rank-prefix layout supports
+  O(1) node access without 64-byte holes.
+- The correctness gates for hashes, offsets, ranks, endpoint parity, distance
+  parity, preprocessing placement, and allocation accounting remain required.
+
+Current audit verdict:
+
+```text
+PASS-COMPATIBILITY-AND-LAYOUT-AUDIT
+NEEDS-REVISION-ON-ORACLE-AND-DECISION-LOGIC
+PLAN-ONLY
+```
+
+## Frozen Workload
+
+- GIST1M-960D, treated only as a dimension-stress control.
+- Existing official 1K queries and audited GT.
+- Existing deterministic 100K training row IDs.
+- Byte-identical graph SHA-256
+  `52827694a9e8dcf64037639e594ed9855f514aa2ebbcb5a4d25f4c1921fa1c37`.
+- Seed `20260724`, 20 OPQ iterations, 256 centroids/chunk.
+- `W=4`, `K=10`, one search thread, zero node cache, V1 dense rotation.
+- `Λ={50,100,200,400,800}`.
+- No new graph, graph mutation, new dataset, GPU, reranking change, or
+  deployable-selector claim.
 
 ## Claim Map
 
-| Claim | Why It Matters | Minimum Convincing Evidence | Linked Blocks |
-|---|---|---|---|
-| C1: higher OPQ precision has static node-level selectivity | Without concentration, mixed representation has no algorithmic basis | At least one mixed budget strictly and repeat-stably dominates the equal-actual-memory uniform frontier | B1–B4 |
-| C2: the gain is precision sensitivity rather than hotness | Visit frequency alone would reduce the idea to cache-like hotspot allocation | Trace-conditioned selection beats random-node and visit-frequency selectors at the same layout and memory | B3–B4 |
-| Anti-claim: gains come from free memory or omitted preprocessing | Mixed OPQ carries a second model and two query preprocessing paths | Actual allocated bytes are audited; both rotations and ADC tables are timed inside end-to-end search | B1, B2, B4 |
+| Claim | Minimum Convincing Evidence | Linked Stage |
+|---|---|---|
+| C1: higher OPQ precision has static algorithmic selectivity | At least one per-L, routing-relevant selector gives no-lower Recall and strictly lower reads and comparisons than the matched-payload uniform OPQ baseline | Stage A |
+| C2: the selectivity survives 1M actual memory and system costs | A Stage-A-positive selector passes the OPQ45/53/61 actual-memory algorithmic gate and moves QPS/p50/p99 in both raw repeats | Stage B |
+| Anti-claim: a surrogate-specific artifact or hotspot explains the gain | Distance-regret and boundary-inversion selectors are evaluated independently against random and visit-frequency | Stage A |
 
-## Frozen Context
+## Memory Accounting: Two Required Views
 
-- Dataset: GIST1M-960D only; positive evidence remains a dimension-stress result.
-- Queries/GT: the existing official 1K queries and audited ground truth.
-- Training rows: the existing deterministic 100K row IDs.
-- Graph SHA-256: `52827694a9e8dcf64037639e594ed9855f514aa2ebbcb5a4d25f4c1921fa1c37`.
-- Training: seed `20260724`, 20 OPQ iterations, 256 centroids/chunk.
-- Search: `W=4`, `K=10`, one search thread, zero node cache, optimized V1 dense rotation.
-- Grid: `L={50,100,200,400,800}`.
-- No graph rebuild/mutation, new dataset, GPU, reranking change, ADC semantic change, or deployable-selector claim.
-
-## M0 Compatibility Findings
-
-The native path used by `apps/utils/generate_pq.cpp` calls
-`generate_opq_pivots()` and `generate_pq_data_from_pivots()`, not the
-divisibility-restricted `*_simplified` helpers. It accepts any
-`num_pq_chunks <= dim`, stores explicit `chunk_offsets`, and both the encoder
-and ADC search loop consume those offsets.
-
-- OPQ40: 40 chunks × 24 dimensions; offsets `0,24,...,960`.
-- OPQ48: 48 chunks × 20 dimensions; offsets `0,20,...,960`.
-- OPQ56: native uneven partition, 8 chunks × 18 dimensions followed by
-  48 chunks × 17 dimensions; offsets end `0,18,...,144,161,...,960`.
-
-Thus OPQ40/48 are directly divisible and OPQ56 is natively supported without
-padding or dropped dimensions. Each baseline must train its own rotation and
-codebook. The OPQ56 artifact audit must verify exactly 57 offsets, eight
-18-dimensional chunks, 48 17-dimensional chunks, and total width 960.
-
-The existing OPQ32 and OPQ64 artifacts have independent 960×960 rotations,
-centroids and codebooks. A mixed query therefore requires:
-
-1. centering and V1 rotation under OPQ32;
-2. a 256×32 ADC table;
-3. centering and V1 rotation under OPQ64;
-4. a 256×64 ADC table.
-
-Both rotation and both ADC-table costs must be inside each query's measured
-latency. The rotation-only lower estimate from the completed V1 microbenchmark
-is approximately `2 × 123.15 us`; it is not an end-to-end prediction. ADC
-construction also traverses all 960 dimensions for each model and must be
-measured separately. Query scratch requires 98,304 bytes for the two float ADC
-tables plus 7,680 bytes for two 960D float query buffers, before existing
-distance/coordinate scratch.
-
-## Compact Mixed Layout and Exact Memory Model
-
-Let `N=1,000,000`, `H` be the OPQ64-node count, and `L=N-H`. Use four separate
-64-byte-aligned arrays:
+The accepted compact layout uses:
 
 ```text
-low_codes[L][32]       // only low nodes
-high_codes[H][64]      // only high nodes
-high_tag[ceil(N/64)]   // one bit per original node ID
-rank1_prefix[ceil(N/64)+1] // uint32 prefix count per 64-node word
+low_codes[(N-H)][32]
+high_codes[H][64]
+high_tag[ceil(N/64)]
+rank1_prefix[ceil(N/64)+1]
 ```
 
-For node `i`, with `w=i>>6` and `b=i&63`:
+At `N=1,000,000`, aligned tag+rank is 187,584B and the two online OPQ models
+occupy 9,347,072B. Therefore:
+
+| Mixed payload | 1M total bytes | 1M bytes/vector | Actual-memory guard |
+|---|---:|---:|---|
+| 40 B/vector | 49,534,656 | 49.534656 | OPQ45: 49.673472 B/vector |
+| 48 B/vector | 57,534,656 | 57.534656 | OPQ53: 57.673536 B/vector |
+| 56 B/vector | 65,534,656 | 65.534656 | OPQ61: 65.673536 B/vector |
+
+Every result must report both views:
+
+1. **1M actual resident**: mixed40/48/56 versus OPQ45/53/61. This is the
+   actual-memory gate.
+2. **Scale-normalized / variable bytes**: mixed40/48/56 versus OPQ40/48/56.
+   This is a matched-code-payload diagnostic for a large-N regime, not an
+   equal-total-byte claim.
+
+The scale view must still disclose metadata. For general `N`:
 
 ```text
-rank1(i) = rank1_prefix[w] +
-           popcount(high_tag[w] & ((1ULL << b) - 1))
+B_mix(N,c) =
+  c + aligned_tag_rank(N)/N + 9,347,072/N
+
+B_uniform(N,m) =
+  m + M_m/N
 ```
 
-with the `b=0` mask defined as zero. If the tag is one, the code is
-`high_codes[rank1(i)]`; otherwise it is `low_codes[i-rank1(i)]`. This gives
-constant-time random access with one tag read, one prefix read and one
-popcount, and never reserves 64 bytes for an OPQ32 node.
+At one billion nodes, the two-model fixed allocation is about
+`0.009347 B/vector`, while tag+rank remains about `0.1875 B/vector`.
+Consequently mixed40 is about `40.196847 B/vector`, not exactly 40. This
+prevents the scale-normalized result from being mislabeled as exact
+equal-memory evidence.
 
-For `N=1,000,000`:
+If mixed beats OPQ40/48/56 but loses to OPQ45/53/61, the verdict is:
 
 ```text
-tag words                    = 15,625
-tag bytes                    = 125,000; aligned allocation = 125,056
-rank entries                 = 15,626
-rank bytes                   = 62,504; aligned allocation = 62,528
-tag+rank actual allocation   = 187,584 bytes
+HOLD-SCALE-DEPENDENT
 ```
 
-One compact online OPQ model retains one transposed codebook, one centroid,
-one rotation, and aligned chunk offsets:
+It is not a direction-level KILL.
+
+## Per-L Trace Policy
+
+Selectors are constructed independently for each `L`. There are five separate
+score vectors per selector family:
 
 ```text
-codebook      = 256 × 960 × 4 =   983,040 bytes
-centroid      = 960 × 4       =     3,840 bytes
-rotation      = 960 × 960 × 4 = 3,686,400 bytes
-OPQ32 offsets = 33 × 4, aligned 64 = 192 bytes
-OPQ64 offsets = 65 × 4, aligned 64 = 320 bytes
-two-model total                         = 9,347,072 bytes
+s_v^(50), s_v^(100), s_v^(200), s_v^(400), s_v^(800)
 ```
 
-The current native loader retains both row-major and transposed codebooks.
-Before the full gate, either the unused copy must be released for every
-uniform and mixed variant or its allocator capacity must be charged to every
-variant. The planned common compact loader counts one physical transposed
-codebook per model; parity tests must show this does not alter ADC values.
+For each `(q,L)`, the trace source is the deduplicated union of node-distance
+events from deterministic OPQ32 and OPQ64 searches under the frozen policy.
+Boundary traces additionally record candidate-list insertion/eviction
+comparisons. Test queries and exact distances are allowed because this is an
+optimistic hindsight gate.
 
-Exact planned resident-representation allocation, including 64-byte padding:
+The primary selector evaluated at `L` must use only `s_v^(L)`. Directly summing
+all five traces is prohibited in the decision gate because nested searches
+double-count events and imply an unstated workload distribution.
 
-| Mix | Code payload | Tag+rank | Two models | Total bytes | Bytes/vector |
-|---|---:|---:|---:|---:|---:|
-| 75% OPQ32 + 25% OPQ64 | 40,000,000 | 187,584 | 9,347,072 | 49,534,656 | 49.534656 |
-| 50% OPQ32 + 50% OPQ64 | 48,000,000 | 187,584 | 9,347,072 | 57,534,656 | 57.534656 |
-| 25% OPQ32 + 75% OPQ64 | 56,000,000 | 187,584 | 9,347,072 | 65,534,656 | 65.534656 |
-
-Uniform actual resident allocations under the same compact loader are:
-
-| Uniform | Code payload | Model allocation | Total bytes | Bytes/vector |
-|---|---:|---:|---:|---:|
-| OPQ40 | 40,000,000 | 4,673,472 | 44,673,472 | 44.673472 |
-| OPQ48 | 48,000,000 | 4,673,536 | 52,673,536 | 52.673536 |
-| OPQ56 | 56,000,000 | 4,673,536 | 60,673,536 | 60.673536 |
-
-Therefore OPQ40/48/56 are same-payload controls, not equal-total-memory
-controls. The primary no-free-memory guards are the nearest stronger uniform
-models OPQ45/53/61:
-
-| Mixed budget | Mixed total | Nearest stronger uniform | Uniform total |
-|---|---:|---|---:|
-| 40 payload | 49,534,656 | OPQ45 | 49,673,472 |
-| 48 payload | 57,534,656 | OPQ53 | 57,673,536 |
-| 56 payload | 65,534,656 | OPQ61 | 65,673,536 |
-
-The full run must report both serialized file bytes and actual allocated
-capacity. If measured allocator capacity differs from this model, the measured
-larger value controls the comparison.
-
-## Formal Trace-Conditioned Selection Objective
-
-Let `Q` be the official 1K test queries and `Λ={50,100,200,400,800}`. For each
-`(q, L)`, record the union of node-distance events from deterministic uniform
-OPQ32 and uniform OPQ64 searches under the frozen graph/search policy. Duplicate
-visits to the same `(q,L,node)` are counted once. This union avoids conditioning
-only on one endpoint while remaining a fixed, reproducible test-trace
-feasibility bound.
-
-For event `e=(q,L,v)`, let `d*(q,v)` be exact squared L2 distance and
-`d32(q,v)`, `d64(q,v)` be the two ADC estimates. Define:
+An optional aggregate selector may be reported only after Stage A's primary
+gate and only as a diagnostic with an explicit uniform-over-L workload:
 
 ```text
-delta_e = (d32(q,v) - d*(q,v))^2 - (d64(q,v) - d*(q,v))^2
-s_v     = sum over trace events e ending at v of delta_e
-J(S)    = sum over v in S of s_v, subject to |S|=H
+s_v^agg = (1/5) sum_L s_v^(L) / max(1, |E_L|)
 ```
 
-There is no threshold, centrality weight, fitted coefficient, or reconstruction
-term. The trace is routing-conditioned, while the loss is exact-distance
-estimation regret.
+It cannot change any PASS/KILL/HOLD label.
 
-Because `J(S)` is modular, an exchange argument proves that choosing the `H`
-largest `s_v` is the exact optimum for this stated trace objective: if a chosen
-node has smaller score than an unchosen node, swapping them strictly increases
-or preserves `J`. Ties are resolved by ascending node ID before any search
-result is observed.
+## Selector 1: Distance-Regret
 
-This is named `TRACE-CONDITIONED-SELECTOR`, not a global oracle. It does not
-optimize the non-additive mixed-search trajectory or its induced future trace,
-and it uses test queries and exact distances. A positive result supports only
-hindsight selectivity.
+For fixed `L`, trace event `e=(q,L,v)` has exact squared-L2 distance `d*` and
+ADC estimates `d32`, `d64`. Define:
 
-Baselines at each `H`:
+```text
+delta_DR(e) = (d32-d*)^2 - (d64-d*)^2
+s_DR,L(v)   = sum_{e in E_L(v)} delta_DR(e)
+J_DR,L(S)   = sum_{v in S} s_DR,L(v), |S|=H
+```
 
-- `RANDOM-NODE`: one preregistered permutation from seed `20260724`;
-- `VISIT-FREQUENCY`: top-H by event count on the same trace, ties by node ID;
-- `TRACE-CONDITIONED-SELECTOR`: top-H by `s_v`.
+Top-H is exactly optimal only for this modular surrogate. It is not an oracle
+for mixed-search trajectories. Therefore:
 
-Trace generation time, exact-distance evaluation time, sorting/selection time,
-and online search time are reported separately.
+```text
+distance-regret failure -> KILL-DISTANCE-REGRET-SELECTOR
+```
+
+and never, by itself, `KILL-SELECTIVE-OPQ`.
+
+## Selector 2: Routing-Aware Boundary-Inversion
+
+For fixed `L`, record every frozen candidate-list boundary event
+`e=(q,L,a,b)`, where incoming/evaluated node `a` is compared with the current
+worst retained node `b` immediately before an insertion/eviction decision.
+Take the deduplicated union of such boundary pairs from OPQ32 and OPQ64
+endpoint traces.
+
+Let the exact ordering label and all-low prediction be:
+
+```text
+y_e    = 1[d*(q,a) < d*(q,b)]
+y_0(e) = 1[d32(q,a) < d32(q,b)]
+```
+
+For a single-node counterfactual:
+
+```text
+y_a(e) = 1[d64(q,a) < d32(q,b)]
+y_b(e) = 1[d32(q,a) < d64(q,b)]
+
+delta_RA(e,a) = 1[y_0 != y_e] - 1[y_a != y_e]
+delta_RA(e,b) = 1[y_0 != y_e] - 1[y_b != y_e]
+```
+
+All other nodes receive zero from this event. Then:
+
+```text
+s_RA,L(v) = sum_e delta_RA(e,v)
+J_RA,L(S) = sum_{v in S} s_RA,L(v), |S|=H
+```
+
+This directly scores correction of frozen beam-boundary ranking inversions. It
+is independent of squared distance-regret and contains no threshold,
+centrality weight, or fitted coefficient. Top-H is exact for this modular
+single-node counterfactual objective, but not for the joint, non-additive
+mixed-search trajectory; it is named `ROUTING-AWARE-SELECTOR`, not global
+oracle.
+
+Failure label:
+
+```text
+routing-aware failure -> KILL-ROUTING-AWARE-SELECTOR
+```
+
+## Control Selectors
+
+All controls are also per-L:
+
+- `RANDOM`: the first H nodes of a permutation fixed by seed `20260724`;
+- `VISIT-FREQUENCY`: top-H by per-L trace event count, ties by node ID;
+- `DISTANCE-REGRET`: top-H by `s_DR,L`, ties by node ID;
+- `ROUTING-AWARE`: top-H by `s_RA,L`, ties by node ID.
+
+Trace generation, exact-distance computation, score construction, sorting, and
+online search are timed separately. Selector construction time is offline and
+never hidden in QPS.
+
+## Two Separate Gates
+
+### Algorithmic-Selectivity
+
+Metrics:
+
+```text
+Recall@10
+reads/query
+comparisons/query
+```
+
+At no-lower Recall, the mixed method must have both strictly lower reads and
+strictly lower comparisons than the applicable uniform frontier. Recall,
+reads, and comparisons are deterministic under the frozen policy, so Stage A
+uses one complete run per point; performance repetitions are not used to
+decide this gate.
+
+### System-Pareto
+
+Metrics:
+
+```text
+QPS
+p50
+p99
+dual-query-preprocessing time
+compact-accessor time
+actual allocated bytes/vector
+```
+
+The final compact layout and both rotation/ADC paths must be active inside the
+query timer. Exactly two interleaved complete performance repeats are
+reported; there is no third repeat.
+
+QPS/p50/p99 may strengthen a PASS only when their direction is favorable in
+both raw repeats. System failure may yield `HOLD-SYSTEM-OVERHEAD` or
+`KILL-CURRENT-SYSTEM-REALIZATION`; it cannot, by itself, KILL algorithmic
+selectivity or the research direction.
+
+## Stage A: Algorithmic Selectivity
+
+### Scope
+
+Train only:
+
+```text
+OPQ40 / OPQ48 / OPQ56
+```
+
+Reuse audited OPQ32/64. Do not train OPQ45/53/61 and do not implement the final
+compact layout.
+
+Stage A may use a dual-dense-code experimental adapter holding the existing
+OPQ32 and OPQ64 arrays solely to dispatch node distances. Its memory and system
+timings are explicitly non-claimable. It must still compute the correct two
+query representations; only Recall/reads/comparisons enter the gate.
+
+### Matrix
+
+Uniform payload frontiers:
+
+```text
+OPQ40 / OPQ48 / OPQ56
+× L={50,100,200,400,800}
+× full 1K queries
+```
+
+Mixed:
+
+```text
+3 payload budgets
+× {RANDOM, VISIT-FREQUENCY, DISTANCE-REGRET, ROUTING-AWARE}
+× per-L selector matched to evaluation L
+× full 1K queries
+```
+
+### Stage-A Decisions
+
+- A selector family that fails every budget/L receives its selector-specific
+  KILL label.
+- If either routing-relevant selector passes the matched-payload
+  Algorithmic-Selectivity gate at any budget/L:
+
+  ```text
+  PASS-ALGORITHMIC-SELECTIVITY-SCALE
+  GO-STAGE-B
+  ```
+
+- If both independent routing-relevant selectors fail at all three budgets and
+  all five per-L hindsight gates, despite test leakage:
+
+  ```text
+  KILL-SELECTIVE-OPQ-STATIC-NODE-A0
+  ```
+
+  This is scoped to static OPQ32/64 node allocation on the frozen GIST1M graph;
+  it is not a universal theorem about every adaptive or query-dependent mixed
+  quantizer.
+
+Random or visit-frequency success without either routing-relevant selector
+does not establish a precision-specific mechanism; verdict:
+
+```text
+HOLD-HOTNESS-ONLY
+```
+
+## Stage B: Actual Memory and System Gate
+
+Stage B is forbidden unless Stage A returns `GO-STAGE-B`.
+
+### Scope
+
+1. Train OPQ45/53/61.
+2. Implement the accepted compact low/high/tag/rank layout.
+3. Carry forward only Stage-A-positive routing-relevant selector/budget/L
+   configurations; random and visit-frequency remain controls.
+4. Run actual-memory Algorithmic-Selectivity against OPQ45/53/61.
+5. Run exactly two interleaved System-Pareto repeats.
+
+### Stage-B Decisions
+
+- Scale-normalized pass versus OPQ40/48/56 but actual-memory algorithmic
+  failure versus OPQ45/53/61:
+
+  ```text
+  HOLD-SCALE-DEPENDENT
+  ```
+
+- Actual-memory algorithmic pass, but QPS/p50/p99 fail after dual preprocessing
+  and compact access:
+
+  ```text
+  PASS-ALGORITHMIC-SELECTIVITY
+  HOLD-SYSTEM-OVERHEAD
+  ```
+
+- Actual-memory algorithmic pass and favorable QPS/p50/p99 direction in both
+  raw repeats:
+
+  ```text
+  PASS-HINDSIGHT-SELECTIVITY
+  HOLD-DEPLOYABLE-SELECTOR
+  ```
+
+- QPS/p50/p99 failure alone cannot produce a direction-level KILL.
+
+Any PASS remains GIST1M-specific and only authorizes a later held-out-query
+selector gate.
 
 ## Experiment Blocks
 
-### B1: Compatibility and Artifact Gate
+### B1: Per-L Trace and Selector Correctness
 
-- Claim tested: the uniform and mixed artifacts obey the frozen protocol.
-- Systems: existing OPQ32/64; new OPQ40/48/56 and memory guards OPQ45/53/61.
-- Success: shapes, offsets, orthogonality, training IDs, graph/query/GT hashes,
-  and code counts all pass.
-- Failure: any mismatch stops all search.
+- Claim: two independent routing-relevant selectors are correctly defined.
+- Evidence: raw per-L traces, exact score recomputation, top-H/tie audit.
+- Failure: `INVALID`; no search.
 - Priority: MUST-RUN after approval.
 
-### B2: Uniform Frontier and Memory Guard
+### B2: Stage-A Uniform Payload Frontiers
 
-- Claim tested: mixed codes face the strongest actual-memory baseline.
-- Systems: OPQ32/40/45/48/53/56/61/64.
-- Metrics: Recall@10, reads, comparisons, QPS, p50, p99, preprocessing time,
-  serialized bytes, allocated bytes/vector.
-- Repetitions: exactly two complete, interleaved repeats; report both raw
-  repeats; never add a third.
+- Claim: OPQ40/48/56 are strong same-payload controls.
+- Evidence: independent rotations/codebooks and audited artifacts.
 - Priority: MUST-RUN.
 
-### B3: Selector Isolation
+### B3: Stage-A Algorithmic Selectivity
 
-- Claim tested: precision sensitivity adds value beyond random placement and
-  visit hotness.
-- Systems: three budgets × RANDOM-NODE / VISIT-FREQUENCY /
-  TRACE-CONDITIONED-SELECTOR.
-- Setup: same compact layout and dual-query preprocessing for every selector.
-- Failure interpretation: if visit frequency matches the trace-conditioned
-  selector, no precision-specific mechanism is established.
+- Claim: precision-sensitive allocation improves navigation work, independent
+  of system layout.
+- Evidence: Recall–reads–comparisons against random, frequency and uniform
+  frontiers.
 - Priority: MUST-RUN.
 
-### B4: Equal-Memory Pareto Gate
+### B4: Stage-B Actual-Memory Gate
 
-- Claim tested: hindsight selectivity moves the actual-memory frontier.
-- Primary comparisons: 40/48/56-payload mixes against OPQ45/53/61,
-  respectively. OPQ40/48/56 remain same-payload diagnostics.
-- PASS requires at least one budget and a pair of points, possibly at different
-  L, where in each raw repeat mixed Recall is no lower, reads are strictly
-  lower, QPS is strictly higher, and p99 is strictly lower than the uniform
-  frontier. Averaging cannot reverse a failed repeat.
-- Otherwise: `KILL-SELECTIVE-OPQ`.
-- Positive result: `PASS-HINDSIGHT-SELECTIVITY /
-  HOLD-DEPLOYABLE-SELECTOR`.
-- Priority: MUST-RUN.
+- Claim: Stage-A selectivity survives OPQ45/53/61.
+- Evidence: actual allocated bytes and Algorithmic-Selectivity.
+- Priority: CONDITIONAL MUST-RUN.
 
-## Run Order and Milestones
+### B5: Stage-B System Gate
 
-| Milestone | Goal | Runs | Decision Gate | Estimated Cost | Risk |
-|---|---|---|---|---|---|
-| M0 | unit/artifact/layout canary | no full search | all parity and byte audits pass | 1–2 h implementation/audit | mixed accessor bug |
-| M1 | train/code uniform controls | 40/45/48/53/56/61 | artifact gate passes | 4–7 h wall with 3-way parallel waves | OPQ training contention |
-| M2 | generate frozen trace/selectors | OPQ32+64 traces over 5 L | deterministic scores and exact top-H audit | 0.5–1.5 h | trace volume |
-| M3 | uniform and mixed search | 8 uniform + 9 mixed variants, 5 L, 2 repeats | strict raw-repeat Pareto gate | 1.5–3 h | host latency noise |
-| M4 | audit/report only | no new runs | issue one frozen verdict | 0.5–1 h | metric mistakes |
+- Claim: the compact implementation converts selectivity into end-to-end value.
+- Evidence: two raw repeats of QPS/p50/p99 with dual preprocessing.
+- Priority: CONDITIONAL MUST-RUN.
 
 ## Correctness Gates
 
-1. Recompute all frozen SHA-256 values before work and before reporting.
-2. Verify OPQ40/48/56/45/53/61 chunk counts, offsets, centroid count and
-   rotation orthogonality.
-3. Exhaustively verify tag popcount, prefix ranks, unique dense slots and exact
-   low/high cardinalities for all one million node IDs.
-4. All-low mixed mode must reproduce uniform OPQ32 per-node ADC values and
-   search outputs; all-high must reproduce OPQ64.
-5. For sampled selected/unselected nodes, mixed distances must equal the
-   corresponding standalone OPQ64/32 distances within `1e-5` absolute error.
-6. Measure two rotations and two ADC tables inside query latency; no pre-rotated
-   query may enter final QPS/p50/p99.
-7. Verify optimized V1, one search thread, zero cache, `W=4`, `K=10`, and exact
-   L grid from logs.
-8. Verify allocated capacity and serialized bytes against the layout model.
-9. Recompute selector scores from raw trace and verify top-H exactness and
-   deterministic tie-breaking.
-10. Exactly two interleaved complete performance repeats; no partial result and
-    no third repeat.
+1. Recompute frozen graph/query/GT/training-row hashes.
+2. Audit OPQ40/48/56 and, conditionally, OPQ45/53/61 shapes, chunk offsets,
+   centroid count, and rotation orthogonality.
+3. Store separate per-L trace files and reject any selector whose score includes
+   another L.
+4. Recompute every distance-regret and boundary-inversion score from raw events.
+5. Verify top-H exactness for each stated modular objective and deterministic
+   node-ID tie-breaking.
+6. Stage-A all-low dispatch must reproduce OPQ32 and all-high dispatch OPQ64
+   ADC/search results.
+7. Stage-B compact layout must exhaustively validate tag/rank/slot uniqueness
+   over all 1M nodes and preserve endpoint parity.
+8. Sampled mixed distances must match the selected standalone OPQ table within
+   `1e-5` absolute error.
+9. Stage-B allocation capacity must match or exceed the analytical accounting;
+   measured larger bytes control comparison.
+10. Both query rotations and ADC tables must be inside Stage-B query timing.
+11. Exactly two interleaved Stage-B performance repeats; no partial or third
+    repeat.
 
-Any correctness failure, graph/data mismatch, hidden dense 64-byte allocation,
-omitted dual preprocessing, or inability to construct a no-free-memory uniform
-guard makes the gate `INVALID`, not PASS.
+Any mismatch is `INVALID`, never PASS.
 
 ## Expected Implementation Scope After Approval
 
-- `DiskANN_trace/include/pq_flash_index.h`: second OPQ table, compact code-store
-  state and dual scratch ownership.
-- `DiskANN_trace/include/pq_scratch.h`: two rotated queries and two ADC tables.
-- `DiskANN_trace/include/pq.h` and `src/pq.cpp`: compact online table ownership,
-  release of duplicate codebook storage, preprocessing accounting.
-- `DiskANN_trace/src/pq_flash_index.cpp`: mixed load/access, dual query
-  preprocessing, trace hooks and selector-aware distance dispatch.
-- `DiskANN_trace/include/percentile_stats.h` and
-  `apps/search_disk_index.cpp`: dual preprocessing and layout-byte reporting.
-- New work-local scripts under
-  `codex/work/2026-07-24/selective_opq_oracle_a0/` for training, layout packing,
-  trace extraction, selector construction, audits, execution and analysis.
+Stage A only:
 
-No full vector-database, graph mutation, SSD layout redesign, selector model,
-or production metadata service is in scope.
+- Work-local scripts for OPQ40/48/56 training/audit.
+- `pq_flash_index.cpp` and work-local instrumentation for per-L node events,
+  boundary pairs, and dual-dense experimental dispatch.
+- Work-local selector, audit, search, and analysis scripts.
+- No compact persistent layout or allocator optimization.
 
-## Compute and Data Budget
+Conditional Stage B:
 
-- GPU: 0.
-- CPU: up to three concurrent OPQ builds, 24 OpenMP threads each; search remains
-  one thread. Host has 112 logical CPUs.
-- RAM: estimated 13 GiB/build; cap concurrent build RSS at 48 GiB; full machine
-  availability at planning time is 242 GiB.
-- NVMe: reserve 2 GiB incremental on `/dev/nvme8n1` for six uniform artifacts,
-  compact mixes, traces, raw repeats and logs. No large artifact may be written
-  to the system LV.
-- Expected wall time after approval: 7–13 h.
-- Hard wall: 16 h for the complete approved pipeline. Stop at the current
-  phase on timeout; do not add models, L points or repeats.
-- Current NVMe availability: approximately 1.4 TiB.
+- `include/pq_flash_index.h`, `src/pq_flash_index.cpp`: compact mixed store and
+  accessor.
+- `include/pq_scratch.h`: dual query and ADC scratch.
+- `include/pq.h`, `src/pq.cpp`: common compact OPQ table ownership and
+  preprocessing accounting.
+- `include/percentile_stats.h`, `apps/search_disk_index.cpp`: dual
+  preprocessing/accessor and actual-byte reporting.
+- Work-local OPQ45/53/61 and two-repeat system scripts.
+
+No VectorDB service, graph redesign, SSD layout project, deployable selector,
+RPQ, or structured OPQ is in scope.
+
+## Run Order, Budget and Hard Walls
+
+### Stage A
+
+| Milestone | Work | Expected Wall |
+|---|---|---:|
+| A0 | trace/score/dispatch implementation and canary | 2–4 h |
+| A1 | concurrent OPQ40/48/56 training and encoding | 2–3 h |
+| A2 | per-L trace, four selectors, algorithmic matrix | 1–2 h |
+| A3 | audit and Stage-A verdict | 0.5 h |
+
+```text
+GPU: 0
+CPU: at most 3 concurrent builds × 24 threads; search 1 thread
+RAM cap: 48 GiB
+incremental NVMe reserve: 2 GiB on /dev/nvme8n1
+expected Stage-A wall: 5–9 h
+Stage-A hard wall: 10 h
+```
+
+At the hard wall, stop and report the current stage. Do not train OPQ45/53/61,
+add L points, or enter Stage B.
+
+### Stage B, Conditional
+
+| Milestone | Work | Expected Wall |
+|---|---|---:|
+| B0 | concurrent OPQ45/53/61 training and encoding | 2–3 h |
+| B1 | compact layout implementation and parity audit | 2–4 h |
+| B2 | actual-memory algorithmic and two-repeat system matrix | 1.5–2.5 h |
+| B3 | final audit and verdict | 0.5 h |
+
+```text
+GPU: 0
+CPU: at most 3 concurrent builds × 24 threads; search 1 thread
+RAM cap: 48 GiB
+additional NVMe reserve: 2 GiB on /dev/nvme8n1
+expected Stage-B wall: 6–10 h
+Stage-B hard wall: 11 h
+combined maximum after both approvals: 21 h
+```
+
+Stage B requires a separate approval after a positive Stage-A report. It does
+not start automatically.
 
 ## Paper Storyline Boundary
 
-- Main evidence if positive: one strict equal-memory hindsight frontier shift.
-- Supporting evidence: trace-conditioned allocation beats random and hotness.
-- Intentionally cut: deployable selector, held-out generalization, new graph,
-  additional datasets, structured OPQ, RPQ, caching and systems machinery.
-- A positive A0 authorizes only a later held-out-query selector gate.
+- Main evidence: static precision selectivity first, system realization second.
+- Supporting evidence: two independent routing-relevant selectors beat
+  hotness/random controls.
+- Appendix-only: explicit-workload aggregate-L selector.
+- Intentionally cut: deployable/learned selector, held-out generalization, new
+  dataset, graph changes, RPQ, structured OPQ, caching, and system services.
 
 ## Final Checklist
 
-- [x] Main claim and anti-claim frozen
-- [x] Strong actual-memory baselines specified
-- [x] Additive objective and exact top-H scope stated
-- [x] Random and visit-frequency controls included
-- [x] Dual preprocessing charged
-- [x] No-GPU and hard-wall budget specified
-- [ ] GPT approval received
-- [ ] Implementation or experiments authorized
+- [x] Per-L selectors replace implicit cross-L averaging
+- [x] Distance-regret KILL is selector-specific
+- [x] Independent routing-aware surrogate added
+- [x] Scale-normalized and 1M actual-memory views separated
+- [x] Algorithmic and system gates separated
+- [x] Stage A and conditional Stage B budgets frozen
+- [ ] GPT approval for Stage A received
+- [ ] Any coding or experiment authorized
